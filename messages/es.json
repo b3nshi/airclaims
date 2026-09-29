@@ -91,7 +91,8 @@
       "partially_won": "Ganada en parte",
       "lost": "Perdida",
       "withdrawn": "Retirada"
-    }
+    },
+    "actionNeeded": "Requiere tu acción"
   },
   "Wizard": {
     "newTitle": "Nueva reclamación",
@@ -345,6 +346,134 @@
     "docsPendingTitle": "Faltan documentos",
     "docsPendingBody": "Añade la tarjeta de embarque y la confirmación de reserva cuando puedas: refuerzan tu reclamación.",
     "addDocuments": "Añadir documentos",
-    "backToClaims": "Volver a mis reclamaciones"
+    "backToClaims": "Volver a mis reclamaciones",
+    "toDashboard": "Ir a tu reclamación"
+  },
+  "Dashboard": {
+    "back": "Mis reclamaciones",
+    "estimated": "Compensación estimada",
+    "claimEmail": "Correo de la reclamación",
+    "nextTitle": "Qué hacer ahora",
+    "next": {
+      "finish_draft": {
+        "title": "Termina tu reclamación",
+        "body": "Tu reclamación está guardada como borrador. Completa los pasos que faltan para enviarla."
+      },
+      "approve_email": {
+        "title": "Aprueba tu mensaje",
+        "body": "Hay un mensaje listo para enviarse en tu nombre. Léelo en Mensajes y apruébalo: no se envía nada hasta que lo hagas."
+      },
+      "submit_web_form": {
+        "title": "Envía tu reclamación a {airline}",
+        "body": "Sigue estos pasos y luego indícanos la referencia de la aerolínea."
+      },
+      "preparing_email": {
+        "title": "Estamos preparando el correo de tu reclamación",
+        "body": "Te avisaremos por correo cuando esté listo. Lo leerás y lo aprobarás antes de que se envíe nada."
+      },
+      "no_channel": {
+        "title": "Estamos buscando cómo recibe reclamaciones {airline}",
+        "body": "Te enviaremos el siguiente paso por correo. Mientras tanto, aquí tienes el texto de tu reclamación."
+      },
+      "validating": {
+        "title": "Estamos revisando tus documentos",
+        "body": "Te avisaremos si algo requiere tu atención."
+      },
+      "wait_airline": {
+        "title": "Esperando a la aerolínea",
+        "body": "La aerolínea debe responder antes del {due}. Te reenviaremos su respuesta."
+      },
+      "airline_overdue": {
+        "title": "La aerolínea no ha respondido a tiempo",
+        "body": "El plazo de un mes venció el {due}. Puedes llevar tu reclamación a AESA, cuya decisión es vinculante para la aerolínea."
+      },
+      "read_reply": {
+        "title": "La aerolínea ha respondido",
+        "body": "Lee la respuesta en Mensajes. Si la rechazan u ofrecen bonos o un importe menor, no tienes que aceptarlo: puedes acudir a AESA."
+      },
+      "wait_aesa": {
+        "title": "Tu reclamación está en AESA",
+        "body": "La decisión de AESA es vinculante para la aerolínea. Te avisaremos cuando llegue."
+      },
+      "in_court": {
+        "title": "Tu reclamación está en los tribunales",
+        "body": "Estate atento a las notificaciones del juzgado y cuéntanos cualquier novedad."
+      },
+      "check_payment": {
+        "title": "Comprueba el pago",
+        "body": "La aerolínea te paga directamente a ti. Avísanos cuando recibas el dinero."
+      },
+      "consider_court": {
+        "title": "Aún puedes acudir a los tribunales",
+        "body": "En España, las reclamaciones de menos de 2.000 € pueden llevarse a juicio sin abogado (juicio verbal)."
+      },
+      "none": {
+        "title": "No hay nada que hacer",
+        "body": "Esta reclamación está cerrada."
+      }
+    },
+    "aesaUntil": "Último día para acudir a AESA: {date}.",
+    "continue": "Continuar",
+    "goToMessages": "Ir a mensajes",
+    "deadlinesTitle": "Plazos",
+    "deadline": {
+      "claimLimit": "Último día para reclamar",
+      "airlineReply": "La aerolínea debe responder antes del",
+      "aesa": "Último día para acudir a AESA"
+    },
+    "daysLeft": "{days, plural, one {Queda # día} other {Quedan # días}}",
+    "today": "Hoy",
+    "passed": "Vencido",
+    "messagesTitle": "Mensajes",
+    "noMessages": "Aún no hay mensajes.",
+    "from": "De {from}",
+    "to": "Para {to}",
+    "emailStatus": {
+      "draft": "Borrador",
+      "pending_approval": "Pendiente de tu aprobación",
+      "approved": "Aprobado, enviando",
+      "sending": "Enviando",
+      "sent": "Enviado",
+      "failed": "No enviado",
+      "received": "Recibido",
+      "forwarded": "Recibido",
+      "ignored": "Recibido"
+    },
+    "summary": "Resumen: {summary}",
+    "showMessage": "Ver mensaje",
+    "approve": "Aprobar y enviar",
+    "confirmSend": "¿Enviar este mensaje a {recipient} desde {alias}, en tu nombre? No se puede deshacer.",
+    "confirmYes": "Sí, enviarlo",
+    "cancel": "Cancelar",
+    "approveError": "No hemos podido aprobar este mensaje. Recarga la página e inténtalo de nuevo.",
+    "timelineTitle": "Historial",
+    "event": {
+      "created": "Reclamación creada",
+      "status_changed": "Estado: {status}",
+      "email_approved": "Aprobaste un mensaje",
+      "submitted_airline": "Reclamación enviada a la aerolínea",
+      "email_received": "Mensaje recibido",
+      "email_sent": "Mensaje enviado",
+      "document_validated": "Documento revisado",
+      "other": "Actualización"
+    },
+    "documentsTitle": "Documentos",
+    "noDocuments": "Aún no hay documentos.",
+    "view": "Ver",
+    "validation": {
+      "pending": "Sin revisar",
+      "passed": "Revisado",
+      "needs_review": "En revisión",
+      "failed": "Requiere atención"
+    },
+    "manageDocuments": "Añadir documentos",
+    "expensesTitle": "Gastos",
+    "noExpenses": "Sin gastos.",
+    "manageExpenses": "Gestionar gastos",
+    "total": "Total: {amount}",
+    "withdraw": "Retirar reclamación",
+    "withdrawConfirm": "¿Retirar esta reclamación? Dejaremos de hacerle seguimiento. Si ya se envió, la aerolínea podría responderte igualmente.",
+    "withdrawYes": "Retirar",
+    "withdrawError": "No hemos podido retirar la reclamación. Inténtalo de nuevo."
   }
 }

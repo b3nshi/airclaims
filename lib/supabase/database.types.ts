@@ -198,6 +198,40 @@ export type AgreementRow = {
   document_sha256: string;
 };
 
+export type EmailStatus =
+  | "draft" | "pending_approval" | "approved" | "sending" | "sent" | "failed" | "received" | "forwarded" | "ignored";
+export type EmailClass = "user" | "airline" | "aesa" | "court" | "spam" | "other" | "unclassified";
+
+// my_emails view: exact addresses are null until an outbound message has been sent.
+export type MyEmailRow = {
+  id: string;
+  claim_id: string;
+  direction: "inbound" | "outbound";
+  status: EmailStatus;
+  classification: EmailClass;
+  from_address: string | null;
+  to_addresses: string[] | null;
+  recipient_label: string | null;
+  subject: string | null;
+  body_text: string | null;
+  body_html: string | null;
+  attachments: Json;
+  ai_summary: string | null;
+  approved_at: string | null;
+  sent_at: string | null;
+  received_at: string | null;
+  created_at: string;
+};
+
+export type ClaimEventRow = {
+  id: number;
+  claim_id: string;
+  event_type: string;
+  payload: Json;
+  actor: string;
+  created_at: string;
+};
+
 export type Database = {
   public: {
     Tables: {
@@ -227,17 +261,22 @@ export type Database = {
           Partial<Pick<DocumentRow, "mime_type" | "sha256">>,
         never
       >;
+      claim_events: Table<ClaimEventRow, never, never>;
       agreements: Table<
         AgreementRow,
         Omit<AgreementRow, "id" | "signed_at"> & Partial<Pick<AgreementRow, "signed_at">>,
         never
       >;
     };
-    Views: Record<string, never>;
+    Views: {
+      my_emails: { Row: MyEmailRow; Relationships: [] };
+    };
     Functions: {
       compute_fee_pct: { Args: { p_claim_id: string }; Returns: number };
       submit_claim: { Args: { p_claim_id: string }; Returns: ClaimStatus };
       record_airline_submission: { Args: { p_claim_id: string; p_reference: string | null }; Returns: undefined };
+      approve_email: { Args: { p_email_id: string }; Returns: undefined };
+      withdraw_claim: { Args: { p_claim_id: string }; Returns: undefined };
       request_flight_check: { Args: { p_flight_iata: string; p_flight_date: string }; Returns: Json };
       airline_claim_channels: {
         Args: { p_airline_id: string };

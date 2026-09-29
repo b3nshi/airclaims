@@ -91,7 +91,8 @@
       "partially_won": "Guanyada en part",
       "lost": "Perduda",
       "withdrawn": "Retirada"
-    }
+    },
+    "actionNeeded": "Requereix la teva acció"
   },
   "Wizard": {
     "newTitle": "Nova reclamació",
@@ -345,6 +346,134 @@
     "docsPendingTitle": "Falten documents",
     "docsPendingBody": "Afegeix la targeta d'embarcament i la confirmació de reserva quan puguis: reforcen la teva reclamació.",
     "addDocuments": "Afegeix documents",
-    "backToClaims": "Torna a les meves reclamacions"
+    "backToClaims": "Torna a les meves reclamacions",
+    "toDashboard": "Ves a la teva reclamació"
+  },
+  "Dashboard": {
+    "back": "Les meves reclamacions",
+    "estimated": "Compensació estimada",
+    "claimEmail": "Correu de la reclamació",
+    "nextTitle": "Què cal fer ara",
+    "next": {
+      "finish_draft": {
+        "title": "Acaba la teva reclamació",
+        "body": "La teva reclamació està desada com a esborrany. Completa els passos que falten per enviar-la."
+      },
+      "approve_email": {
+        "title": "Aprova el teu missatge",
+        "body": "Hi ha un missatge a punt per enviar-se en nom teu. Llegeix-lo a Missatges i aprova'l: no s'envia res fins que ho facis."
+      },
+      "submit_web_form": {
+        "title": "Envia la teva reclamació a {airline}",
+        "body": "Segueix aquests passos i després indica'ns la referència de l'aerolínia."
+      },
+      "preparing_email": {
+        "title": "Estem preparant el correu de la teva reclamació",
+        "body": "T'avisarem per correu quan estigui a punt. El llegiràs i l'aprovaràs abans que s'enviï res."
+      },
+      "no_channel": {
+        "title": "Estem buscant com rep reclamacions {airline}",
+        "body": "T'enviarem el pas següent per correu. Mentrestant, aquí tens el text de la teva reclamació."
+      },
+      "validating": {
+        "title": "Estem revisant els teus documents",
+        "body": "T'avisarem si alguna cosa requereix la teva atenció."
+      },
+      "wait_airline": {
+        "title": "Esperant l'aerolínia",
+        "body": "L'aerolínia ha de respondre abans del {due}. Et reenviarem la seva resposta."
+      },
+      "airline_overdue": {
+        "title": "L'aerolínia no ha respost a temps",
+        "body": "El termini d'un mes va vèncer el {due}. Pots portar la teva reclamació a AESA, la decisió de la qual és vinculant per a l'aerolínia."
+      },
+      "read_reply": {
+        "title": "L'aerolínia ha respost",
+        "body": "Llegeix la resposta a Missatges. Si la rebutgen o ofereixen vals o un import menor, no l'has d'acceptar: pots anar a AESA."
+      },
+      "wait_aesa": {
+        "title": "La teva reclamació és a AESA",
+        "body": "La decisió d'AESA és vinculant per a l'aerolínia. T'avisarem quan arribi."
+      },
+      "in_court": {
+        "title": "La teva reclamació és als tribunals",
+        "body": "Estigues atent a les notificacions del jutjat i explica'ns qualsevol novetat."
+      },
+      "check_payment": {
+        "title": "Comprova el pagament",
+        "body": "L'aerolínia et paga directament a tu. Avisa'ns quan rebis els diners."
+      },
+      "consider_court": {
+        "title": "Encara pots anar als tribunals",
+        "body": "A Espanya, les reclamacions de menys de 2.000 € es poden portar a judici sense advocat (judici verbal)."
+      },
+      "none": {
+        "title": "No hi ha res a fer",
+        "body": "Aquesta reclamació està tancada."
+      }
+    },
+    "aesaUntil": "Últim dia per anar a AESA: {date}.",
+    "continue": "Continua",
+    "goToMessages": "Ves als missatges",
+    "deadlinesTitle": "Terminis",
+    "deadline": {
+      "claimLimit": "Últim dia per reclamar",
+      "airlineReply": "L'aerolínia ha de respondre abans del",
+      "aesa": "Últim dia per anar a AESA"
+    },
+    "daysLeft": "{days, plural, one {Queda # dia} other {Queden # dies}}",
+    "today": "Avui",
+    "passed": "Vençut",
+    "messagesTitle": "Missatges",
+    "noMessages": "Encara no hi ha missatges.",
+    "from": "De {from}",
+    "to": "Per a {to}",
+    "emailStatus": {
+      "draft": "Esborrany",
+      "pending_approval": "Pendent de la teva aprovació",
+      "approved": "Aprovat, enviant",
+      "sending": "Enviant",
+      "sent": "Enviat",
+      "failed": "No enviat",
+      "received": "Rebut",
+      "forwarded": "Rebut",
+      "ignored": "Rebut"
+    },
+    "summary": "Resum: {summary}",
+    "showMessage": "Mostra el missatge",
+    "approve": "Aprova i envia",
+    "confirmSend": "Vols enviar aquest missatge a {recipient} des de {alias}, en nom teu? No es pot desfer.",
+    "confirmYes": "Sí, envia'l",
+    "cancel": "Cancel·la",
+    "approveError": "No hem pogut aprovar aquest missatge. Recarrega la pàgina i torna-ho a provar.",
+    "timelineTitle": "Historial",
+    "event": {
+      "created": "Reclamació creada",
+      "status_changed": "Estat: {status}",
+      "email_approved": "Vas aprovar un missatge",
+      "submitted_airline": "Reclamació enviada a l'aerolínia",
+      "email_received": "Missatge rebut",
+      "email_sent": "Missatge enviat",
+      "document_validated": "Document revisat",
+      "other": "Actualització"
+    },
+    "documentsTitle": "Documents",
+    "noDocuments": "Encara no hi ha documents.",
+    "view": "Mostra",
+    "validation": {
+      "pending": "Sense revisar",
+      "passed": "Revisat",
+      "needs_review": "En revisió",
+      "failed": "Requereix atenció"
+    },
+    "manageDocuments": "Afegeix documents",
+    "expensesTitle": "Despeses",
+    "noExpenses": "Sense despeses.",
+    "manageExpenses": "Gestiona les despeses",
+    "total": "Total: {amount}",
+    "withdraw": "Retira la reclamació",
+    "withdrawConfirm": "Vols retirar aquesta reclamació? Deixarem de fer-ne el seguiment. Si ja s'havia enviat, l'aerolínia encara et podria respondre.",
+    "withdrawYes": "Retira",
+    "withdrawError": "No hem pogut retirar la reclamació. Torna-ho a provar."
   }
 }

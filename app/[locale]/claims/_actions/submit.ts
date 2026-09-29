@@ -93,7 +93,7 @@ export async function recheckDocuments(locale: string, claimId: string) {
   await guardClaim(locale, claimId, "documents");
   const supabase = await createClient();
   await supabase.rpc("submit_claim", { p_claim_id: claimId });
-  return redirect({ href: `/claims/${claimId}/done`, locale });
+  return redirect({ href: `/claims/${claimId}`, locale });
 }
 
 export async function recordSubmission(locale: string, claimId: string, _prev: FormState, formData: FormData): Promise<FormState> {
@@ -104,6 +104,6 @@ export async function recordSubmission(locale: string, claimId: string, _prev: F
   const supabase = await createClient();
   const { error } = await supabase.rpc("record_airline_submission", { p_claim_id: claimId, p_reference: reference || null });
   if (error) return { status: "error" };
-  revalidatePath(`/${locale}/claims/${claimId}/done`);
-  return { status: "saved" };
+  revalidatePath(`/${locale}/claims/${claimId}`, "layout");
+  return redirect({ href: `/claims/${claimId}`, locale });
 }

@@ -38,7 +38,7 @@ export async function loadStep(locale: string, claimId: string, step: WizardStep
       ? canEditDocuments(claim.status)
       : !isDraft(claim.status); // done
   if (!allowed) {
-    return redirect({ href: `/claims/${claimId}/${isDraft(claim.status) ? "flight" : "done"}`, locale });
+    return redirect({ href: isDraft(claim.status) ? `/claims/${claimId}/flight` : `/claims/${claimId}`, locale });
   }
   return { user, claim };
 }

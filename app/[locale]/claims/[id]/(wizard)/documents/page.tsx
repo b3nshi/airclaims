@@ -62,7 +62,7 @@ export default async function DocumentsStep({ params }: PageProps<"/[locale]/cla
           <p>{t("idNotice")}</p>
         </div>
         <div className="flex items-center justify-between gap-3 border-t pt-5">
-          <Link href={`/claims/${claim.id}/${draft ? "expenses" : "done"}`} className={buttonVariants({ variant: "ghost" })}>
+          <Link href={draft ? `/claims/${claim.id}/expenses` : `/claims/${claim.id}`} className={buttonVariants({ variant: "ghost" })}>
             {tw("back")}
           </Link>
           {draft ? (

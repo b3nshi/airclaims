@@ -48,10 +48,10 @@ export default async function ExpensesStep({ params }: PageProps<"/[locale]/clai
         )}
         <ExpenseForm locale={locale} claimId={claim.id} userId={user.id} />
         <div className="flex items-center justify-between gap-3 border-t pt-5">
-          <Link href={draft ? `/claims/${claim.id}/passengers` : `/claims/${claim.id}/done`} className={buttonVariants({ variant: "ghost" })}>
+          <Link href={draft ? `/claims/${claim.id}/passengers` : `/claims/${claim.id}`} className={buttonVariants({ variant: "ghost" })}>
             {tw("back")}
           </Link>
-          <Link href={`/claims/${claim.id}/${draft ? "documents" : "done"}`} className={buttonVariants({ size: "lg" })}>
+          <Link href={draft ? `/claims/${claim.id}/documents` : `/claims/${claim.id}`} className={buttonVariants({ size: "lg" })}>
             {tw("continue")}
           </Link>
         </div>

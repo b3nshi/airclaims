@@ -10,6 +10,6 @@ export async function guardClaim(locale: string, claimId: string, need: "draft" 
   if (!user) return redirect({ href: "/login", locale });
   const claim = await getOwnClaim(claimId);
   const ok = need === "draft" ? isDraft(claim.status) : canEditDocuments(claim.status);
-  if (!ok) return redirect({ href: `/claims/${claim.id}/done`, locale });
+  if (!ok) return redirect({ href: `/claims/${claim.id}`, locale });
   return { user, claim };
 }

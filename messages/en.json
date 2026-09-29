@@ -91,7 +91,8 @@
       "partially_won": "Partly won",
       "lost": "Lost",
       "withdrawn": "Withdrawn"
-    }
+    },
+    "actionNeeded": "Action needed"
   },
   "Wizard": {
     "newTitle": "New claim",
@@ -345,6 +346,134 @@
     "docsPendingTitle": "Documents missing",
     "docsPendingBody": "Add your boarding pass and booking confirmation when you can: they make your claim stronger.",
     "addDocuments": "Add documents",
-    "backToClaims": "Back to my claims"
+    "backToClaims": "Back to my claims",
+    "toDashboard": "Go to your claim"
+  },
+  "Dashboard": {
+    "back": "My claims",
+    "estimated": "Estimated compensation",
+    "claimEmail": "Claim email",
+    "nextTitle": "What to do next",
+    "next": {
+      "finish_draft": {
+        "title": "Finish your claim",
+        "body": "Your claim is saved as a draft. Complete the remaining steps to send it."
+      },
+      "approve_email": {
+        "title": "Approve your message",
+        "body": "A message is ready to be sent in your name. Read it under Messages and approve it: nothing is sent until you do."
+      },
+      "submit_web_form": {
+        "title": "Send your claim to {airline}",
+        "body": "Follow these steps, then tell us the airline's reference."
+      },
+      "preparing_email": {
+        "title": "We're preparing your claim email",
+        "body": "We'll email you when it's ready. You'll read and approve it before anything is sent."
+      },
+      "no_channel": {
+        "title": "We're looking up how {airline} takes claims",
+        "body": "We'll email you the next step. Meanwhile, here is your claim text."
+      },
+      "validating": {
+        "title": "We're checking your documents",
+        "body": "We'll let you know if anything needs your attention."
+      },
+      "wait_airline": {
+        "title": "Waiting for the airline",
+        "body": "The airline must reply by {due}. We'll forward their reply to you."
+      },
+      "airline_overdue": {
+        "title": "The airline hasn't replied in time",
+        "body": "The one-month deadline passed on {due}. You can take your claim to AESA, whose decision is binding on the airline."
+      },
+      "read_reply": {
+        "title": "The airline has replied",
+        "body": "Read the reply under Messages. If they refuse, or offer vouchers or a reduced amount, you don't have to accept: you can go to AESA."
+      },
+      "wait_aesa": {
+        "title": "Your claim is with AESA",
+        "body": "AESA's decision is binding on the airline. We'll let you know when it arrives."
+      },
+      "in_court": {
+        "title": "Your claim is in court",
+        "body": "Keep an eye on letters from the court and tell us about any news."
+      },
+      "check_payment": {
+        "title": "Check your payment",
+        "body": "The airline pays you directly. Let us know when the money arrives."
+      },
+      "consider_court": {
+        "title": "You can still go to court",
+        "body": "In Spain, claims under €2,000 can go to court without a lawyer (juicio verbal)."
+      },
+      "none": {
+        "title": "Nothing to do",
+        "body": "This claim is closed."
+      }
+    },
+    "aesaUntil": "Last day to go to AESA: {date}.",
+    "continue": "Continue",
+    "goToMessages": "Go to messages",
+    "deadlinesTitle": "Deadlines",
+    "deadline": {
+      "claimLimit": "Last day to claim",
+      "airlineReply": "Airline must reply by",
+      "aesa": "Last day to go to AESA"
+    },
+    "daysLeft": "{days, plural, one {# day left} other {# days left}}",
+    "today": "Today",
+    "passed": "Passed",
+    "messagesTitle": "Messages",
+    "noMessages": "No messages yet.",
+    "from": "From {from}",
+    "to": "To {to}",
+    "emailStatus": {
+      "draft": "Draft",
+      "pending_approval": "Waiting for your approval",
+      "approved": "Approved, sending",
+      "sending": "Sending",
+      "sent": "Sent",
+      "failed": "Not sent",
+      "received": "Received",
+      "forwarded": "Received",
+      "ignored": "Received"
+    },
+    "summary": "Summary: {summary}",
+    "showMessage": "Show message",
+    "approve": "Approve and send",
+    "confirmSend": "Send this message to {recipient} from {alias}, in your name? This can't be undone.",
+    "confirmYes": "Yes, send it",
+    "cancel": "Cancel",
+    "approveError": "We couldn't approve this message. Reload the page and try again.",
+    "timelineTitle": "Timeline",
+    "event": {
+      "created": "Claim created",
+      "status_changed": "Status: {status}",
+      "email_approved": "You approved a message",
+      "submitted_airline": "Claim sent to the airline",
+      "email_received": "Message received",
+      "email_sent": "Message sent",
+      "document_validated": "Document checked",
+      "other": "Update"
+    },
+    "documentsTitle": "Documents",
+    "noDocuments": "No documents yet.",
+    "view": "View",
+    "validation": {
+      "pending": "Not checked yet",
+      "passed": "Checked",
+      "needs_review": "Being reviewed",
+      "failed": "Needs attention"
+    },
+    "manageDocuments": "Add documents",
+    "expensesTitle": "Expenses",
+    "noExpenses": "No expenses.",
+    "manageExpenses": "Manage expenses",
+    "total": "Total: {amount}",
+    "withdraw": "Withdraw claim",
+    "withdrawConfirm": "Withdraw this claim? We'll stop tracking it. If it was already sent, the airline may still reply to you.",
+    "withdrawYes": "Withdraw",
+    "withdrawError": "We couldn't withdraw the claim. Try again."
   }
 }
