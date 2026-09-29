@@ -12,7 +12,7 @@ export function RequestDraft({
 }: {
   locale: string;
   claimId: string;
-  template: "initial_claim" | "follow_up";
+  template: "initial_claim" | "follow_up" | "offer_reply";
 }) {
   const t = useTranslations("Dashboard");
   const [result, setResult] = useState<"requested" | "unavailable" | null>(null);
@@ -22,7 +22,7 @@ export function RequestDraft({
   return (
     <div className="space-y-2">
       <Button
-        variant={template === "follow_up" ? "default" : "outline"}
+        variant={template === "initial_claim" ? "outline" : "default"}
         disabled={pending}
         onClick={() =>
           startTransition(async () => {
@@ -31,7 +31,7 @@ export function RequestDraft({
           })
         }
       >
-        {template === "follow_up" ? t("prepareReminder") : t("prepareEmail")}
+        {t(template === "follow_up" ? "prepareReminder" : template === "offer_reply" ? "prepareOfferReply" : "prepareEmail")}
       </Button>
       {result === "unavailable" && <p role="alert" className="text-sm text-destructive">{t("draftUnavailable")}</p>}
     </div>

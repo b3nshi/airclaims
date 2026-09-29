@@ -183,7 +183,7 @@ export async function registerDocument(
   claimId: string,
   input: { docType: string; storagePath: string; mimeType: string; sha256: string },
 ): Promise<{ id: string } | { error: true }> {
-  const { user } = await guardClaim(locale, claimId, "documents");
+  const { user } = await guardClaim(locale, claimId, "upload");
   const parsed = z
     .object({
       docType: z.enum(UPLOADABLE),

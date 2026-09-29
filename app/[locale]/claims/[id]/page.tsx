@@ -4,13 +4,22 @@ import { buttonVariants } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { AirlineSubmission, airlineChannel } from "@/components/claims/airline-submission";
 import { CopyButton } from "@/components/claims/copy-button";
-import { Badge, Deadlines, Documents, Expenses, Messages, Timeline } from "@/components/dashboard/sections";
+import {
+  Badge,
+  Deadlines,
+  Documents,
+  Expenses,
+  MessageNotice,
+  Messages,
+  Timeline,
+  type EmailAnalysis,
+} from "@/components/dashboard/sections";
 import { RequestDraft } from "@/components/dashboard/request-draft";
 import { WithdrawClaim } from "@/components/dashboard/withdraw-claim";
 import { aesaAvailable, airlineReplyDue, claimLimitDate } from "@/lib/eligibility";
 import { assessClaim } from "@/lib/claims/assess";
 import { todayInMadrid } from "@/lib/claims/dates";
-import { aliasEmail, canEditDocuments, isDraft } from "@/lib/claims/model";
+import { aliasEmail, canAddDocuments, canEditDocuments, isDraft } from "@/lib/claims/model";
 import { nextAction } from "@/lib/claims/next-action";
 import { getOwnClaim, requireUser } from "@/lib/claims/server";
 import { createClient } from "@/lib/supabase/server";
@@ -37,6 +46,10 @@ export default async function ClaimDashboard({ params }: PageProps<"/[locale]/cl
   ]);
   for (const r of [emailsRes, eventsRes, docsRes]) if (r.error) throw r.error;
   const emails = emailsRes.data ?? [];
+
+  // The AI's reading of the most recent message (offers, document requests), if any.
+  const latestAnalysis = [...(eventsRes.data ?? [])].reverse().find((e) => e.event_type === "email_analyzed");
+  const analysis = latestAnalysis ? (latestAnalysis.payload as unknown as EmailAnalysis) : null;
 
   const today = todayInMadrid();
   const alias = aliasEmail(claim.alias_code);
@@ -120,9 +133,22 @@ export default async function ClaimDashboard({ params }: PageProps<"/[locale]/cl
         </CardContent>
       </Card>
 
+      {analysis && !CLOSED.includes(claim.status) && (
+        <MessageNotice
+          locale={locale}
+          claimId={claim.id}
+          analysis={analysis}
+          canUpload={canAddDocuments(claim.status)}
+          canReply={
+            (claim.status === "submitted_airline" || claim.status === "airline_replied") &&
+            !emails.some((e) => e.direction === "outbound" && ["pending_approval", "approved", "sending"].includes(e.status))
+          }
+        />
+      )}
+
       <Deadlines today={today} items={deadlines} />
       <Messages locale={locale} claimId={claim.id} alias={alias} emails={emails} />
-      <Documents claimId={claim.id} documents={docsRes.data ?? []} canAdd={canEditDocuments(claim.status)} />
+      <Documents claimId={claim.id} documents={docsRes.data ?? []} canAdd={canAddDocuments(claim.status)} />
       <Expenses claimId={claim.id} expenses={a.expenses} totalEur={Number(claim.expenses_total_eur)} canEdit={canEditDocuments(claim.status)} />
       <Timeline createdAt={claim.created_at} events={eventsRes.data ?? []} />
 

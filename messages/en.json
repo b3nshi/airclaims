@@ -460,7 +460,9 @@
       "email_failed": "A message couldn't be sent",
       "email_draft_failed": "We couldn't prepare a message",
       "email_edited": "You edited a message",
-      "email_discarded": "You discarded a draft"
+      "email_discarded": "You discarded a draft",
+      "email_analyzed": "We read a message about your claim",
+      "email_analysis_failed": "We couldn't summarise a message"
     },
     "documentsTitle": "Documents",
     "noDocuments": "No documents yet.",
@@ -493,6 +495,26 @@
     "editError": "We couldn't save your changes. Reload the page and try again.",
     "discardConfirm": "Discard this draft? Nothing will be sent. You can ask for a new one.",
     "discardYes": "Discard",
-    "discardError": "We couldn't discard this draft. Reload the page and try again."
+    "discardError": "We couldn't discard this draft. Reload the page and try again.",
+    "offer": {
+      "title": "The airline made an offer",
+      "titleMoney": "The airline says it will pay you",
+      "body": "You don't have to accept it. Under EU261 you're entitled to be paid in money; vouchers, travel credit or miles only count if you agree to them. We never accept anything on your behalf. If it's less than you claimed or not in money, you can ask to be paid in money or take the claim to AESA.",
+      "bodyMoney": "Check that the payment reaches you in money and for the full amount you claimed.",
+      "kinds": {
+        "none": "Offer",
+        "voucher": "Voucher",
+        "travel_credit": "Travel credit",
+        "miles": "Miles",
+        "money_full": "Payment in money",
+        "money_partial": "Money, less than you claimed",
+        "other": "Other offer"
+      }
+    },
+    "docRequest": {
+      "title": "The airline asks for"
+    },
+    "whatToDo": "What to do",
+    "prepareOfferReply": "Prepare a reply asking to be paid in money"
   }
 }

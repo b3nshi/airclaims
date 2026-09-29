@@ -12,6 +12,7 @@ import type {
 } from "@/lib/supabase/database.types";
 import { cn } from "@/lib/utils";
 import { EmailDraft } from "./email-draft";
+import { RequestDraft } from "./request-draft";
 
 export function Section({ id, title, children }: { id?: string; title: string; children: React.ReactNode }) {
   return (
@@ -68,7 +69,8 @@ export async function Messages({
 }) {
   const [t, format] = await Promise.all([getTranslations("Dashboard"), getFormatter()]);
   // Discarded drafts stay in the database (and the timeline), not in the conversation.
-  const visible = emails.filter((e) => !(e.direction === "outbound" && e.status === "ignored"));
+  // (and inbound mail we ignored, e.g. our own notifications looping back).
+  const visible = emails.filter((e) => e.status !== "ignored");
   const sorted = [...visible].sort((a, b) =>
     a.status === "pending_approval" && b.status !== "pending_approval"
       ? -1
@@ -216,6 +218,7 @@ export async function Timeline({ createdAt, events }: { createdAt: string; event
   const known = [
     "status_changed", "email_approved", "submitted_airline", "email_received", "email_sent", "document_validated",
     "email_drafted", "email_failed", "email_draft_failed", "email_edited", "email_discarded",
+    "email_analyzed", "email_analysis_failed",
   ];
   const label = (e: ClaimEventRow) => {
     if (e.event_type === "status_changed") {
@@ -239,5 +242,91 @@ export async function Timeline({ createdAt, events }: { createdAt: string; event
         ))}
       </ol>
     </Section>
+  );
+}
+
+export type EmailAnalysis = {
+  email_id: string;
+  settlement_offer?: {
+    detected: boolean;
+    kind: "none" | "voucher" | "travel_credit" | "miles" | "money_full" | "money_partial" | "other";
+    amount: number | null;
+    currency: string | null;
+    conditions: string | null;
+  } | null;
+  document_request?: { detected: boolean; documents: string[] } | null;
+  needs_user_action?: boolean;
+  user_action?: string | null;
+};
+
+/**
+ * What the latest message from the airline asks of the passenger. Offers are explained,
+ * never accepted (principle 3); document requests link to the upload page.
+ */
+export async function MessageNotice({
+  locale,
+  claimId,
+  analysis,
+  canUpload,
+  canReply,
+}: {
+  locale: string;
+  claimId: string;
+  analysis: EmailAnalysis;
+  canUpload: boolean;
+  canReply: boolean; // claim still open with the airline and no draft waiting
+}) {
+  const [t, format] = await Promise.all([getTranslations("Dashboard"), getFormatter()]);
+  const offer = analysis.settlement_offer?.detected ? analysis.settlement_offer : null;
+  const docs = analysis.document_request?.detected ? analysis.document_request.documents : [];
+  if (!offer && !docs.length && !analysis.needs_user_action) return null;
+
+  const amount =
+    offer?.amount != null
+      ? offer.currency && /^[A-Z]{3}$/.test(offer.currency)
+        ? format.number(offer.amount, { style: "currency", currency: offer.currency })
+        : String(offer.amount)
+      : null;
+  const fullMoney = offer?.kind === "money_full";
+
+  return (
+    <section className={cn("space-y-3 rounded-xl border p-4", fullMoney ? "border-emerald-600/40" : "border-amber-500/60")}>
+      {offer && (
+        <div className="space-y-1">
+          <h2 className="font-semibold">{fullMoney ? t("offer.titleMoney") : t("offer.title")}</h2>
+          <p className="text-sm">
+            {t(`offer.kinds.${offer.kind}`)}
+            {amount ? ` · ${amount}` : ""}
+            {offer.conditions ? ` · ${offer.conditions}` : ""}
+          </p>
+          <p className="text-sm text-muted-foreground">{fullMoney ? t("offer.bodyMoney") : t("offer.body")}</p>
+          {!fullMoney && canReply && (
+            <div className="pt-2">
+              <RequestDraft locale={locale} claimId={claimId} template="offer_reply" />
+            </div>
+          )}
+        </div>
+      )}
+      {docs.length > 0 && (
+        <div className="space-y-2">
+          <h2 className="font-semibold">{t("docRequest.title")}</h2>
+          <ul className="list-disc pl-5 text-sm">
+            {docs.map((d, i) => <li key={i}>{d}</li>)}
+          </ul>
+          {canUpload && (
+            <Link href={`/claims/${claimId}/documents`} className={buttonVariants({ variant: "outline", size: "sm" })}>
+              {t("manageDocuments")}
+            </Link>
+          )}
+        </div>
+      )}
+      {analysis.needs_user_action && analysis.user_action && (
+        <p className="text-sm">
+          <span className="font-medium">{t("whatToDo")}: </span>
+          {analysis.user_action}
+        </p>
+      )}
+      <a href="#messages" className="text-sm underline">{t("goToMessages")}</a>
+    </section>
   );
 }

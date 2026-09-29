@@ -1,7 +1,7 @@
 import "server-only";
 import { notFound } from "next/navigation";
 import { redirect } from "@/i18n/navigation";
-import { canEditDocuments, isDraft, type WizardStep } from "@/lib/claims/model";
+import { canAddDocuments, canEditDocuments, isDraft, type WizardStep } from "@/lib/claims/model";
 import { createClient, getCurrentUser } from "@/lib/supabase/server";
 
 /** Signed-in user, or redirect to login (returning here afterwards). */
@@ -34,8 +34,10 @@ export async function loadStep(locale: string, claimId: string, step: WizardStep
   const claim = await getOwnClaim(claimId);
   const allowed = CONTENT_STEPS.includes(step)
     ? isDraft(claim.status)
-    : step === "expenses" || step === "documents"
+    : step === "expenses"
       ? canEditDocuments(claim.status)
+      : step === "documents"
+        ? canAddDocuments(claim.status)
       : !isDraft(claim.status); // done
   if (!allowed) {
     return redirect({ href: isDraft(claim.status) ? `/claims/${claimId}/flight` : `/claims/${claimId}`, locale });

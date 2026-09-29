@@ -18,6 +18,7 @@ Create these once in *Credentials*; every workflow refers to them by name:
 | `AeroDataBox (RapidAPI key)` | Header Auth | header `X-RapidAPI-Key` |
 | `Anthropic API key` | Header Auth | header `x-api-key` |
 | `Forward Email API` | Basic Auth | user = Forward Email API token, password empty |
+| `Forward Email inbound webhook (basic auth)` | Basic Auth | any long random user + password; the same pair goes in the webhook URL (see `airclaim-email-inbound`) |
 
 ### 2. `airclaim-config` (settings, instance-wide)
 
@@ -104,9 +105,15 @@ Notes:
 AI-drafted claim and follow-up emails. Nothing is sent from here: drafts land as
 `pending_approval` and the user approves them in the dashboard.
 
-- **In:** signed `POST /webhook/airclaim-email-draft` `{ "claim_id", "template": "initial_claim" | "follow_up" }`.
-  The app calls it after signing (email-channel airlines), from the dashboard ("Prepare my claim
-  email" if the first attempt failed; "Prepare a reminder" once the airline is overdue).
+- **In:** signed `POST /webhook/airclaim-email-draft`
+  `{ "claim_id", "template": "initial_claim" | "follow_up" | "offer_reply" }`. The app calls it after
+  signing (email-channel airlines) and from the dashboard: "Prepare my claim email" (if the first
+  attempt failed), "Prepare a reminder" (airline overdue), "Prepare a reply asking to be paid in
+  money" (the latest airline message offered a voucher, credit, miles or less money than claimed).
+- **`offer_reply`** declines the offer (Art. 7(3): money unless the passenger agrees in writing),
+  accepts no conditions, restates the amount and asks for a bank transfer within 14 days. It's
+  threaded onto the offer. Recipient: the curated email contact, or else the offer's sender, only
+  when its domain is the airline's (website or a curated contact); otherwise it's refused.
 - **Flow:** verify signature → 202 → `claim_webhook_key` (idempotency) → `email_draft_context`
   (eligibility: signed email authorization, airline has an email contact, one open draft at a
   time) → Claude → guardrails → `insert_email_draft` → notify the user.
@@ -152,9 +159,50 @@ still sends.
 domain. Confirm the catch-all covers every `airclaims_*@airclaims.klivr.com` address and that
 `no-reply@` exists, with a test send; otherwise sends are rejected and marked `failed`.
 
+## `airclaim-email-inbound`
+
+Every email to a claim alias (`airclaims_xxxxxx@`) or `support@` reaches this workflow.
+
+**Forward Email setup** (paid plan, *My Account → Domains → Aliases*, so the URL isn't public DNS):
+
+- regex alias `/^airclaims_[a-z0-9]{6}$/` → `https://<user>:<password>@labs.klivr.com/webhook/airclaim-email-inbound?raw=false`
+- `support` → the same URL (and `no-reply`, to catch bounces)
+
+`?raw=false` drops the raw RFC 822 copy (the parsed message and attachments are still sent), which
+keeps payloads well under n8n's 16 MB limit.
+
+**Flow:**
+
+1. **Authenticate** with the Basic Auth credential. Forward Email signs payloads (`X-Webhook-Signature`,
+   HMAC-SHA256 over the body), but verifying that in Supabase would mean posting the whole message,
+   attachments included, to the database; Basic Auth over HTTPS with a private URL is used instead.
+2. **Parse** mailparser's JSON (HTML → text; attachments limited to PDF/images ≤ 10 MB, max 10).
+3. **`ingest_inbound_email`** stores it once (idempotent on Message-ID, so Forward Email's retries
+   are harmless) and finds the claim by alias, or by `In-Reply-To` of one of our messages.
+   Only then does the webhook answer 200.
+   - from the passenger themself, to `support@`, or matching no claim → **human review queue**
+     (`review_queue`), never answered automatically;
+   - our own senders looping back → stored as `ignored`.
+4. **Attachments** → Storage (`{owner}/{claim}/…`, or `_inbound/{email}/…` when unmatched) →
+   `attach_inbound_files` (claim documents of type `airline_correspondence`).
+5. **Claude reads it** (`anthropic_effort_classify`, default `low`; structured output): who sent it
+   (airline / AESA / court / spam / other), what it is (acknowledgement, request for information,
+   offer, decision, rejection), any **settlement offer** (voucher, credit, miles, money full or
+   partial, amount, conditions), **documents requested**, the airline's reference, and a summary and
+   suggested action in the passenger's language. The model sees the claim context and the message,
+   never the passenger's personal email; the message is treated as untrusted data.
+6. **`apply_inbound_analysis`** acts only on the obvious: a substantive airline answer moves
+   `submitted_airline → airline_replied`; the airline's reference is saved if we had none. Offers,
+   document requests and AESA/court mail also go to the review queue. Nothing is ever accepted.
+7. **Forward** to the passenger's personal email (Forward Email API, from `notify_from`, Reply-To
+   `support_email`) with the summary, an explanation of any offer ("you don't have to accept; you
+   can ask to be paid in money"), the documents requested, the original message and its attachments.
+   Spam isn't forwarded. If the AI step fails, the message is forwarded anyway, without a summary.
+
+The review queue has no admin UI yet: use Supabase Studio (`review_queue where status = 'open'`).
+
 ## Planned
 
-- `airclaim-email-inbound` (M5)
 - `airclaim-finder` (M6): primarily fed by AeroDataBox's free **airport webhook subscription**
   (BCN) for delay notifications, with the FIDS poll as a reconciliation fallback. It writes to
   the same `flights` table (provisional while in the air, final once landed), so most user

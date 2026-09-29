@@ -25,6 +25,8 @@ CREDENTIALS = {
     "aerodatabox": ("httpHeaderAuth", "AeroDataBox (RapidAPI key)"),
     "anthropic": ("httpHeaderAuth", "Anthropic API key"),
     "forwardemail": ("httpBasicAuth", "Forward Email API"),
+    # Protects the inbound webhook (Forward Email calls https://user:pass@…/airclaim-email-inbound).
+    "inbound_webhook": ("httpBasicAuth", "Forward Email inbound webhook (basic auth)"),
 }
 
 # Non-secret settings, edited in n8n in the `airclaim-config` workflow after import.
@@ -32,9 +34,11 @@ SETTINGS = {
     "supabase_url": "https://YOUR-PROJECT-REF.supabase.co",
     "app_url": "https://airclaims.klivr.com",
     "notify_from": "AirClaims <no-reply@airclaims.klivr.com>",
+    "support_email": "support@airclaims.klivr.com",
     "forwardemail_api_url": "https://api.forwardemail.net/v1/emails",
     "anthropic_model": "claude-opus-5-5",
-    "anthropic_effort": "medium",
+    "anthropic_effort": "medium",           # drafting
+    "anthropic_effort_classify": "low",     # reading inbound mail
     "flight_check_batch": 5,
     "email_send_batch": 5,
 }
@@ -103,7 +107,8 @@ class Workflow:
                         {"respondWith": "json", "responseBody": body, "options": {"responseCode": code_}})
 
     def http(self, name, pos, *, url, credential, method="POST", body=None, headers=None,
-             query=None, full_response=False, timeout=None, batch_interval=None, continue_on_error=False):
+             query=None, full_response=False, timeout=None, batch_interval=None, continue_on_error=False,
+             binary_field=None):
         cred_type, cred_name = CREDENTIALS[credential]
         params = {"method": method, "url": url,
                   "authentication": "genericCredentialType", "genericAuthType": cred_type}
@@ -113,6 +118,8 @@ class Workflow:
             params.update(sendHeaders=True, headerParameters={"parameters": [{"name": k, "value": v} for k, v in headers]})
         if body is not None:
             params.update(sendBody=True, specifyBody="json", jsonBody=body)
+        if binary_field:
+            params.update(sendBody=True, contentType="binaryData", inputDataFieldName=binary_field)
         options = {}
         if full_response:
             options["response"] = {"response": {"fullResponse": True, "neverError": True}}
@@ -315,7 +322,72 @@ def email_send():
     wf.export()
 
 
+# ---- airclaim-email-inbound ---------------------------------------------------------------
+def email_inbound():
+    wf = Workflow("airclaim-email-inbound")
+    cred_type, cred_name = CREDENTIALS["inbound_webhook"]
+    # Forward Email posts mailparser JSON; it retries until it gets a 200, so we only answer
+    # once the message is stored (idempotent on Message-ID).
+    wf.add("Webhook", "n8n-nodes-base.webhook", 2, [0, 300],
+           {"httpMethod": "POST", "path": "airclaim-email-inbound", "authentication": "basicAuth",
+            "responseMode": "responseNode", "options": {}},
+           webhookId=wf._id("webhook-id"), credentials={cred_type: {"id": "", "name": cred_name}})
+    wf.load_config([200, 300])
+    wf.code("Parse email", src("email-inbound/parse-email.js"), [400, 300])
+    wf.rpc("Ingest", "ingest_inbound_email", "={{ JSON.stringify({ p: $json.email }) }}", [600, 300])
+    wf.respond("Received", '={{ { "received": true } }}', 200, [800, 300])
+    wf.if_("Stored?", "={{ $('Ingest').first().json.status }}", {"type": "string", "operation": "equals"}, [1000, 300], "stored")
+    wf.chain("Webhook", "Load config", "Parse email", "Ingest", "Received", "Stored?")
+
+    # Branch 1: keep the attachments (evidence for AESA/court).
+    wf.if_("Has attachments?", "={{ $('Parse email').first().json.attachments.length > 0 }}", TRUE, [1200, 160])
+    wf.code("Prepare attachments", src("email-inbound/prepare-attachments.js"), [1400, 160])
+    wf.http("Upload to Storage", [1600, 160], credential="supabase",
+            url=f"={{{{ {CFG}.supabase_url }}}}/storage/v1/object/claim-documents/{{{{ $json.storage_path }}}}",
+            headers=[("x-upsert", "true")], binary_field="data", continue_on_error=True)
+    wf.code("Collect files", src("email-inbound/collect-files.js"), [1800, 160])
+    wf.rpc("Attach files", "attach_inbound_files",
+           "={{ JSON.stringify({ p_email_id: $json.email_id, p_files: $json.files }) }}", [2000, 160], continue_on_error=True)
+    wf.link("Stored?", "Has attachments?", 0)
+    wf.link("Has attachments?", "Prepare attachments", 0)
+    wf.chain("Prepare attachments", "Upload to Storage", "Collect files", "Attach files")
+
+    # Branch 2: read it (AI), act on the obvious, forward to the passenger.
+    wf.if_("Needs AI?", "={{ $('Ingest').first().json.needs_ai }}", TRUE, [1200, 440])
+    prompt = src("email-inbound/system-prompt.md").rstrip("\n")
+    wf.code("Build request", src("email-inbound/build-request.js").replace("__SYSTEM_PROMPT__", json.dumps(prompt)), [1400, 440])
+    wf.http("Claude", [1600, 440], url="https://api.anthropic.com/v1/messages", credential="anthropic",
+            headers=[("anthropic-version", "2023-06-01"), ("anthropic-beta", "server-side-fallback-2026-07-01")],
+            body="={{ JSON.stringify($json.request) }}", full_response=True, timeout=120000)
+    wf.code("Check analysis", src("email-inbound/check-analysis.js"), [1800, 440])
+    wf.if_("Analysis ok?", "={{ $json.ok }}", TRUE, [2000, 440])
+    wf.rpc("Apply analysis", "apply_inbound_analysis",
+           "={{ JSON.stringify({ p_email_id: $('Ingest').first().json.email_id, p: $json.analysis }) }}", [2200, 380])
+    wf.if_("Forward?", "={{ $json.forward }}", TRUE, [2400, 380])
+    wf.rpc("Log analysis failure", "log_claim_event",
+           "={{ JSON.stringify({ p_claim_id: $('Ingest').first().json.claim_id, p_event_type: 'email_analysis_failed', "
+           "p_payload: { email_id: $('Ingest').first().json.email_id, error: $json.error } }) }}",
+           [2200, 540], continue_on_error=True)
+    wf.code("Build forward", src("email-inbound/build-forward.js"), [2600, 440])
+    wf.http("Send forward", [2800, 440], url=f"={{{{ {CFG}.forwardemail_api_url }}}}", credential="forwardemail",
+            body="={{ JSON.stringify($json.payload) }}", full_response=True, timeout=60000)
+    wf.if_("Forwarded?", "={{ $json.statusCode >= 200 && $json.statusCode < 300 }}", TRUE, [3000, 440])
+    wf.rpc("Mark forwarded", "mark_email_forwarded",
+           "={{ JSON.stringify({ p_email_id: $('Build forward').first().json.email_id }) }}", [3200, 440])
+    wf.link("Stored?", "Needs AI?", 0)
+    wf.link("Needs AI?", "Build request", 0)
+    wf.chain("Build request", "Claude", "Check analysis", "Analysis ok?")
+    wf.link("Analysis ok?", "Apply analysis", 0)
+    wf.link("Analysis ok?", "Log analysis failure", 1)
+    wf.chain("Apply analysis", "Forward?")
+    wf.link("Forward?", "Build forward", 0)
+    wf.link("Log analysis failure", "Build forward")  # the passenger still gets the message
+    wf.chain("Build forward", "Send forward", "Forwarded?")
+    wf.link("Forwarded?", "Mark forwarded", 0)
+    wf.export()
+
+
 if __name__ == "__main__":
-    for build in (config, flight_check, email_draft, email_send):
+    for build in (config, flight_check, email_draft, email_send, email_inbound):
         build()
     print("built:", ", ".join(sorted(p.name for p in OUT.glob("airclaim-*.json"))))

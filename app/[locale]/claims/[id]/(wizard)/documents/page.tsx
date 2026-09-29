@@ -7,7 +7,7 @@ import { DocumentUploader } from "@/components/claims/document-uploader";
 import { StepHeader } from "@/components/claims/wizard-shell";
 import { deleteDocument } from "@/app/[locale]/claims/_actions/details";
 import { recheckDocuments } from "@/app/[locale]/claims/_actions/submit";
-import { isDraft } from "@/lib/claims/model";
+import { canEditDocuments, isDraft } from "@/lib/claims/model";
 import { loadStep } from "@/lib/claims/server";
 import { createClient } from "@/lib/supabase/server";
 
@@ -47,9 +47,11 @@ export default async function DocumentsStep({ params }: PageProps<"/[locale]/cla
                         {t("uploadedOn", { date: format.dateTime(new Date(d.created_at), { dateStyle: "medium", timeStyle: "short" }) })}
                         {d.mime_type === "application/pdf" ? " · PDF" : ""}
                       </span>
-                      <form action={deleteDocument.bind(null, locale, claim.id, d.id)}>
-                        <DeleteButton label={t("remove")} />
-                      </form>
+                      {canEditDocuments(claim.status) && (
+                        <form action={deleteDocument.bind(null, locale, claim.id, d.id)}>
+                          <DeleteButton label={t("remove")} />
+                        </form>
+                      )}
                     </li>
                   ))}
                 </ul>
@@ -69,10 +71,14 @@ export default async function DocumentsStep({ params }: PageProps<"/[locale]/cla
             <Link href={`/claims/${claim.id}/review`} className={buttonVariants({ size: "lg" })}>
               {tw("continue")}
             </Link>
-          ) : (
+          ) : claim.status === "documents_pending" ? (
             <form action={recheckDocuments.bind(null, locale, claim.id)}>
               <Button type="submit" size="lg">{t("recheck")}</Button>
             </form>
+          ) : (
+            <Link href={`/claims/${claim.id}`} className={buttonVariants({ size: "lg" })}>
+              {tw("continue")}
+            </Link>
           )}
         </div>
       </CardContent>

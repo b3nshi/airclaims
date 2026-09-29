@@ -74,13 +74,15 @@ export async function withdrawClaim(locale: string, claimId: string): Promise<{ 
 export async function requestEmailDraft(
   locale: string,
   claimId: string,
-  template: "initial_claim" | "follow_up",
+  template: "initial_claim" | "follow_up" | "offer_reply",
 ): Promise<{ ok: boolean }> {
   const claim = await requireOwner(locale, claimId);
   const allowed =
     template === "initial_claim"
       ? claim.status === "ready_to_submit" || claim.status === "documents_pending"
-      : claim.status === "submitted_airline";
+      : template === "follow_up"
+        ? claim.status === "submitted_airline"
+        : claim.status === "submitted_airline" || claim.status === "airline_replied";
   if (!allowed) return { ok: false };
   try {
     await callN8n("airclaim-email-draft", { claim_id: claimId, template }, {

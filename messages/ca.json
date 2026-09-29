@@ -460,7 +460,9 @@
       "email_failed": "No s'ha pogut enviar un missatge",
       "email_draft_failed": "No hem pogut preparar un missatge",
       "email_edited": "Vas editar un missatge",
-      "email_discarded": "Vas descartar un esborrany"
+      "email_discarded": "Vas descartar un esborrany",
+      "email_analyzed": "Vam llegir un missatge sobre la teva reclamació",
+      "email_analysis_failed": "No vam poder resumir un missatge"
     },
     "documentsTitle": "Documents",
     "noDocuments": "Encara no hi ha documents.",
@@ -493,6 +495,26 @@
     "editError": "No hem pogut desar els canvis. Recarrega la pàgina i torna-ho a provar.",
     "discardConfirm": "Vols descartar aquest esborrany? No s'enviarà res. En pots demanar un de nou.",
     "discardYes": "Descarta",
-    "discardError": "No hem pogut descartar aquest esborrany. Recarrega la pàgina i torna-ho a provar."
+    "discardError": "No hem pogut descartar aquest esborrany. Recarrega la pàgina i torna-ho a provar.",
+    "offer": {
+      "title": "L'aerolínia t'ha fet una oferta",
+      "titleMoney": "L'aerolínia indica que et pagarà",
+      "body": "No l'has d'acceptar. Segons l'EU261 tens dret a cobrar en diners; els vals, el crèdit de viatge o les milles només compten si els acceptes. Mai no acceptem res en nom teu. Si és menys del que vas reclamar o no és en diners, pots demanar el pagament en diners o portar la reclamació a AESA.",
+      "bodyMoney": "Comprova que el pagament t'arriba en diners i per l'import complet que vas reclamar.",
+      "kinds": {
+        "none": "Oferta",
+        "voucher": "Val",
+        "travel_credit": "Crèdit de viatge",
+        "miles": "Milles",
+        "money_full": "Pagament en diners",
+        "money_partial": "Diners, menys del reclamat",
+        "other": "Una altra oferta"
+      }
+    },
+    "docRequest": {
+      "title": "L'aerolínia demana"
+    },
+    "whatToDo": "Què cal fer",
+    "prepareOfferReply": "Prepara una resposta demanant el pagament en diners"
   }
 }

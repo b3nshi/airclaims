@@ -48,6 +48,8 @@ Checks: `pnpm test` (eligibility, legal texts, messages, signatures), `pnpm type
 | `0007` | Flight checks cache-first: queued flights that became final in `flights` are closed without an API call |
 | `0008` | Email draft/send (n8n): webhook idempotency, draft context/insert, lease/sent/failed, approval trigger (pg_net + Vault) |
 | `0009` | Draft edit/discard RPCs for users; `verify_webhook_signature` (n8n verifies webhooks via Supabase, secret in Vault) |
+| `0010` | Inbound email: `ingest_inbound_email`, `attach_inbound_files`, `apply_inbound_analysis`, `review_queue` for humans |
+| `0011` | `offer_reply` drafts; shared recipient rule (curated contact, or the offer's sender only on the airline's own domain) |
 
 ## Claim wizard (M2)
 

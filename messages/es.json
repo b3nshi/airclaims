@@ -460,7 +460,9 @@
       "email_failed": "No se pudo enviar un mensaje",
       "email_draft_failed": "No pudimos preparar un mensaje",
       "email_edited": "Editaste un mensaje",
-      "email_discarded": "Descartaste un borrador"
+      "email_discarded": "Descartaste un borrador",
+      "email_analyzed": "Leímos un mensaje sobre tu reclamación",
+      "email_analysis_failed": "No pudimos resumir un mensaje"
     },
     "documentsTitle": "Documentos",
     "noDocuments": "Aún no hay documentos.",
@@ -493,6 +495,26 @@
     "editError": "No hemos podido guardar los cambios. Recarga la página e inténtalo de nuevo.",
     "discardConfirm": "¿Descartar este borrador? No se enviará nada. Puedes pedir uno nuevo.",
     "discardYes": "Descartar",
-    "discardError": "No hemos podido descartar este borrador. Recarga la página e inténtalo de nuevo."
+    "discardError": "No hemos podido descartar este borrador. Recarga la página e inténtalo de nuevo.",
+    "offer": {
+      "title": "La aerolínea te ha hecho una oferta",
+      "titleMoney": "La aerolínea indica que te pagará",
+      "body": "No tienes que aceptarla. Según el EU261 tienes derecho a cobrar en dinero; los bonos, el crédito de viaje o las millas solo cuentan si los aceptas. Nunca aceptamos nada en tu nombre. Si es menos de lo reclamado o no es en dinero, puedes pedir el pago en dinero o llevar la reclamación a AESA.",
+      "bodyMoney": "Comprueba que el pago te llega en dinero y por el importe completo que reclamaste.",
+      "kinds": {
+        "none": "Oferta",
+        "voucher": "Bono",
+        "travel_credit": "Crédito de viaje",
+        "miles": "Millas",
+        "money_full": "Pago en dinero",
+        "money_partial": "Dinero, menos de lo reclamado",
+        "other": "Otra oferta"
+      }
+    },
+    "docRequest": {
+      "title": "La aerolínea pide"
+    },
+    "whatToDo": "Qué hacer",
+    "prepareOfferReply": "Preparar una respuesta pidiendo el pago en dinero"
   }
 }

@@ -19,8 +19,12 @@ export const nextStep = (step: WizardStep): WizardStep =>
 /** Claim content (flight, what happened, passengers…) is editable only as a draft. */
 export const isDraft = (status: ClaimStatus) => status === "draft";
 
-/** Documents and expenses can still be added until the claim is signed and sent. */
+/** Expenses can be changed, and documents deleted, until the claim is signed and sent. */
 export const canEditDocuments = (status: ClaimStatus) => status === "draft" || status === "documents_pending";
+
+/** Documents can be added while the claim is open (e.g. when the airline asks for them). */
+export const canAddDocuments = (status: ClaimStatus) =>
+  !["won", "partially_won", "lost", "withdrawn"].includes(status);
 
 export const REASON_CATEGORIES = [
   "technical",
