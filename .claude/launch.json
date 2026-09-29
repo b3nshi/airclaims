@@ -1,0 +1,17 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "web-placeholder-env",
+      "runtimeExecutable": "env",
+      "runtimeArgs": [
+        "NEXT_PUBLIC_SITE_URL=http://localhost:3123",
+        "NEXT_PUBLIC_SUPABASE_URL=https://example.supabase.co",
+        "NEXT_PUBLIC_SUPABASE_ANON_KEY=placeholder",
+        "NEXT_TELEMETRY_DISABLED=1",
+        "pnpm", "dev", "--port", "3123"
+      ],
+      "port": 3123
+    }
+  ]
+}

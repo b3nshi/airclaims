@@ -1,0 +1,75 @@
+{
+  "Metadata": {
+    "title": "AirClaims — claim your flight compensation yourself",
+    "description": "Delayed or cancelled flight? Claim up to €600 under EU261 yourself, with AI help. You only pay if you get paid."
+  },
+  "Header": {
+    "home": "AirClaims home",
+    "signIn": "Sign in",
+    "profile": "My profile",
+    "signOut": "Sign out"
+  },
+  "LocaleSwitcher": {
+    "label": "Language"
+  },
+  "Home": {
+    "eyebrow": "EU261 · Flights from Barcelona",
+    "title": "Your flight was delayed or cancelled? Claim up to €{long} yourself.",
+    "subtitle": "We prepare your claim, track the airline's answers and tell you what to do next. You stay the claimant and the money goes straight to you.",
+    "cta": "Start your claim",
+    "amountsTitle": "What you can get",
+    "amountShort": "Flights up to 1,500 km",
+    "amountMedium": "1,500 – 3,500 km, or longer within the EU",
+    "amountLong": "Over 3,500 km",
+    "amountsNote": "Per passenger with a paid ticket, when you arrive {hours} hours late or more, or your flight is cancelled at short notice. Extraordinary circumstances (such as severe weather) can exempt the airline.",
+    "howTitle": "How it works",
+    "step1Title": "Tell us about your flight",
+    "step1Body": "Flight number, date and what happened. We estimate if you're entitled to compensation.",
+    "step2Title": "Approve every message",
+    "step2Body": "We draft your claim. Nothing is sent to the airline until you read it and approve it.",
+    "step3Title": "Get paid by the airline",
+    "step3Body": "The airline pays you directly. If they refuse, we guide you to AESA and, if needed, to court.",
+    "feeTitle": "You only pay if you get paid",
+    "feeBody": "{base}% of the compensation you receive, VAT included. Lower with more passengers, previous claims or referrals (never below {min}%). Expenses you get back are never charged.",
+    "honestyTitle": "What we are (and aren't)",
+    "honestyBody": "AirClaims is an assisted self-claim service. We are not a law firm and don't represent you: you are always the claimant, we never hold your money and we never accept an offer on your behalf.",
+    "scorecardTitle": "Airline scorecard",
+    "scorecardBody": "Coming soon: how each airline responds to claims, based on real cases."
+  },
+  "Login": {
+    "title": "Sign in",
+    "description": "We'll email you a link to sign in. No password needed.",
+    "email": "Email",
+    "submit": "Send me the link",
+    "sending": "Sending…",
+    "sentTitle": "Check your inbox",
+    "sentBody": "If the address is valid, you'll receive a sign-in link in a few minutes. Open it on this device.",
+    "errorInvalid": "Enter a valid email address.",
+    "errorSend": "We couldn't send the link. Try again in a minute.",
+    "errorLink": "That sign-in link is invalid or has expired. Request a new one.",
+    "privacy": "We only use your email to sign you in and to contact you about your claims."
+  },
+  "Profile": {
+    "title": "My profile",
+    "description": "We use these details to prepare your claims.",
+    "signInEmail": "Sign-in email",
+    "fullName": "Full name",
+    "fullNameHint": "As it appears on your booking.",
+    "personalEmail": "Email for notifications",
+    "personalEmailHint": "We forward the airline's replies here.",
+    "locale": "Language",
+    "save": "Save",
+    "saving": "Saving…",
+    "saved": "Saved.",
+    "errorInvalid": "Please check the highlighted fields.",
+    "errorSave": "We couldn't save your profile. Try again."
+  },
+  "Footer": {
+    "disclaimer": "AirClaims helps you claim for yourself. We are not a law firm and do not provide legal representation.",
+    "operator": "A Klivr project."
+  },
+  "NotFound": {
+    "title": "Page not found",
+    "back": "Back to home"
+  }
+}

@@ -1,0 +1,75 @@
+{
+  "Metadata": {
+    "title": "AirClaims — reclama tu mateix la compensació pel teu vol",
+    "description": "Vol endarrerit o cancel·lat? Reclama fins a 600 € segons el Reglament EU261 tu mateix, amb ajuda d'IA. Només pagues si cobres."
+  },
+  "Header": {
+    "home": "Inici d'AirClaims",
+    "signIn": "Entra",
+    "profile": "El meu perfil",
+    "signOut": "Surt"
+  },
+  "LocaleSwitcher": {
+    "label": "Idioma"
+  },
+  "Home": {
+    "eyebrow": "EU261 · Vols des de Barcelona",
+    "title": "El teu vol es va endarrerir o cancel·lar? Reclama tu mateix fins a {long} €.",
+    "subtitle": "Preparem la teva reclamació, seguim les respostes de l'aerolínia i et diem què has de fer a cada pas. Tu continues sent el reclamant i els diners et arriben directament a tu.",
+    "cta": "Comença la teva reclamació",
+    "amountsTitle": "Quant pots rebre",
+    "amountShort": "Vols de fins a 1.500 km",
+    "amountMedium": "De 1.500 a 3.500 km, o més dins de la UE",
+    "amountLong": "Més de 3.500 km",
+    "amountsNote": "Per passatger amb bitllet de pagament, si arribes amb {hours} hores o més de retard o et cancel·len el vol amb poca antelació. Les circumstàncies extraordinàries (com un temporal) poden eximir l'aerolínia.",
+    "howTitle": "Com funciona",
+    "step1Title": "Explica'ns què va passar",
+    "step1Body": "Número de vol, data i què va passar. Estimem si tens dret a compensació.",
+    "step2Title": "Aproves cada missatge",
+    "step2Body": "Redactem la teva reclamació. No s'envia res a l'aerolínia fins que no l'hagis llegit i aprovat.",
+    "step3Title": "L'aerolínia et paga",
+    "step3Body": "L'aerolínia et paga directament a tu. Si s'hi nega, et guiem per anar a AESA i, si cal, als tribunals.",
+    "feeTitle": "Només pagues si cobres",
+    "feeBody": "El {base} % de la compensació que rebis, IVA inclòs. Menys amb més passatgers, reclamacions anteriors o invitacions (mai per sota del {min} %). Mai cobrem sobre les despeses que et retornin.",
+    "honestyTitle": "Què som (i què no)",
+    "honestyBody": "AirClaims és un servei d'autoreclamació assistida. No som un despatx d'advocats ni et representem: tu ets sempre el reclamant, mai gestionem els teus diners i mai acceptem una oferta en nom teu.",
+    "scorecardTitle": "Rànquing d'aerolínies",
+    "scorecardBody": "Aviat: com respon cada aerolínia a les reclamacions, a partir de casos reals."
+  },
+  "Login": {
+    "title": "Entra",
+    "description": "T'enviarem un enllaç per correu per entrar. Sense contrasenya.",
+    "email": "Correu electrònic",
+    "submit": "Envia'm l'enllaç",
+    "sending": "Enviant…",
+    "sentTitle": "Revisa la safata d'entrada",
+    "sentBody": "Si l'adreça és vàlida, rebràs un enllaç per entrar en uns minuts. Obre'l en aquest dispositiu.",
+    "errorInvalid": "Introdueix un correu electrònic vàlid.",
+    "errorSend": "No hem pogut enviar l'enllaç. Torna-ho a provar d'aquí a un minut.",
+    "errorLink": "L'enllaç no és vàlid o ha caducat. Demana'n un de nou.",
+    "privacy": "Només fem servir el teu correu perquè puguis entrar i per contactar-te sobre les teves reclamacions."
+  },
+  "Profile": {
+    "title": "El meu perfil",
+    "description": "Fem servir aquestes dades per preparar les teves reclamacions.",
+    "signInEmail": "Correu d'accés",
+    "fullName": "Nom complet",
+    "fullNameHint": "Tal com apareix a la reserva.",
+    "personalEmail": "Correu per als avisos",
+    "personalEmailHint": "Aquí et reenviem les respostes de l'aerolínia.",
+    "locale": "Idioma",
+    "save": "Desa",
+    "saving": "Desant…",
+    "saved": "Desat.",
+    "errorInvalid": "Revisa els camps marcats.",
+    "errorSave": "No hem pogut desar el teu perfil. Torna-ho a provar."
+  },
+  "Footer": {
+    "disclaimer": "AirClaims t'ajuda a reclamar pel teu compte. No som un despatx d'advocats i no oferim representació legal.",
+    "operator": "Un projecte de Klivr."
+  },
+  "NotFound": {
+    "title": "Pàgina no trobada",
+    "back": "Torna a l'inici"
+  }
+}

@@ -1,0 +1,75 @@
+{
+  "Metadata": {
+    "title": "AirClaims — reclama tú mismo la compensación por tu vuelo",
+    "description": "¿Vuelo retrasado o cancelado? Reclama hasta 600 € según el Reglamento EU261 tú mismo, con ayuda de IA. Solo pagas si cobras."
+  },
+  "Header": {
+    "home": "Inicio de AirClaims",
+    "signIn": "Entrar",
+    "profile": "Mi perfil",
+    "signOut": "Salir"
+  },
+  "LocaleSwitcher": {
+    "label": "Idioma"
+  },
+  "Home": {
+    "eyebrow": "EU261 · Vuelos desde Barcelona",
+    "title": "¿Tu vuelo se retrasó o se canceló? Reclama tú mismo hasta {long} €.",
+    "subtitle": "Preparamos tu reclamación, seguimos las respuestas de la aerolínea y te decimos qué hacer en cada paso. Tú sigues siendo el reclamante y el dinero te llega directamente a ti.",
+    "cta": "Empieza tu reclamación",
+    "amountsTitle": "Cuánto puedes recibir",
+    "amountShort": "Vuelos de hasta 1.500 km",
+    "amountMedium": "De 1.500 a 3.500 km, o más dentro de la UE",
+    "amountLong": "Más de 3.500 km",
+    "amountsNote": "Por pasajero con billete de pago, si llegas con {hours} horas o más de retraso o te cancelan el vuelo con poca antelación. Las circunstancias extraordinarias (como un temporal) pueden eximir a la aerolínea.",
+    "howTitle": "Cómo funciona",
+    "step1Title": "Cuéntanos qué pasó",
+    "step1Body": "Número de vuelo, fecha y lo que ocurrió. Estimamos si tienes derecho a compensación.",
+    "step2Title": "Apruebas cada mensaje",
+    "step2Body": "Redactamos tu reclamación. No se envía nada a la aerolínea hasta que lo leas y lo apruebes.",
+    "step3Title": "La aerolínea te paga",
+    "step3Body": "La aerolínea te paga directamente a ti. Si se niega, te guiamos para acudir a AESA y, si hace falta, a los tribunales.",
+    "feeTitle": "Solo pagas si cobras",
+    "feeBody": "El {base} % de la compensación que recibas, IVA incluido. Menos con más pasajeros, reclamaciones anteriores o invitaciones (nunca por debajo del {min} %). Nunca cobramos sobre los gastos que te devuelvan.",
+    "honestyTitle": "Qué somos (y qué no)",
+    "honestyBody": "AirClaims es un servicio de autorreclamación asistida. No somos un despacho de abogados ni te representamos: tú eres siempre el reclamante, nunca gestionamos tu dinero y nunca aceptamos una oferta en tu nombre.",
+    "scorecardTitle": "Ranking de aerolíneas",
+    "scorecardBody": "Próximamente: cómo responde cada aerolínea a las reclamaciones, basado en casos reales."
+  },
+  "Login": {
+    "title": "Entrar",
+    "description": "Te enviaremos un enlace por correo para entrar. Sin contraseña.",
+    "email": "Correo electrónico",
+    "submit": "Envíame el enlace",
+    "sending": "Enviando…",
+    "sentTitle": "Revisa tu bandeja de entrada",
+    "sentBody": "Si la dirección es válida, recibirás un enlace para entrar en unos minutos. Ábrelo en este dispositivo.",
+    "errorInvalid": "Introduce un correo electrónico válido.",
+    "errorSend": "No hemos podido enviar el enlace. Inténtalo de nuevo en un minuto.",
+    "errorLink": "El enlace no es válido o ha caducado. Solicita uno nuevo.",
+    "privacy": "Solo usamos tu correo para que puedas entrar y para contactarte sobre tus reclamaciones."
+  },
+  "Profile": {
+    "title": "Mi perfil",
+    "description": "Usamos estos datos para preparar tus reclamaciones.",
+    "signInEmail": "Correo de acceso",
+    "fullName": "Nombre completo",
+    "fullNameHint": "Tal como aparece en tu reserva.",
+    "personalEmail": "Correo para avisos",
+    "personalEmailHint": "Aquí te reenviamos las respuestas de la aerolínea.",
+    "locale": "Idioma",
+    "save": "Guardar",
+    "saving": "Guardando…",
+    "saved": "Guardado.",
+    "errorInvalid": "Revisa los campos marcados.",
+    "errorSave": "No hemos podido guardar tu perfil. Inténtalo de nuevo."
+  },
+  "Footer": {
+    "disclaimer": "AirClaims te ayuda a reclamar por tu cuenta. No somos un despacho de abogados y no ofrecemos representación legal.",
+    "operator": "Un proyecto de Klivr."
+  },
+  "NotFound": {
+    "title": "Página no encontrada",
+    "back": "Volver al inicio"
+  }
+}
