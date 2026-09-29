@@ -2,6 +2,8 @@ import type { NextConfig } from "next";
 import createNextIntlPlugin from "next-intl/plugin";
 
 const nextConfig: NextConfig = {
+  // Legal texts are read from disk at request time (signing hashes the exact text).
+  outputFileTracingIncludes: { "/**": ["./content/legal/**/*"] },
   async headers() {
     return [
       {

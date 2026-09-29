@@ -17,6 +17,9 @@ export async function SiteHeader() {
         <LocaleSwitcher />
         {user ? (
           <>
+            <Link href="/claims" className={buttonVariants({ variant: "ghost", size: "sm" })}>
+              {t("claims")}
+            </Link>
             <Link href="/profile" className={buttonVariants({ variant: "ghost", size: "sm" })}>
               {t("profile")}
             </Link>

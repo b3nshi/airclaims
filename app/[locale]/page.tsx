@@ -27,7 +27,7 @@ export default function HomePage({ params }: PageProps<"/[locale]">) {
           {t("title", { long })}
         </h1>
         <p className="text-lg text-muted-foreground">{t("subtitle")}</p>
-        <Link href="/login" className={buttonVariants({ size: "lg" })}>
+        <Link href="/claims/new" className={buttonVariants({ size: "lg" })}>
           {t("cta")}
         </Link>
       </section>
@@ -47,7 +47,7 @@ export default function HomePage({ params }: PageProps<"/[locale]">) {
           ))}
         </div>
         <p className="max-w-2xl text-sm text-muted-foreground">
-          {t("amountsNote", { hours: EU261.minArrivalDelayHours })}
+          {t("amountsNote", { hours: EU261.minArrivalDelayMinutes / 60 })}
         </p>
       </section>
 

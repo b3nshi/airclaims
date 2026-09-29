@@ -1,5 +1,6 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import { redirect } from "@/i18n/navigation";
+import { redirect } from "next/navigation";
+import { safeNextPath } from "@/lib/safe-next";
 import { getCurrentUser } from "@/lib/supabase/server";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { LoginForm } from "./login-form";
@@ -7,9 +8,12 @@ import { LoginForm } from "./login-form";
 export default async function LoginPage({ params, searchParams }: PageProps<"/[locale]/login">) {
   const { locale } = await params;
   setRequestLocale(locale);
-  if (await getCurrentUser()) redirect({ href: "/profile", locale });
+  const { error, next } = await searchParams;
+  const nextPath = safeNextPath(next)?.path ?? null;
+  if (await getCurrentUser()) {
+    redirect(nextPath ?? `/${locale}/claims`);
+  }
 
-  const { error } = await searchParams;
   const t = await getTranslations("Login");
 
   return (
@@ -25,7 +29,7 @@ export default async function LoginPage({ params, searchParams }: PageProps<"/[l
               {t("errorLink")}
             </p>
           )}
-          <LoginForm locale={locale} />
+          <LoginForm locale={locale} next={nextPath} />
           <p className="text-xs text-muted-foreground">{t("privacy")}</p>
         </CardContent>
       </Card>

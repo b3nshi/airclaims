@@ -7,10 +7,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { sendMagicLink, type LoginState } from "./actions";
 
-export function LoginForm({ locale }: { locale: string }) {
+export function LoginForm({ locale, next }: { locale: string; next: string | null }) {
   const t = useTranslations("Login");
   const [state, formAction, pending] = useActionState<LoginState, FormData>(
-    sendMagicLink.bind(null, locale),
+    sendMagicLink.bind(null, locale, next),
     { status: "idle" },
   );
 

@@ -5,13 +5,19 @@ import { z } from "zod";
 import { redirect } from "@/i18n/navigation";
 import { routing } from "@/i18n/routing";
 import { env } from "@/lib/env";
+import { safeNextPath } from "@/lib/safe-next";
 import { createClient } from "@/lib/supabase/server";
 
 export type LoginState = { status: "idle" | "sent" | "invalid" | "error" };
 
 const emailSchema = z.email().max(254);
 
-export async function sendMagicLink(locale: string, _prev: LoginState, formData: FormData): Promise<LoginState> {
+export async function sendMagicLink(
+  locale: string,
+  next: string | null,
+  _prev: LoginState,
+  formData: FormData,
+): Promise<LoginState> {
   const parsed = emailSchema.safeParse(String(formData.get("email") ?? "").trim().toLowerCase());
   if (!parsed.success) return { status: "invalid" };
   const lang = hasLocale(routing.locales, locale) ? locale : routing.defaultLocale;
@@ -20,7 +26,7 @@ export async function sendMagicLink(locale: string, _prev: LoginState, formData:
   const { error } = await supabase.auth.signInWithOtp({
     email: parsed.data,
     options: {
-      emailRedirectTo: `${env.siteUrl}/auth/confirm?next=/${lang}/profile`,
+      emailRedirectTo: `${env.siteUrl}/auth/confirm?next=${safeNextPath(next)?.path ?? `/${lang}/claims`}`,
       data: { locale: lang }, // read by handle_new_user() on first sign-in
     },
   });
