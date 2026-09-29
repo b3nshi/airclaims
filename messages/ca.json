@@ -455,7 +455,12 @@
       "email_received": "Missatge rebut",
       "email_sent": "Missatge enviat",
       "document_validated": "Document revisat",
-      "other": "Actualització"
+      "other": "Actualització",
+      "email_drafted": "Es va preparar un missatge per a la teva aprovació",
+      "email_failed": "No s'ha pogut enviar un missatge",
+      "email_draft_failed": "No hem pogut preparar un missatge",
+      "email_edited": "Vas editar un missatge",
+      "email_discarded": "Vas descartar un esborrany"
     },
     "documentsTitle": "Documents",
     "noDocuments": "Encara no hi ha documents.",
@@ -474,6 +479,20 @@
     "withdraw": "Retira la reclamació",
     "withdrawConfirm": "Vols retirar aquesta reclamació? Deixarem de fer-ne el seguiment. Si ja s'havia enviat, l'aerolínia encara et podria respondre.",
     "withdrawYes": "Retira",
-    "withdrawError": "No hem pogut retirar la reclamació. Torna-ho a provar."
+    "withdrawError": "No hem pogut retirar la reclamació. Torna-ho a provar.",
+    "prepareEmail": "Prepara el correu de la meva reclamació",
+    "prepareReminder": "Prepara un recordatori a l'aerolínia",
+    "draftRequested": "L'estem preparant. T'avisarem per correu quan estigui a punt per a la teva aprovació.",
+    "draftUnavailable": "No hem pogut començar ara. Torna-ho a provar d'aquí a uns minuts.",
+    "edit": "Edita",
+    "discard": "Descarta",
+    "subject": "Assumpte",
+    "body": "Missatge",
+    "saveDraft": "Desa els canvis",
+    "editHint": "S'envia en nom teu: cenyeix-te als fets i demana el pagament en diners, no en vals.",
+    "editError": "No hem pogut desar els canvis. Recarrega la pàgina i torna-ho a provar.",
+    "discardConfirm": "Vols descartar aquest esborrany? No s'enviarà res. En pots demanar un de nou.",
+    "discardYes": "Descarta",
+    "discardError": "No hem pogut descartar aquest esborrany. Recarrega la pàgina i torna-ho a provar."
   }
 }

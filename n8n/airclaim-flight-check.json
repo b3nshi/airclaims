@@ -2,15 +2,14 @@
   "name": "airclaim-flight-check",
   "nodes": [
     {
-      "id": "6ddac992-2b78-4f54-8a7c-2d2e334062d8",
+      "id": "360740d7-c94b-51c8-9615-6d6e6cd57a55",
       "name": "Webhook",
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2,
       "position": [
         0,
-        200
+        300
       ],
-      "webhookId": "cf69275f-cfe1-4dfb-8fc5-6602f934ad2b",
       "parameters": {
         "httpMethod": "POST",
         "path": "airclaim-flight-check",
@@ -18,29 +17,97 @@
         "options": {
           "rawBody": true
         }
-      }
+      },
+      "webhookId": "5c7a8ed6-5276-56eb-906b-7b37a699f452"
     },
     {
-      "id": "cfa822c4-4338-4c71-8045-79a7d78a187b",
-      "name": "Verify signature",
+      "id": "475d0937-75d3-5105-9519-fb74607ab581",
+      "name": "Read request",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        220,
-        200
+        200,
+        300
       ],
       "parameters": {
-        "jsCode": "// Verifies X-AirClaims-Signature = sha256=HMAC(secret, `${timestamp}.${rawBody}`).\n// Needs NODE_FUNCTION_ALLOW_BUILTIN=crypto and AIRCLAIMS_WEBHOOK_SECRET in n8n's env.\nconst crypto = require('crypto');\nconst headers = $input.first().json.headers || {};\nconst raw = (await this.helpers.getBinaryDataBuffer(0, 'data')).toString('utf8');\nconst ts = String(headers['x-airclaims-timestamp'] || '');\nconst sig = String(headers['x-airclaims-signature'] || '');\nconst expected = 'sha256=' + crypto.createHmac('sha256', $env.AIRCLAIMS_WEBHOOK_SECRET).update(`${ts}.${raw}`).digest('hex');\nconst fresh = Math.abs(Date.now() / 1000 - Number(ts)) <= 300;\nconst valid = fresh && sig.length === expected.length &&\n  crypto.timingSafeEqual(Buffer.from(sig), Buffer.from(expected));\nreturn [{ json: { valid } }];"
+        "jsCode": "// Raw webhook request → the fields verify_webhook_signature checks in Supabase against the\n// Vault secret. No secret lives in n8n. The Webhook node must have \"Raw Body\" enabled.\nconst headers = $input.first().json.headers || {};\nconst raw = (await this.helpers.getBinaryDataBuffer(0, 'data')).toString('utf8');\nreturn [{\n  json: {\n    timestamp: String(headers['x-airclaims-timestamp'] || ''),\n    signature: String(headers['x-airclaims-signature'] || ''),\n    idempotency_key: String(headers['x-airclaims-idempotency-key'] || ''),\n    raw,\n  },\n}];\n"
       }
     },
     {
-      "id": "09eea38b-48f4-4ba0-b283-51d52dff71f8",
-      "name": "Valid?",
+      "id": "02fe1fed-e55d-5188-8c92-f54e0313e325",
+      "name": "Load config",
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        400,
+        300
+      ],
+      "parameters": {
+        "source": "database",
+        "mode": "once",
+        "workflowId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "",
+          "cachedResultName": "airclaim-config"
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "ec55e8de-ed6c-5146-9844-b1581e8146de",
+      "name": "Verify signature",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        800,
+        300
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Load config').first().json.supabase_url }}/rest/v1/rpc/verify_webhook_signature",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpCustomAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ p_timestamp: $('Read request').first().json.timestamp, p_body: $('Read request').first().json.raw, p_signature: $('Read request').first().json.signature }) }}",
+        "options": {}
+      },
+      "credentials": {
+        "httpCustomAuth": {
+          "id": "",
+          "name": "AirClaims Supabase (service role)"
+        }
+      }
+    },
+    {
+      "id": "c998a8d1-2d2e-5987-ac56-4d8cb44f3e92",
+      "name": "Every 10 minutes",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        200,
+        100
+      ],
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes",
+              "minutesInterval": 10
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "07f71934-9773-5937-9083-75287bda940d",
+      "name": "From webhook?",
       "type": "n8n-nodes-base.if",
       "typeVersion": 2,
       "position": [
-        440,
-        200
+        600,
+        300
       ],
       "parameters": {
         "conditions": {
@@ -51,7 +118,40 @@
           },
           "conditions": [
             {
-              "id": "6b1cade1-f64d-4ce9-a7c4-d7d46e416505",
+              "id": "64ff0eba-eecf-5ed8-a064-83045987cfcb",
+              "leftValue": "={{ $('Read request').isExecuted }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "11993f4d-7185-5504-8ef3-cca71285d7b5",
+      "name": "Valid?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        1000,
+        300
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose"
+          },
+          "conditions": [
+            {
+              "id": "c575057e-66dd-5be7-8826-25df9a778570",
               "leftValue": "={{ $json.valid }}",
               "rightValue": "",
               "operator": {
@@ -67,30 +167,13 @@
       }
     },
     {
-      "id": "e12e7922-fb68-4f76-b6a9-df9d2f6c53ff",
-      "name": "Reject",
-      "type": "n8n-nodes-base.respondToWebhook",
-      "typeVersion": 1.1,
-      "position": [
-        660,
-        320
-      ],
-      "parameters": {
-        "respondWith": "json",
-        "responseBody": "={{ { \"error\": \"invalid_signature\" } }}",
-        "options": {
-          "responseCode": 401
-        }
-      }
-    },
-    {
-      "id": "92fa60da-f3cb-4ce5-9e7b-a3a060da1607",
+      "id": "b36e9a50-4bb4-5611-8d15-c4b56d1e3848",
       "name": "Accepted",
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.1,
       "position": [
-        660,
-        120
+        1200,
+        240
       ],
       "parameters": {
         "respondWith": "json",
@@ -101,66 +184,92 @@
       }
     },
     {
-      "id": "c40100b3-df29-4649-8ad2-07343c836724",
-      "name": "Every 10 minutes",
-      "type": "n8n-nodes-base.scheduleTrigger",
-      "typeVersion": 1.2,
+      "id": "b6ce4087-efff-52e6-8f77-3c30a87cc73a",
+      "name": "Reject",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
       "position": [
-        660,
-        -80
+        1200,
+        400
       ],
       "parameters": {
-        "rule": {
-          "interval": [
-            {
-              "field": "minutes",
-              "minutesInterval": 10
-            }
-          ]
+        "respondWith": "json",
+        "responseBody": "={{ { \"error\": \"invalid_signature\" } }}",
+        "options": {
+          "responseCode": 401
         }
       }
     },
     {
-      "id": "4ef0ed5c-51e3-4a13-a371-1f4ac865b7de",
+      "id": "bfae2f7f-f133-5abc-b106-5fd3c97deb13",
       "name": "Claim due checks",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        900,
-        40
+        1400,
+        120
       ],
       "parameters": {
         "method": "POST",
-        "url": "={{ $env.AIRCLAIMS_SUPABASE_URL }}/rest/v1/rpc/claim_due_flight_checks",
-        "sendHeaders": true,
-        "headerParameters": {
-          "parameters": [
-            {
-              "name": "apikey",
-              "value": "={{ $env.AIRCLAIMS_SUPABASE_SERVICE_ROLE_KEY }}"
-            },
-            {
-              "name": "Authorization",
-              "value": "=Bearer {{ $env.AIRCLAIMS_SUPABASE_SERVICE_ROLE_KEY }}"
-            }
-          ]
-        },
+        "url": "={{ $('Load config').first().json.supabase_url }}/rest/v1/rpc/claim_due_flight_checks",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpCustomAuth",
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={{ JSON.stringify({ p_limit: 5 }) }}",
+        "jsonBody": "={{ JSON.stringify({ p_limit: $('Load config').first().json.flight_check_batch }) }}",
+        "options": {}
+      },
+      "credentials": {
+        "httpCustomAuth": {
+          "id": "",
+          "name": "AirClaims Supabase (service role)"
+        }
+      }
+    },
+    {
+      "id": "92e5e263-81af-58dd-a3ff-53c4ef634ace",
+      "name": "Has check?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        1600,
+        120
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose"
+          },
+          "conditions": [
+            {
+              "id": "ae77d165-0394-519b-a431-e30415b519ca",
+              "leftValue": "={{ $json.id }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
         "options": {}
       }
     },
     {
-      "id": "16753fb4-e6d6-4035-b219-30b6a65fd00d",
+      "id": "cfdd111a-ee7d-5eeb-99ff-daf074a3367d",
       "name": "AeroDataBox",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        1120,
-        40
+        1800,
+        120
       ],
       "parameters": {
+        "method": "GET",
         "url": "=https://aerodatabox.p.rapidapi.com/flights/number/{{ $json.flight_iata }}/{{ $json.flight_date }}",
         "authentication": "genericCredentialType",
         "genericAuthType": "httpHeaderAuth",
@@ -214,27 +323,27 @@
       }
     },
     {
-      "id": "f4174bee-f3bd-4ba7-9212-3927b299be07",
+      "id": "c1cb3672-7682-5558-8a39-698ae1aa3869",
       "name": "Normalize",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1340,
-        40
+        2000,
+        120
       ],
       "parameters": {
-        "mode": "runOnceForEachItem",
-        "jsCode": "// One AeroDataBox response → complete (found / not found) or fail (no data received).\n// actual_arr is the API's revised/runway time; the legal reference (doors open) is\n// confirmed by the passenger in the wizard.\nconst check = $('Claim due checks').item.json;\nconst res = $json;\nconst code = res.statusCode;\nconst list = Array.isArray(res.body) ? res.body : [];\n\nif (code === 200 && list.length) {\n  const f = list.find((x) => (x.departure?.scheduledTime?.local || '').startsWith(check.flight_date)) || list[0];\n  const iso = (t) => (t?.utc ? new Date(t.utc.replace(' ', 'T')).toISOString() : null);\n  const arrived = /arrived/i.test(f.status || '');\n  return {\n    json: {\n      check_id: check.id,\n      outcome: 'found',\n      flight: {\n        dep_iata: f.departure?.airport?.iata || null,\n        arr_iata: f.arrival?.airport?.iata || null,\n        airline_iata: f.airline?.iata || null,\n        scheduled_dep: iso(f.departure?.scheduledTime),\n        actual_dep: iso(f.departure?.runwayTime || f.departure?.revisedTime),\n        scheduled_arr: iso(f.arrival?.scheduledTime),\n        actual_arr: arrived ? iso(f.arrival?.revisedTime || f.arrival?.runwayTime) : null,\n        status: f.status || null,\n        distance_km: f.greatCircleDistance?.km ? Math.round(f.greatCircleDistance.km) : null,\n      },\n      raw: f,\n    },\n  };\n}\nif (code === 204 || code === 404 || (code === 200 && !list.length)) {\n  return { json: { check_id: check.id, outcome: 'not_found' } };\n}\nreturn { json: { check_id: check.id, outcome: 'error', error: `HTTP ${code}` } };"
+        "jsCode": "// One AeroDataBox response → complete (found / not found) or fail (no data received).\n// actual_arr is the API's revised/runway time; the legal reference (doors open) is\n// confirmed by the passenger in the wizard.\nconst check = $('Has check?').item.json;\nconst res = $json;\nconst code = res.statusCode;\nconst list = Array.isArray(res.body) ? res.body : [];\n\nif (code === 200 && list.length) {\n  const f = list.find((x) => (x.departure?.scheduledTime?.local || '').startsWith(check.flight_date)) || list[0];\n  const iso = (t) => (t?.utc ? new Date(t.utc.replace(' ', 'T')).toISOString() : null);\n  const arrived = /arrived/i.test(f.status || '');\n  return {\n    json: {\n      check_id: check.id,\n      outcome: 'found',\n      flight: {\n        dep_iata: f.departure?.airport?.iata || null,\n        arr_iata: f.arrival?.airport?.iata || null,\n        airline_iata: f.airline?.iata || null,\n        scheduled_dep: iso(f.departure?.scheduledTime),\n        actual_dep: iso(f.departure?.runwayTime || f.departure?.revisedTime),\n        scheduled_arr: iso(f.arrival?.scheduledTime),\n        actual_arr: arrived ? iso(f.arrival?.revisedTime || f.arrival?.runwayTime) : null,\n        status: f.status || null,\n        distance_km: f.greatCircleDistance?.km ? Math.round(f.greatCircleDistance.km) : null,\n      },\n      raw: f,\n    },\n  };\n}\nif (code === 204 || code === 404 || (code === 200 && !list.length)) {\n  return { json: { check_id: check.id, outcome: 'not_found' } };\n}\nreturn { json: { check_id: check.id, outcome: 'error', error: `HTTP ${code}` } };\n",
+        "mode": "runOnceForEachItem"
       }
     },
     {
-      "id": "4faec596-cc65-4cc1-9082-22a452216b7a",
+      "id": "7883dabb-d67f-597c-917f-6d776e9eb735",
       "name": "Got data?",
       "type": "n8n-nodes-base.if",
       "typeVersion": 2,
       "position": [
-        1560,
-        40
+        2200,
+        120
       ],
       "parameters": {
         "conditions": {
@@ -245,7 +354,7 @@
           },
           "conditions": [
             {
-              "id": "be24c910-5d3b-45d5-a878-d1eea8eee8da",
+              "id": "3ea16d09-fdb3-52ef-87cd-597f12efd319",
               "leftValue": "={{ $json.outcome }}",
               "rightValue": "error",
               "operator": {
@@ -260,65 +369,55 @@
       }
     },
     {
-      "id": "a4e73248-4b43-4d47-9295-f3508b0bc526",
+      "id": "cabd5b7c-5608-5871-8a59-3b62e0bc444a",
       "name": "Complete check",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        1780,
-        -40
+        2400,
+        40
       ],
       "parameters": {
         "method": "POST",
-        "url": "={{ $env.AIRCLAIMS_SUPABASE_URL }}/rest/v1/rpc/complete_flight_check",
-        "sendHeaders": true,
-        "headerParameters": {
-          "parameters": [
-            {
-              "name": "apikey",
-              "value": "={{ $env.AIRCLAIMS_SUPABASE_SERVICE_ROLE_KEY }}"
-            },
-            {
-              "name": "Authorization",
-              "value": "=Bearer {{ $env.AIRCLAIMS_SUPABASE_SERVICE_ROLE_KEY }}"
-            }
-          ]
-        },
+        "url": "={{ $('Load config').first().json.supabase_url }}/rest/v1/rpc/complete_flight_check",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpCustomAuth",
         "sendBody": true,
         "specifyBody": "json",
         "jsonBody": "={{ JSON.stringify({ p_check_id: $json.check_id, p_found: $json.outcome === 'found', p_flight: $json.flight ?? null, p_raw: $json.raw ?? null }) }}",
         "options": {}
+      },
+      "credentials": {
+        "httpCustomAuth": {
+          "id": "",
+          "name": "AirClaims Supabase (service role)"
+        }
       }
     },
     {
-      "id": "f288fee3-a04a-4c33-bff8-1d6f14467707",
+      "id": "2ef83a0e-4b36-538e-a502-631628d4b454",
       "name": "Fail check",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        1780,
-        140
+        2400,
+        220
       ],
       "parameters": {
         "method": "POST",
-        "url": "={{ $env.AIRCLAIMS_SUPABASE_URL }}/rest/v1/rpc/fail_flight_check",
-        "sendHeaders": true,
-        "headerParameters": {
-          "parameters": [
-            {
-              "name": "apikey",
-              "value": "={{ $env.AIRCLAIMS_SUPABASE_SERVICE_ROLE_KEY }}"
-            },
-            {
-              "name": "Authorization",
-              "value": "=Bearer {{ $env.AIRCLAIMS_SUPABASE_SERVICE_ROLE_KEY }}"
-            }
-          ]
-        },
+        "url": "={{ $('Load config').first().json.supabase_url }}/rest/v1/rpc/fail_flight_check",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpCustomAuth",
         "sendBody": true,
         "specifyBody": "json",
         "jsonBody": "={{ JSON.stringify({ p_check_id: $json.check_id, p_error: $json.error }) }}",
         "options": {}
+      },
+      "credentials": {
+        "httpCustomAuth": {
+          "id": "",
+          "name": "AirClaims Supabase (service role)"
+        }
       }
     }
   ],
@@ -327,7 +426,18 @@
       "main": [
         [
           {
-            "node": "Verify signature",
+            "node": "Read request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read request": {
+      "main": [
+        [
+          {
+            "node": "Load config",
             "type": "main",
             "index": 0
           }
@@ -339,6 +449,46 @@
         [
           {
             "node": "Valid?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Every 10 minutes": {
+      "main": [
+        [
+          {
+            "node": "Load config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Load config": {
+      "main": [
+        [
+          {
+            "node": "From webhook?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "From webhook?": {
+      "main": [
+        [
+          {
+            "node": "Verify signature",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Claim due checks",
             "type": "main",
             "index": 0
           }
@@ -374,18 +524,18 @@
         ]
       ]
     },
-    "Every 10 minutes": {
+    "Claim due checks": {
       "main": [
         [
           {
-            "node": "Claim due checks",
+            "node": "Has check?",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Claim due checks": {
+    "Has check?": {
       "main": [
         [
           {

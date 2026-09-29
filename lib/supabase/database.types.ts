@@ -277,6 +277,8 @@ export type Database = {
       record_airline_submission: { Args: { p_claim_id: string; p_reference: string | null }; Returns: undefined };
       approve_email: { Args: { p_email_id: string }; Returns: undefined };
       withdraw_claim: { Args: { p_claim_id: string }; Returns: undefined };
+      update_email_draft: { Args: { p_email_id: string; p_subject: string; p_body: string }; Returns: undefined };
+      discard_email_draft: { Args: { p_email_id: string }; Returns: undefined };
       request_flight_check: { Args: { p_flight_iata: string; p_flight_date: string }; Returns: Json };
       airline_claim_channels: {
         Args: { p_airline_id: string };

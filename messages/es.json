@@ -455,7 +455,12 @@
       "email_received": "Mensaje recibido",
       "email_sent": "Mensaje enviado",
       "document_validated": "Documento revisado",
-      "other": "Actualización"
+      "other": "Actualización",
+      "email_drafted": "Se preparó un mensaje para tu aprobación",
+      "email_failed": "No se pudo enviar un mensaje",
+      "email_draft_failed": "No pudimos preparar un mensaje",
+      "email_edited": "Editaste un mensaje",
+      "email_discarded": "Descartaste un borrador"
     },
     "documentsTitle": "Documentos",
     "noDocuments": "Aún no hay documentos.",
@@ -474,6 +479,20 @@
     "withdraw": "Retirar reclamación",
     "withdrawConfirm": "¿Retirar esta reclamación? Dejaremos de hacerle seguimiento. Si ya se envió, la aerolínea podría responderte igualmente.",
     "withdrawYes": "Retirar",
-    "withdrawError": "No hemos podido retirar la reclamación. Inténtalo de nuevo."
+    "withdrawError": "No hemos podido retirar la reclamación. Inténtalo de nuevo.",
+    "prepareEmail": "Preparar el correo de mi reclamación",
+    "prepareReminder": "Preparar un recordatorio a la aerolínea",
+    "draftRequested": "Lo estamos preparando. Te avisaremos por correo cuando esté listo para tu aprobación.",
+    "draftUnavailable": "No hemos podido empezar ahora. Inténtalo de nuevo en unos minutos.",
+    "edit": "Editar",
+    "discard": "Descartar",
+    "subject": "Asunto",
+    "body": "Mensaje",
+    "saveDraft": "Guardar cambios",
+    "editHint": "Se envía en tu nombre: cíñete a los hechos y pide el pago en dinero, no en bonos.",
+    "editError": "No hemos podido guardar los cambios. Recarga la página e inténtalo de nuevo.",
+    "discardConfirm": "¿Descartar este borrador? No se enviará nada. Puedes pedir uno nuevo.",
+    "discardYes": "Descartar",
+    "discardError": "No hemos podido descartar este borrador. Recarga la página e inténtalo de nuevo."
   }
 }

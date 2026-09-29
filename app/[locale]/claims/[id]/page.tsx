@@ -5,6 +5,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { AirlineSubmission, airlineChannel } from "@/components/claims/airline-submission";
 import { CopyButton } from "@/components/claims/copy-button";
 import { Badge, Deadlines, Documents, Expenses, Messages, Timeline } from "@/components/dashboard/sections";
+import { RequestDraft } from "@/components/dashboard/request-draft";
 import { WithdrawClaim } from "@/components/dashboard/withdraw-claim";
 import { aesaAvailable, airlineReplyDue, claimLimitDate } from "@/lib/eligibility";
 import { assessClaim } from "@/lib/claims/assess";
@@ -106,6 +107,12 @@ export default async function ClaimDashboard({ params }: PageProps<"/[locale]/cl
           </div>
           {(action.kind === "approve_email" || action.kind === "read_reply") && (
             <a href="#messages" className={buttonVariants()}>{t("goToMessages")}</a>
+          )}
+          {action.kind === "preparing_email" && (
+            <RequestDraft locale={locale} claimId={claim.id} template="initial_claim" />
+          )}
+          {action.kind === "airline_overdue" && channel === "email" && (
+            <RequestDraft locale={locale} claimId={claim.id} template="follow_up" />
           )}
           {(action.kind === "submit_web_form" || action.kind === "no_channel") && (
             <AirlineSubmission locale={locale} claim={claim} assessment={a} channel={channel} />

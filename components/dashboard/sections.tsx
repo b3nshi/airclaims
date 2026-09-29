@@ -11,7 +11,7 @@ import type {
   MyEmailRow,
 } from "@/lib/supabase/database.types";
 import { cn } from "@/lib/utils";
-import { ApproveEmail } from "./approve-email";
+import { EmailDraft } from "./email-draft";
 
 export function Section({ id, title, children }: { id?: string; title: string; children: React.ReactNode }) {
   return (
@@ -67,7 +67,9 @@ export async function Messages({
   emails: MyEmailRow[];
 }) {
   const [t, format] = await Promise.all([getTranslations("Dashboard"), getFormatter()]);
-  const sorted = [...emails].sort((a, b) =>
+  // Discarded drafts stay in the database (and the timeline), not in the conversation.
+  const visible = emails.filter((e) => !(e.direction === "outbound" && e.status === "ignored"));
+  const sorted = [...visible].sort((a, b) =>
     a.status === "pending_approval" && b.status !== "pending_approval"
       ? -1
       : b.status === "pending_approval" && a.status !== "pending_approval"
@@ -98,14 +100,21 @@ export async function Messages({
                   {who} · {format.dateTime(new Date(when), { dateStyle: "medium", timeStyle: "short" })}
                 </p>
                 {e.ai_summary && <p className="text-sm">{t("summary", { summary: e.ai_summary })}</p>}
-                {body && (
-                  <details open={pending} className="text-sm">
-                    <summary className="cursor-pointer text-muted-foreground">{t("showMessage")}</summary>
-                    <pre className="mt-2 max-h-96 overflow-auto rounded-md bg-muted/40 p-3 font-sans whitespace-pre-wrap">{body}</pre>
-                  </details>
-                )}
-                {pending && (
-                  <ApproveEmail locale={locale} claimId={claimId} emailId={e.id} recipient={e.recipient_label ?? "—"} alias={alias} />
+                {pending ? (
+                  <EmailDraft
+                    key={`${e.id}:${e.subject}:${body.length}`}
+                    locale={locale}
+                    claimId={claimId}
+                    email={{ id: e.id, subject: e.subject ?? "", body, recipient: e.recipient_label ?? "—" }}
+                    alias={alias}
+                  />
+                ) : (
+                  body && (
+                    <details className="text-sm">
+                      <summary className="cursor-pointer text-muted-foreground">{t("showMessage")}</summary>
+                      <pre className="mt-2 max-h-96 overflow-auto rounded-md bg-muted/40 p-3 font-sans whitespace-pre-wrap">{body}</pre>
+                    </details>
+                  )
                 )}
               </li>
             );
@@ -204,7 +213,10 @@ export async function Expenses({
 
 export async function Timeline({ createdAt, events }: { createdAt: string; events: ClaimEventRow[] }) {
   const [t, tc, format] = await Promise.all([getTranslations("Dashboard"), getTranslations("Claims"), getFormatter()]);
-  const known = ["status_changed", "email_approved", "submitted_airline", "email_received", "email_sent", "document_validated"];
+  const known = [
+    "status_changed", "email_approved", "submitted_airline", "email_received", "email_sent", "document_validated",
+    "email_drafted", "email_failed", "email_draft_failed", "email_edited", "email_discarded",
+  ];
   const label = (e: ClaimEventRow) => {
     if (e.event_type === "status_changed") {
       const to = (e.payload as { to?: ClaimStatus } | null)?.to;

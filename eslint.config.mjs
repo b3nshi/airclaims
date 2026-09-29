@@ -12,6 +12,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // n8n Code-node snippets: concatenated into workflows by scripts/build-n8n-workflows.py.
+    "n8n/src/**",
   ]),
 ]);
 

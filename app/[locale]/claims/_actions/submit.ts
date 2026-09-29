@@ -72,7 +72,7 @@ export async function signAndSubmit(locale: string, claimId: string, _prev: Form
   const submitted = await supabase.rpc("submit_claim", { p_claim_id: claimId });
   if (submitted.error) return { status: "error" };
 
-  // Airlines that take claims by email: ask n8n (M4) for a draft the user will approve.
+  // Airlines that take claims by email: ask n8n for a draft the user will approve.
   if (assessment.airline) {
     const { data: channels } = await supabase.rpc("airline_claim_channels", { p_airline_id: assessment.airline.id });
     if (channels?.[0]?.channel === "email") {

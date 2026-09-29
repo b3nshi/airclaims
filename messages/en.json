@@ -455,7 +455,12 @@
       "email_received": "Message received",
       "email_sent": "Message sent",
       "document_validated": "Document checked",
-      "other": "Update"
+      "other": "Update",
+      "email_drafted": "A message was prepared for your approval",
+      "email_failed": "A message couldn't be sent",
+      "email_draft_failed": "We couldn't prepare a message",
+      "email_edited": "You edited a message",
+      "email_discarded": "You discarded a draft"
     },
     "documentsTitle": "Documents",
     "noDocuments": "No documents yet.",
@@ -474,6 +479,20 @@
     "withdraw": "Withdraw claim",
     "withdrawConfirm": "Withdraw this claim? We'll stop tracking it. If it was already sent, the airline may still reply to you.",
     "withdrawYes": "Withdraw",
-    "withdrawError": "We couldn't withdraw the claim. Try again."
+    "withdrawError": "We couldn't withdraw the claim. Try again.",
+    "prepareEmail": "Prepare my claim email",
+    "prepareReminder": "Prepare a reminder to the airline",
+    "draftRequested": "We're preparing it. We'll email you when it's ready for your approval.",
+    "draftUnavailable": "We couldn't start it right now. Try again in a few minutes.",
+    "edit": "Edit",
+    "discard": "Discard",
+    "subject": "Subject",
+    "body": "Message",
+    "saveDraft": "Save changes",
+    "editHint": "It's sent in your name: keep it factual and ask for payment in money, not vouchers.",
+    "editError": "We couldn't save your changes. Reload the page and try again.",
+    "discardConfirm": "Discard this draft? Nothing will be sent. You can ask for a new one.",
+    "discardYes": "Discard",
+    "discardError": "We couldn't discard this draft. Reload the page and try again."
   }
 }

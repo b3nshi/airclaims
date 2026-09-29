@@ -1,0 +1,51 @@
+{
+  "name": "airclaim-config",
+  "nodes": [
+    {
+      "id": "a3339d86-c032-5355-a49a-b91448c7b32e",
+      "name": "When called",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {
+        "inputSource": "passthrough"
+      }
+    },
+    {
+      "id": "16f89109-12c8-5ee2-969f-264c72452efe",
+      "name": "Settings",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        220,
+        0
+      ],
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "{\n  \"supabase_url\": \"https://YOUR-PROJECT-REF.supabase.co\",\n  \"app_url\": \"https://airclaims.klivr.com\",\n  \"notify_from\": \"AirClaims <no-reply@airclaims.klivr.com>\",\n  \"forwardemail_api_url\": \"https://api.forwardemail.net/v1/emails\",\n  \"anthropic_model\": \"claude-opus-5-5\",\n  \"anthropic_effort\": \"medium\",\n  \"flight_check_batch\": 5,\n  \"email_send_batch\": 5\n}",
+        "options": {}
+      }
+    }
+  ],
+  "connections": {
+    "When called": {
+      "main": [
+        [
+          {
+            "node": "Settings",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "saveDataSuccessExecution": "none"
+  },
+  "active": false
+}

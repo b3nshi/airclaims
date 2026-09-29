@@ -1,0 +1,794 @@
+{
+  "name": "airclaim-email-send",
+  "nodes": [
+    {
+      "id": "1aab18b2-595e-501b-b6d0-ba1e3b1a63ed",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        0,
+        300
+      ],
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "airclaim-email-send",
+        "responseMode": "responseNode",
+        "options": {
+          "rawBody": true
+        }
+      },
+      "webhookId": "e40b89d6-83f0-5feb-ada6-f679dd31fce6"
+    },
+    {
+      "id": "c2686eb0-79e8-537e-a38f-f97d09a83c45",
+      "name": "Read request",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        200,
+        300
+      ],
+      "parameters": {
+        "jsCode": "// Raw webhook request → the fields verify_webhook_signature checks in Supabase against the\n// Vault secret. No secret lives in n8n. The Webhook node must have \"Raw Body\" enabled.\nconst headers = $input.first().json.headers || {};\nconst raw = (await this.helpers.getBinaryDataBuffer(0, 'data')).toString('utf8');\nreturn [{\n  json: {\n    timestamp: String(headers['x-airclaims-timestamp'] || ''),\n    signature: String(headers['x-airclaims-signature'] || ''),\n    idempotency_key: String(headers['x-airclaims-idempotency-key'] || ''),\n    raw,\n  },\n}];\n"
+      }
+    },
+    {
+      "id": "abdea34e-850f-5f8c-91ec-f348e5160284",
+      "name": "Load config",
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        400,
+        300
+      ],
+      "parameters": {
+        "source": "database",
+        "mode": "once",
+        "workflowId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "",
+          "cachedResultName": "airclaim-config"
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "6332407c-f2d1-50a8-a6ca-884ae6119dc6",
+      "name": "Verify signature",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        800,
+        300
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Load config').first().json.supabase_url }}/rest/v1/rpc/verify_webhook_signature",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpCustomAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ p_timestamp: $('Read request').first().json.timestamp, p_body: $('Read request').first().json.raw, p_signature: $('Read request').first().json.signature }) }}",
+        "options": {}
+      },
+      "credentials": {
+        "httpCustomAuth": {
+          "id": "",
+          "name": "AirClaims Supabase (service role)"
+        }
+      }
+    },
+    {
+      "id": "34528245-9733-5d75-ad77-e9a04c0429a1",
+      "name": "Every 5 minutes",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        200,
+        100
+      ],
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes",
+              "minutesInterval": 5
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "b2e22dfa-5804-5576-877c-443e60e1132b",
+      "name": "From webhook?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        600,
+        300
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose"
+          },
+          "conditions": [
+            {
+              "id": "72762c37-dd95-599f-914d-96c2d206943b",
+              "leftValue": "={{ $('Read request').isExecuted }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "326136c2-ebdc-5f65-a327-09e2af8f0240",
+      "name": "Valid?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        1000,
+        300
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose"
+          },
+          "conditions": [
+            {
+              "id": "de5b6b33-4d41-50fb-a41d-d5b7718ed0b0",
+              "leftValue": "={{ $json.valid }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "be960008-92c2-59e1-a34b-d0e9e4550889",
+      "name": "Accepted",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        1200,
+        240
+      ],
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ { \"accepted\": true } }}",
+        "options": {
+          "responseCode": 202
+        }
+      }
+    },
+    {
+      "id": "8ccf7250-3039-5545-aee6-3958ccb8971c",
+      "name": "Reject",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        1200,
+        400
+      ],
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ { \"error\": \"invalid_signature\" } }}",
+        "options": {
+          "responseCode": 401
+        }
+      }
+    },
+    {
+      "id": "89de4b7f-a279-52ef-a867-b72539d00af7",
+      "name": "Lease approved emails",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1400,
+        120
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Load config').first().json.supabase_url }}/rest/v1/rpc/claim_approved_emails",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpCustomAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ p_limit: $('Load config').first().json.email_send_batch }) }}",
+        "options": {}
+      },
+      "credentials": {
+        "httpCustomAuth": {
+          "id": "",
+          "name": "AirClaims Supabase (service role)"
+        }
+      }
+    },
+    {
+      "id": "59a7e99e-448a-5211-b7a5-00ea1d4bc5c5",
+      "name": "Has email?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        1600,
+        120
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose"
+          },
+          "conditions": [
+            {
+              "id": "976a869e-c0e1-5d51-8026-debf5be6cdef",
+              "leftValue": "={{ $json.id }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "98cde13d-e407-5ba9-8650-43fd7aa61f1c",
+      "name": "Sign attachment URLs",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1800,
+        120
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Load config').first().json.supabase_url }}/storage/v1/object/sign/claim-documents",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpCustomAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ expiresIn: 300, paths: ($json.attachments || []).map(a => a.storage_path) }) }}",
+        "options": {
+          "response": {
+            "response": {
+              "fullResponse": true,
+              "neverError": true
+            }
+          }
+        }
+      },
+      "credentials": {
+        "httpCustomAuth": {
+          "id": "",
+          "name": "AirClaims Supabase (service role)"
+        }
+      }
+    },
+    {
+      "id": "d88c053b-aace-5916-8d37-f84279901a44",
+      "name": "Build message",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2000,
+        120
+      ],
+      "parameters": {
+        "jsCode": "// Forward Email API payload for one approved email. Attachments are downloaded through\n// short-lived signed URLs, so the Storage service key stays in the n8n credential.\nconst cfg = $('Load config').first().json;\nconst e = $('Has email?').item.json;\nconst signed = Array.isArray($json.body) ? $json.body : [];\nconst messageId = `<${e.id}@airclaims.klivr.com>`; // unique per email; stored for threading\ntry {\n  const attachments = [];\n  for (const a of e.attachments || []) {\n    const s = signed.find((x) => x.path === a.storage_path && x.signedURL);\n    if (!s) throw new Error(`no signed URL for ${a.filename}`);\n    const data = await this.helpers.httpRequest({ url: `${cfg.supabase_url}/storage/v1${s.signedURL}`, encoding: 'arraybuffer' });\n    attachments.push({ filename: a.filename, content: Buffer.from(data).toString('base64'), encoding: 'base64', contentType: a.mime || undefined });\n  }\n  const name = String(e.sender_name || '').replace(/[\"<>\\r\\n]/g, '').trim();\n  const payload = {\n    from: name ? `\"${name}\" <${e.from_address}>` : e.from_address,\n    to: e.to_addresses,\n    replyTo: e.from_address,\n    subject: e.subject,\n    text: e.body_text,\n    messageId,\n    attachments,\n  };\n  if (e.cc_addresses && e.cc_addresses.length) payload.cc = e.cc_addresses;\n  if (e.in_reply_to) Object.assign(payload, { inReplyTo: e.in_reply_to, references: e.in_reply_to });\n  return { json: { email_id: e.id, ready: true, message_id: messageId, payload } };\n} catch (err) {\n  return { json: { email_id: e.id, ready: false, error: `attachments: ${String(err && err.message || err).slice(0, 300)}` } };\n}\n",
+        "mode": "runOnceForEachItem"
+      }
+    },
+    {
+      "id": "62434378-a4d6-5585-9d61-bab6ca367439",
+      "name": "Ready?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        2200,
+        120
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose"
+          },
+          "conditions": [
+            {
+              "id": "6ed6c04c-fe6a-5211-84bd-d4959ac60319",
+              "leftValue": "={{ $json.ready }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "ce1184f1-e290-516d-b8fa-e1c77f080186",
+      "name": "Send via Forward Email",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2400,
+        40
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Load config').first().json.forwardemail_api_url }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBasicAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json.payload) }}",
+        "options": {
+          "response": {
+            "response": {
+              "fullResponse": true,
+              "neverError": true
+            }
+          },
+          "timeout": 60000
+        }
+      },
+      "credentials": {
+        "httpBasicAuth": {
+          "id": "",
+          "name": "Forward Email API"
+        }
+      }
+    },
+    {
+      "id": "6156bf2d-25f2-5b90-98b4-cbcb3ab5f65e",
+      "name": "Result",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2600,
+        40
+      ],
+      "parameters": {
+        "jsCode": "// Any non-2xx is a failure. It is never retried automatically: it may have gone out.\nconst built = $('Build message').item.json;\nconst code = $json.statusCode;\nif (code >= 200 && code < 300) {\n  return { json: { email_id: built.email_id, ok: true, message_id: ($json.body && $json.body.messageId) || built.message_id } };\n}\nconst detail = String(($json.body && ($json.body.message || $json.body.error)) || '').slice(0, 300);\nreturn { json: { email_id: built.email_id, ok: false, error: `forwardemail_http_${code}: ${detail}` } };\n",
+        "mode": "runOnceForEachItem"
+      }
+    },
+    {
+      "id": "5b86e296-5179-598f-a4f9-237bc6b99ace",
+      "name": "Sent?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        2800,
+        40
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose"
+          },
+          "conditions": [
+            {
+              "id": "b6851651-5a82-5b6b-8acc-1ba98da71a90",
+              "leftValue": "={{ $json.ok }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "e8246015-12b6-5aa0-b0d4-072df4fdf0ba",
+      "name": "Mark sent",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3000,
+        -40
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Load config').first().json.supabase_url }}/rest/v1/rpc/mark_email_sent",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpCustomAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ p_email_id: $json.email_id, p_message_id: $json.message_id }) }}",
+        "options": {}
+      },
+      "credentials": {
+        "httpCustomAuth": {
+          "id": "",
+          "name": "AirClaims Supabase (service role)"
+        }
+      }
+    },
+    {
+      "id": "95cd3da8-6943-550a-b748-96bf7e19d4d5",
+      "name": "Newly sent?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        3200,
+        -40
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose"
+          },
+          "conditions": [
+            {
+              "id": "5ed2d352-3da6-528c-a661-6ff87d3f5313",
+              "leftValue": "={{ $json.notify_email }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "f75a89e4-639e-5acd-ba54-79c1e154a0c4",
+      "name": "Notification",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3400,
+        -40
+      ],
+      "parameters": {
+        "jsCode": "// Notification emails to the passenger. New UI locales fall back to Spanish until added here.\nconst T = {\n  es: {\n    draft: (r) => [`Tu mensaje para ${r} está listo`, `Hola:\\n\\nHemos preparado un mensaje en tu nombre para ${r}. No se enviará nada hasta que lo leas y lo apruebes:\\n\\n{link}\\n\\nAirClaims`],\n    sent: (r, s) => [`Tu mensaje se ha enviado a ${r}`, `Hola:\\n\\nTu mensaje se ha enviado a ${r} desde el correo de tu reclamación.${s ? ' La aerolínea tiene un mes para responder; te reenviaremos su respuesta.' : ''}\\n\\n{link}\\n\\nAirClaims`],\n  },\n  en: {\n    draft: (r) => [`Your message to ${r} is ready`, `Hello,\\n\\nWe've prepared a message in your name to ${r}. Nothing is sent until you read and approve it:\\n\\n{link}\\n\\nAirClaims`],\n    sent: (r, s) => [`Your message was sent to ${r}`, `Hello,\\n\\nYour message was sent to ${r} from your claim email address.${s ? \" The airline has one month to reply; we'll forward their answer to you.\" : ''}\\n\\n{link}\\n\\nAirClaims`],\n  },\n  ca: {\n    draft: (r) => [`El teu missatge per a ${r} està a punt`, `Hola:\\n\\nHem preparat un missatge en nom teu per a ${r}. No s'enviarà res fins que el llegeixis i l'aprovis:\\n\\n{link}\\n\\nAirClaims`],\n    sent: (r, s) => [`El teu missatge s'ha enviat a ${r}`, `Hola:\\n\\nEl teu missatge s'ha enviat a ${r} des del correu de la teva reclamació.${s ? \" L'aerolínia té un mes per respondre; et reenviarem la seva resposta.\" : ''}\\n\\n{link}\\n\\nAirClaims`],\n  },\n};\nconst cfg = $('Load config').first().json;\nconst notification = (meta, kind, ...args) => {\n  const locale = T[meta.notify_locale] ? meta.notify_locale : 'es';\n  const [subject, text] = T[locale][kind](meta.recipient_label, ...args);\n  const link = `${cfg.app_url}/${locale}/claims/${meta.claim_id}`;\n  // Forward Email API payload (sent from the no-reply alias).\n  return { from: cfg.notify_from, to: meta.notify_email, subject, text: text.replace('{link}', link) };\n};\nreturn { json: notification($json, 'sent', $json.claim_submitted) };\n",
+        "mode": "runOnceForEachItem"
+      }
+    },
+    {
+      "id": "167947b4-c11f-5f87-8031-41cc200b1c41",
+      "name": "Notify user",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3600,
+        -40
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Load config').first().json.forwardemail_api_url }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBasicAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json) }}",
+        "options": {}
+      },
+      "credentials": {
+        "httpBasicAuth": {
+          "id": "",
+          "name": "Forward Email API"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "id": "cc0bf8df-9753-52b5-8086-c3a1d61e7d56",
+      "name": "Mark failed",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3000,
+        160
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Load config').first().json.supabase_url }}/rest/v1/rpc/mark_email_failed",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpCustomAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ p_email_id: $json.email_id, p_error: $json.error }) }}",
+        "options": {}
+      },
+      "credentials": {
+        "httpCustomAuth": {
+          "id": "",
+          "name": "AirClaims Supabase (service role)"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Read request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read request": {
+      "main": [
+        [
+          {
+            "node": "Load config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Verify signature": {
+      "main": [
+        [
+          {
+            "node": "Valid?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Every 5 minutes": {
+      "main": [
+        [
+          {
+            "node": "Load config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Load config": {
+      "main": [
+        [
+          {
+            "node": "From webhook?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "From webhook?": {
+      "main": [
+        [
+          {
+            "node": "Verify signature",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Lease approved emails",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Valid?": {
+      "main": [
+        [
+          {
+            "node": "Accepted",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Reject",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Accepted": {
+      "main": [
+        [
+          {
+            "node": "Lease approved emails",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Lease approved emails": {
+      "main": [
+        [
+          {
+            "node": "Has email?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Has email?": {
+      "main": [
+        [
+          {
+            "node": "Sign attachment URLs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sign attachment URLs": {
+      "main": [
+        [
+          {
+            "node": "Build message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build message": {
+      "main": [
+        [
+          {
+            "node": "Ready?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ready?": {
+      "main": [
+        [
+          {
+            "node": "Send via Forward Email",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Mark failed",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send via Forward Email": {
+      "main": [
+        [
+          {
+            "node": "Result",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Result": {
+      "main": [
+        [
+          {
+            "node": "Sent?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sent?": {
+      "main": [
+        [
+          {
+            "node": "Mark sent",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Mark failed",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mark sent": {
+      "main": [
+        [
+          {
+            "node": "Newly sent?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Newly sent?": {
+      "main": [
+        [
+          {
+            "node": "Notification",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Notification": {
+      "main": [
+        [
+          {
+            "node": "Notify user",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "saveDataSuccessExecution": "none"
+  },
+  "active": false
+}
