@@ -527,7 +527,8 @@
       "stats": "Estadísticas",
       "airlines": "Aerolíneas",
       "review": "Revisión",
-      "audit": "Registro"
+      "audit": "Registro",
+      "flights": "Vuelos"
     },
     "saved": "Guardado.",
     "invalid": "Revisa los campos",
@@ -690,6 +691,37 @@
       "title": "Registro de cambios",
       "description": "Los últimos 200 cambios: quién cambió qué, antes y después.",
       "system": "sistema"
+    },
+    "flights": {
+      "addTitle": "Registrar datos de un vuelo",
+      "addDescription": "Lo que pasó realmente con un vuelo, según el pasajero o una fuente fiable. Si se marca como definitivo, se usa para todas las reclamaciones de ese vuelo y nunca se consulta a la API de pago. Guardar de nuevo el mismo número y fecha lo actualiza.",
+      "number": "Número de vuelo",
+      "date": "Fecha de salida prevista",
+      "dateHint": "Fecha local en el aeropuerto de salida.",
+      "from": "Origen (IATA)",
+      "to": "Destino (IATA)",
+      "scheduledDep": "Salida prevista (local)",
+      "actualDep": "Salida real (local)",
+      "depOffset": "Desfase UTC de salida",
+      "offsetHint": "p. ej. +02:00 para España en verano, +01:00 en invierno.",
+      "status": "Estado",
+      "scheduledArr": "Llegada prevista (local)",
+      "actualArr": "Llegada real (local)",
+      "actualArrHint": "Cuando se abrieron las puertas, si se sabe.",
+      "arrOffset": "Desfase UTC de llegada",
+      "note": "Nota (fuente, quién lo informó)",
+      "final": "Definitivo: esto es lo que pasó (no hace falta consultar la API)",
+      "listTitle": "Vuelos retrasados y registrados a mano",
+      "col": {
+        "flight": "Vuelo",
+        "route": "Ruta",
+        "depDelay": "Retraso de salida",
+        "arrDelay": "Retraso de llegada",
+        "status": "Estado",
+        "candidate": "Clase de retraso",
+        "data": "Datos",
+        "source": "Fuente"
+      }
     }
   }
 }

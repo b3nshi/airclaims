@@ -381,6 +381,7 @@ export type Database = {
       airline_passenger_tips: { Args: { p_airline_id: string; p_locale: string }; Returns: string[] };
       admin_airline_stats: { Args: Record<string, never>; Returns: AirlineStatsRow[] };
       admin_resolve_review: { Args: { p_id: string; p_note: string | null }; Returns: undefined };
+      admin_upsert_flight: { Args: { p: Json }; Returns: string };
       admin_link_email_to_claim: { Args: { p_email_id: string; p_alias_code: string }; Returns: string };
       request_flight_check: { Args: { p_flight_iata: string; p_flight_date: string }; Returns: Json };
       airline_claim_channels: {

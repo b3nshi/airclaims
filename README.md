@@ -51,6 +51,7 @@ Checks: `pnpm test` (eligibility, legal texts, messages, signatures), `pnpm type
 | `0010` | Inbound email: `ingest_inbound_email`, `attach_inbound_files`, `apply_inbound_analysis`, `review_queue` for humans |
 | `0011` | `offer_reply` drafts; shared recipient rule (curated contact, or the offer's sender only on the airline's own domain) |
 | `0012` | Admin: roles (`kb_editor`, `admin`), `airline_knowledge`, `airline_insights`, `admin_audit_log`, review-queue actions, `admin_airline_stats`, passenger tips, per-airline drafting notes; Wizz knowledge seed |
+| `0013` | `admin_upsert_flight` (register flight data by hand, no API call); Wizz Air group: W4/W9 get W6's form and knowledge |
 
 ## Claim wizard (M2)
 
@@ -82,7 +83,7 @@ withdraw. Email bodies are always shown as plain text; inbound HTML is never ren
 
 | Role | Can |
 |---|---|
-| `kb_editor` | Airline stats; edit airlines, contacts (incl. curated emails), per-locale submission steps, knowledge (passenger tips, AI drafting notes, form facts, reply times), sourced insights; knowledge audit log |
+| `kb_editor` | Airline stats; register flight data by hand (Admin → Flights); edit airlines, contacts (incl. curated emails), per-locale submission steps, knowledge (passenger tips, AI drafting notes, form facts, reply times), sourced insights; knowledge audit log |
 | `admin` | All of the above, plus the review queue (unmatched / support / passenger emails, offers, document requests: link to a claim, resolve) and the full audit log |
 
 Grant a role in the Supabase SQL editor; it applies from the user's next sign-in:

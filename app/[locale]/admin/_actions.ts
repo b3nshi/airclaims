@@ -217,3 +217,56 @@ export async function linkEmailToClaim(locale: string, emailId: string, _prev: F
   revalidatePath(`/${locale}/admin/review`);
   return { status: "saved" };
 }
+
+const localTime = z.union([z.string().regex(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/), z.literal("")]);
+const utcOffset = z.string().trim().regex(/^[+-]\d{2}:\d{2}$/);
+
+/**
+ * Records what happened to a flight by hand (source `manual`). Marked final, it's answered from
+ * our table and never sent to the paid flight API.
+ */
+export async function saveFlight(locale: string, _prev: FormState, formData: FormData): Promise<FormState> {
+  await kb(locale);
+  const get = (k: string) => String(formData.get(k) ?? "").trim();
+  const parsed = z
+    .object({
+      flight_iata: z.string().transform((v) => v.toUpperCase().replace(/[^A-Z0-9]/g, "")).pipe(z.string().regex(/^[A-Z0-9]{2}\d{1,4}[A-Z]?$/)),
+      flight_date: z.iso.date(),
+      dep_iata: z.string().toUpperCase().regex(/^[A-Z]{3}$/),
+      arr_iata: z.string().toUpperCase().regex(/^[A-Z]{3}$/),
+      dep_offset: utcOffset,
+      arr_offset: utcOffset,
+      scheduled_dep: localTime,
+      scheduled_arr: localTime,
+      actual_dep: localTime,
+      actual_arr: localTime,
+      status: z.enum(["", "Scheduled", "Delayed", "Departed", "Arrived", "Canceled", "Diverted"]),
+      note: z.string().max(1000),
+    })
+    .safeParse(Object.fromEntries(
+      ["flight_iata", "flight_date", "dep_iata", "arr_iata", "dep_offset", "arr_offset", "scheduled_dep", "scheduled_arr",
+       "actual_dep", "actual_arr", "status", "note"].map((k) => [k, get(k)]),
+    ));
+  if (!parsed.success) return invalid(parsed.error.issues);
+  const v = parsed.data;
+  const at = (local: string, offset: string) => (local ? `${local}:00${offset}` : "");
+  const supabase = await createClient();
+  const { error } = await supabase.rpc("admin_upsert_flight", {
+    p: {
+      flight_iata: v.flight_iata,
+      flight_date: v.flight_date,
+      dep_iata: v.dep_iata,
+      arr_iata: v.arr_iata,
+      scheduled_dep: at(v.scheduled_dep, v.dep_offset),
+      scheduled_arr: at(v.scheduled_arr, v.arr_offset),
+      actual_dep: at(v.actual_dep, v.dep_offset),
+      actual_arr: at(v.actual_arr, v.arr_offset),
+      status: v.status,
+      final: formData.get("final") === "on",
+      note: v.note,
+    },
+  });
+  if (error) return { status: "error" };
+  revalidatePath(`/${locale}/admin/flights`);
+  return { status: "saved" };
+}

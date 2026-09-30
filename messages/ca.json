@@ -527,7 +527,8 @@
       "stats": "Estadístiques",
       "airlines": "Aerolínies",
       "review": "Revisió",
-      "audit": "Registre"
+      "audit": "Registre",
+      "flights": "Vols"
     },
     "saved": "Desat.",
     "invalid": "Revisa els camps",
@@ -690,6 +691,37 @@
       "title": "Registre de canvis",
       "description": "Els últims 200 canvis: qui va canviar què, abans i després.",
       "system": "sistema"
+    },
+    "flights": {
+      "addTitle": "Registrar dades d'un vol",
+      "addDescription": "El que va passar realment amb un vol, segons el passatger o una font fiable. Si es marca com a definitiu, s'utilitza per a totes les reclamacions d'aquest vol i mai no es consulta l'API de pagament. Desar de nou el mateix número i data l'actualitza.",
+      "number": "Número de vol",
+      "date": "Data de sortida prevista",
+      "dateHint": "Data local a l'aeroport de sortida.",
+      "from": "Origen (IATA)",
+      "to": "Destinació (IATA)",
+      "scheduledDep": "Sortida prevista (local)",
+      "actualDep": "Sortida real (local)",
+      "depOffset": "Desfasament UTC de sortida",
+      "offsetHint": "p. ex. +02:00 per a Espanya a l'estiu, +01:00 a l'hivern.",
+      "status": "Estat",
+      "scheduledArr": "Arribada prevista (local)",
+      "actualArr": "Arribada real (local)",
+      "actualArrHint": "Quan es van obrir les portes, si se sap.",
+      "arrOffset": "Desfasament UTC d'arribada",
+      "note": "Nota (font, qui ho va informar)",
+      "final": "Definitiu: això és el que va passar (no cal consultar l'API)",
+      "listTitle": "Vols endarrerits i registrats a mà",
+      "col": {
+        "flight": "Vol",
+        "route": "Ruta",
+        "depDelay": "Retard de sortida",
+        "arrDelay": "Retard d'arribada",
+        "status": "Estat",
+        "candidate": "Classe de retard",
+        "data": "Dades",
+        "source": "Font"
+      }
     }
   }
 }

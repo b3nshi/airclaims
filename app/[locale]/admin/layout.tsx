@@ -12,6 +12,7 @@ export default async function AdminLayout({ params, children }: LayoutProps<"/[l
   const nav = [
     { href: "/admin", label: t("nav.stats") },
     { href: "/admin/airlines", label: t("nav.airlines") },
+    { href: "/admin/flights", label: t("nav.flights") },
     ...(isAdmin(user.roles) ? [{ href: "/admin/review", label: t("nav.review") }] : []),
     { href: "/admin/audit", label: t("nav.audit") },
   ];

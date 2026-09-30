@@ -527,7 +527,8 @@
       "stats": "Airline stats",
       "airlines": "Airlines",
       "review": "Review queue",
-      "audit": "Audit log"
+      "audit": "Audit log",
+      "flights": "Flights"
     },
     "saved": "Saved.",
     "invalid": "Check the fields",
@@ -690,6 +691,37 @@
       "title": "Audit log",
       "description": "The last 200 changes: who changed what, before and after.",
       "system": "system"
+    },
+    "flights": {
+      "addTitle": "Register flight data",
+      "addDescription": "What really happened to a flight, from the passenger or a reliable source. Marked final, it's used for every claim on that flight and never sent to the paid flight API. Saving the same flight number and date again updates it.",
+      "number": "Flight number",
+      "date": "Scheduled departure date",
+      "dateHint": "Local date at the departure airport.",
+      "from": "From (IATA)",
+      "to": "To (IATA)",
+      "scheduledDep": "Scheduled departure (local)",
+      "actualDep": "Actual departure (local)",
+      "depOffset": "Departure UTC offset",
+      "offsetHint": "e.g. +02:00 for Spain in summer, +01:00 in winter.",
+      "status": "Status",
+      "scheduledArr": "Scheduled arrival (local)",
+      "actualArr": "Actual arrival (local)",
+      "actualArrHint": "When the doors opened, if known.",
+      "arrOffset": "Arrival UTC offset",
+      "note": "Note (source, who reported it)",
+      "final": "Final: this is what happened (no API check needed)",
+      "listTitle": "Delayed and manually entered flights",
+      "col": {
+        "flight": "Flight",
+        "route": "Route",
+        "depDelay": "Departure delay",
+        "arrDelay": "Arrival delay",
+        "status": "Status",
+        "candidate": "Delay class",
+        "data": "Data",
+        "source": "Source"
+      }
     }
   }
 }
