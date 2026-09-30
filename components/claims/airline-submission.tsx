@@ -33,10 +33,30 @@ export async function AirlineSubmission({
 }) {
   const t = await getTranslations("Done");
   const airlineName = a.airline?.name ?? claim.flight_iata.slice(0, 2);
-
-  if (channel === "email") return <p className="text-sm">{t("emailBody", { airline: airlineName })}</p>;
-
   const supabase = await createClient();
+
+  // Curated per-airline tips (admin knowledge base), in the passenger's language.
+  const { data: tips } = a.airline
+    ? await supabase.rpc("airline_passenger_tips", { p_airline_id: a.airline.id, p_locale: locale })
+    : { data: [] as string[] };
+  const tipsBlock = tips && tips.length > 0 && (
+    <div className="space-y-1 rounded-lg bg-muted/40 p-3">
+      <h4 className="text-sm font-medium">{t("tipsTitle", { airline: airlineName })}</h4>
+      <ul className="list-disc space-y-1 pl-5 text-sm">
+        {tips.map((tip, i) => <li key={i}>{tip}</li>)}
+      </ul>
+    </div>
+  );
+
+  if (channel === "email") {
+    return (
+      <div className="space-y-3">
+        <p className="text-sm">{t("emailBody", { airline: airlineName })}</p>
+        {tipsBlock}
+      </div>
+    );
+  }
+
   const { data: webForm } = a.airline
     ? await supabase
         .from("airline_contacts")
@@ -85,6 +105,7 @@ export async function AirlineSubmission({
       ) : (
         <p className="text-sm">{t("unknownBody")}</p>
       )}
+      {tipsBlock}
       <div className="space-y-2">
         <div className="flex items-center justify-between gap-2">
           <h4 className="text-sm font-medium">{t("claimText")}</h4>

@@ -26,4 +26,6 @@ For template "offer_reply" (an answer to the airline's offer described in `offer
 - Restate the compensation claimed (per passenger and total) and any expenses, and ask for payment by bank transfer within 14 days, asking how the airline wants to receive the passenger's bank details.
 - Say that otherwise the passenger will refer the matter to the `enforcement_body`, and ask for the reply at the `reply_to` address.
 
+If `airline_notes` is present, it contains practical notes about this airline written by our team (for example what to put in the subject line). Follow them when they don't conflict with the rules above.
+
 Return a subject and the full body. Include the `reply_to` address in the body.

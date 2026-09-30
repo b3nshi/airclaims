@@ -8,7 +8,8 @@
     "signIn": "Entra",
     "profile": "El meu perfil",
     "signOut": "Surt",
-    "claims": "Les meves reclamacions"
+    "claims": "Les meves reclamacions",
+    "admin": "Administració"
   },
   "LocaleSwitcher": {
     "label": "Idioma"
@@ -347,7 +348,8 @@
     "docsPendingBody": "Afegeix la targeta d'embarcament i la confirmació de reserva quan puguis: reforcen la teva reclamació.",
     "addDocuments": "Afegeix documents",
     "backToClaims": "Torna a les meves reclamacions",
-    "toDashboard": "Ves a la teva reclamació"
+    "toDashboard": "Ves a la teva reclamació",
+    "tipsTitle": "Consells per a {airline}"
   },
   "Dashboard": {
     "back": "Les meves reclamacions",
@@ -516,5 +518,178 @@
     },
     "whatToDo": "Què cal fer",
     "prepareOfferReply": "Prepara una resposta demanant el pagament en diners"
+  },
+  "Admin": {
+    "title": "Administració",
+    "roleAdmin": "Rol: administrador",
+    "roleKb": "Rol: editor de coneixement",
+    "nav": {
+      "stats": "Estadístiques",
+      "airlines": "Aerolínies",
+      "review": "Revisió",
+      "audit": "Registre"
+    },
+    "saved": "Desat.",
+    "invalid": "Revisa els camps",
+    "error": "No s'ha pogut desar. Torna-ho a provar.",
+    "save": "Desa",
+    "yes": "Sí",
+    "no": "No",
+    "unknown": "Desconegut",
+    "stats": {
+      "title": "Estadístiques per aerolínia",
+      "description": "Resultats de les reclamacions gestionades aquí, per aerolínia. Els dies es compten des de l'enviament de la reclamació.",
+      "empty": "Encara no hi ha reclamacions ni coneixement.",
+      "avg": "mitjana",
+      "offerSplit": "crèdit {credit} · parcial {partial} · complet {full}",
+      "legend": "Resultat: guanyada / guanyada en part / perduda. El percentatge d'èxit només compta reclamacions resoltes. Primera resposta: mediana de dies fins a la primera resposta de l'aerolínia. Vençudes: enviades fa més d'un mes sense resposta.",
+      "col": {
+        "airline": "Aerolínia",
+        "claims": "Reclamacions",
+        "open": "Obertes",
+        "outcome": "Resultat",
+        "success": "Èxit",
+        "firstReply": "Primera resposta (dies)",
+        "overdue": "Vençudes",
+        "resolution": "Dies fins a resoldre",
+        "offers": "Ofertes",
+        "kb": "Coneixement actualitzat",
+        "verified": "Contactes verificats"
+      }
+    },
+    "airlines": {
+      "search": "Cerca per nom o codi",
+      "inactive": "inactiva",
+      "neverVerified": "mai",
+      "staleHint": "Es destaquen els contactes no verificats en els últims {days} dies.",
+      "col": {
+        "airline": "Aerolínia",
+        "codes": "Codis · país",
+        "contacts": "Contactes",
+        "verified": "Última verificació",
+        "kb": "Coneixement"
+      }
+    },
+    "airline": {
+      "title": "Aerolínia",
+      "name": "Nom",
+      "language": "Idioma de les reclamacions",
+      "languageHint": "Codi de dues lletres de l'idioma en què s'escriuen les reclamacions (p. ex. en, es).",
+      "website": "Web",
+      "euCarrier": "Companyia de la UE/EEE/CH (l'EU261 s'aplica als seus vols cap a la UE)",
+      "active": "Activa",
+      "notes": "Notes internes"
+    },
+    "knowledge": {
+      "title": "Coneixement",
+      "description": "Última actualització: {date}.",
+      "tips": "Consells per als passatgers",
+      "tipsHint": "Un consell per línia. Es mostren als passatgers al seu pas següent i al seu tauler, en el seu idioma (si falta, en anglès).",
+      "drafting": "Notes per a la redacció amb IA",
+      "draftingHint": "Notes pràctiques en anglès que s'afegeixen al prompt de redacció per a aquesta aerolínia (p. ex. què posar a l'assumpte). Continuen aplicant-se els controls habituals.",
+      "formNotes": "Com funciona la reclamació (intern)",
+      "formNotesHint": "Camps del formulari, si cal iniciar sessió, particularitats, què falta verificar.",
+      "statedDays": "Resposta declarada (dies)",
+      "typicalMin": "Resposta habitual des de",
+      "typicalMax": "fins a (dies)",
+      "maxMb": "Màx. adjunts (MB)",
+      "creditFirst": "Ofereix crèdit primer"
+    },
+    "contact": {
+      "title": "Contactes",
+      "description": "Com reclamen els passatgers a aquesta aerolínia. Les adreces de correu mai no es mostren als passatgers abans d'enviar un missatge.",
+      "purpose": "Finalitat",
+      "channel": "Canal",
+      "language": "Idioma",
+      "label": "Etiqueta",
+      "labelHint": "El que veuen els passatgers, p. ex. «Wizz Air – Claims & Compensation».",
+      "value": "Adreça o URL",
+      "valueHint": "Correu per al canal email, URL del formulari per als formularis web.",
+      "steps": "Passos per reclamar",
+      "stepsHint": "Un pas per línia, per idioma. Es mostren als passatgers en els formularis web.",
+      "notes": "Notes",
+      "markVerified": "Marca com a verificat avui",
+      "verifiedOn": "verificat: {date}",
+      "delete": "Elimina el contacte",
+      "add": "Afegeix un contacte"
+    },
+    "purposes": {
+      "compensation": "Compensació",
+      "expenses": "Despeses",
+      "refund": "Reemborsament",
+      "baggage": "Equipatge",
+      "general": "General",
+      "legal": "Legal"
+    },
+    "channels": {
+      "email": "Correu",
+      "web_form": "Formulari web",
+      "postal": "Correu postal",
+      "phone": "Telèfon"
+    },
+    "topics": {
+      "claim_process": "Procés de reclamació",
+      "payment_practice": "Forma de pagament",
+      "response_time": "Termini de resposta",
+      "rejection_pattern": "Motius de rebuig",
+      "punctuality": "Puntualitat",
+      "escalation": "Escalada",
+      "tip": "Consell",
+      "other": "Altres"
+    },
+    "reliability": {
+      "official": "Oficial (aerolínia)",
+      "enforcement_body": "Organisme supervisor",
+      "competitor": "Empresa de reclamacions",
+      "forum": "Fòrum",
+      "own_data": "Dades pròpies"
+    },
+    "insights": {
+      "title": "Dades",
+      "description": "Informació amb font sobre aquesta aerolínia, redactada amb les nostres paraules. Marca-la com a verificada quan la comprovis.",
+      "verified": "verificat",
+      "unverified": "sense verificar",
+      "verify": "Marca verificat",
+      "unverify": "Marca sense verificar",
+      "delete": "Elimina",
+      "add": "Afegeix una dada",
+      "topic": "Tema",
+      "reliability": "Tipus de font",
+      "observedOn": "Data",
+      "summary": "Resum",
+      "summaryHint": "Amb les nostres paraules; no enganxis text amb drets d'autor.",
+      "sourceName": "Font",
+      "sourceUrl": "URL de la font",
+      "verifiedCheck": "Ho he verificat"
+    },
+    "review": {
+      "title": "Cua de revisió",
+      "description": "Missatges i fets que necessiten una persona: correus sense reclamació, passatgers que ens escriuen, ofertes i peticions de documents.",
+      "showOpen": "Mostra oberts",
+      "showDone": "Mostra resolts",
+      "empty": "No hi ha res a revisar.",
+      "note": "Nota",
+      "claim": "Reclamació",
+      "from": "De",
+      "to": "Per a",
+      "body": "Mostra el missatge",
+      "link": "Vincula a la reclamació",
+      "alias": "Àlies de la reclamació",
+      "aliasHint": "El codi de 6 caràcters o l'adreça airclaims_… completa.",
+      "resolve": "Marca com a resolt",
+      "resolveNote": "Nota de resolució",
+      "kinds": {
+        "unmatched_email": "Correu sense reclamació",
+        "user_email": "Escriu el passatger",
+        "support_email": "Suport",
+        "email_needs_attention": "Requereix atenció",
+        "email_draft_failed": "Esborrany fallit"
+      }
+    },
+    "audit": {
+      "title": "Registre de canvis",
+      "description": "Els últims 200 canvis: qui va canviar què, abans i després.",
+      "system": "sistema"
+    }
   }
 }

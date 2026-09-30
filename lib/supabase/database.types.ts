@@ -232,6 +232,94 @@ export type ClaimEventRow = {
   created_at: string;
 };
 
+export type AirlineKnowledgeRow = {
+  airline_id: string;
+  passenger_tips: Json;
+  drafting_notes: string | null;
+  claim_form_notes: string | null;
+  attachments_max_mb: number | null;
+  stated_reply_days: number | null;
+  typical_reply_days_min: number | null;
+  typical_reply_days_max: number | null;
+  offers_credit_first: boolean | null;
+  updated_at: string;
+  updated_by: string | null;
+};
+
+export type InsightTopic =
+  | "claim_process" | "payment_practice" | "response_time" | "rejection_pattern" | "punctuality" | "escalation" | "tip" | "other";
+export type InsightReliability = "official" | "enforcement_body" | "competitor" | "forum" | "own_data";
+
+export type AirlineInsightRow = {
+  id: string;
+  airline_id: string;
+  topic: InsightTopic;
+  summary: string;
+  source_name: string;
+  source_url: string | null;
+  reliability: InsightReliability;
+  observed_on: string;
+  verified: boolean;
+  created_by: string | null;
+  created_at: string;
+};
+
+export type ReviewQueueRow = {
+  id: string;
+  kind: "unmatched_email" | "user_email" | "support_email" | "email_needs_attention" | "email_draft_failed";
+  email_id: string | null;
+  claim_id: string | null;
+  status: "open" | "done";
+  note: string | null;
+  created_at: string;
+  resolved_at: string | null;
+};
+
+export type AuditLogRow = {
+  id: number;
+  actor_id: string | null;
+  table_name: string;
+  row_id: string | null;
+  action: string;
+  before: Json | null;
+  after: Json | null;
+  created_at: string;
+};
+
+export type EmailRow = Omit<MyEmailRow, "from_address" | "to_addresses"> & {
+  from_address: string;
+  to_addresses: string[];
+  cc_addresses: string[];
+  message_id: string | null;
+  in_reply_to: string | null;
+};
+
+export type AirlineStatsRow = {
+  airline_id: string;
+  iata: string | null;
+  name: string;
+  claims_total: number;
+  claims_open: number;
+  submitted: number;
+  won: number;
+  partially_won: number;
+  lost: number;
+  withdrawn: number;
+  success_rate_pct: number | null;
+  replies: number;
+  avg_days_first_reply: number | null;
+  median_days_first_reply: number | null;
+  overdue_replies: number;
+  avg_days_to_resolution: number | null;
+  offers_total: number;
+  offers_credit: number;
+  offers_money_partial: number;
+  offers_money_full: number;
+  flights_3h_plus: number;
+  knowledge_updated_at: string | null;
+  contacts_last_verified: string | null;
+};
+
 export type Database = {
   public: {
     Tables: {
@@ -241,8 +329,19 @@ export type Database = {
         Partial<Pick<ProfileRow, "full_name" | "preferred_locale" | "personal_email" | "marketing_consent">>
       >;
       airports: Table<AirportRow, never, never>;
-      airlines: Table<AirlineRow, never, never>;
-      airline_contacts: Table<AirlineContactRow, never, never>;
+      airlines: Table<AirlineRow, Partial<AirlineRow> & Pick<AirlineRow, "name">>;
+      airline_contacts: Table<
+        AirlineContactRow,
+        Omit<AirlineContactRow, "id" | "verified_at" | "submission_steps" | "language" | "notes"> & Partial<AirlineContactRow>
+      >;
+      airline_knowledge: Table<AirlineKnowledgeRow, Partial<AirlineKnowledgeRow> & Pick<AirlineKnowledgeRow, "airline_id">>;
+      airline_insights: Table<
+        AirlineInsightRow,
+        Omit<AirlineInsightRow, "id" | "created_at" | "observed_on" | "verified" | "created_by"> & Partial<AirlineInsightRow>
+      >;
+      review_queue: Table<ReviewQueueRow, never>;
+      admin_audit_log: Table<AuditLogRow, never, never>;
+      emails: Table<EmailRow, never, never>;
       flights: Table<FlightRow, never, never>;
       flight_risk_flags: Table<FlightRiskFlagRow, never, never>;
       claims: Table<
@@ -279,6 +378,10 @@ export type Database = {
       withdraw_claim: { Args: { p_claim_id: string }; Returns: undefined };
       update_email_draft: { Args: { p_email_id: string; p_subject: string; p_body: string }; Returns: undefined };
       discard_email_draft: { Args: { p_email_id: string }; Returns: undefined };
+      airline_passenger_tips: { Args: { p_airline_id: string; p_locale: string }; Returns: string[] };
+      admin_airline_stats: { Args: Record<string, never>; Returns: AirlineStatsRow[] };
+      admin_resolve_review: { Args: { p_id: string; p_note: string | null }; Returns: undefined };
+      admin_link_email_to_claim: { Args: { p_email_id: string; p_alias_code: string }; Returns: string };
       request_flight_check: { Args: { p_flight_iata: string; p_flight_date: string }; Returns: Json };
       airline_claim_channels: {
         Args: { p_airline_id: string };

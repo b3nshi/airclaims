@@ -8,7 +8,8 @@
     "signIn": "Entrar",
     "profile": "Mi perfil",
     "signOut": "Salir",
-    "claims": "Mis reclamaciones"
+    "claims": "Mis reclamaciones",
+    "admin": "Administración"
   },
   "LocaleSwitcher": {
     "label": "Idioma"
@@ -347,7 +348,8 @@
     "docsPendingBody": "Añade la tarjeta de embarque y la confirmación de reserva cuando puedas: refuerzan tu reclamación.",
     "addDocuments": "Añadir documentos",
     "backToClaims": "Volver a mis reclamaciones",
-    "toDashboard": "Ir a tu reclamación"
+    "toDashboard": "Ir a tu reclamación",
+    "tipsTitle": "Consejos para {airline}"
   },
   "Dashboard": {
     "back": "Mis reclamaciones",
@@ -516,5 +518,178 @@
     },
     "whatToDo": "Qué hacer",
     "prepareOfferReply": "Preparar una respuesta pidiendo el pago en dinero"
+  },
+  "Admin": {
+    "title": "Administración",
+    "roleAdmin": "Rol: administrador",
+    "roleKb": "Rol: editor de conocimiento",
+    "nav": {
+      "stats": "Estadísticas",
+      "airlines": "Aerolíneas",
+      "review": "Revisión",
+      "audit": "Registro"
+    },
+    "saved": "Guardado.",
+    "invalid": "Revisa los campos",
+    "error": "No se ha podido guardar. Inténtalo de nuevo.",
+    "save": "Guardar",
+    "yes": "Sí",
+    "no": "No",
+    "unknown": "Desconocido",
+    "stats": {
+      "title": "Estadísticas por aerolínea",
+      "description": "Resultados de las reclamaciones gestionadas aquí, por aerolínea. Los días se cuentan desde el envío de la reclamación.",
+      "empty": "Aún no hay reclamaciones ni conocimiento.",
+      "avg": "media",
+      "offerSplit": "crédito {credit} · parcial {partial} · completo {full}",
+      "legend": "Resultado: ganada / ganada en parte / perdida. El porcentaje de éxito solo cuenta reclamaciones resueltas. Primera respuesta: mediana de días hasta la primera respuesta de la aerolínea. Vencidas: enviadas hace más de un mes sin respuesta.",
+      "col": {
+        "airline": "Aerolínea",
+        "claims": "Reclamaciones",
+        "open": "Abiertas",
+        "outcome": "Resultado",
+        "success": "Éxito",
+        "firstReply": "Primera respuesta (días)",
+        "overdue": "Vencidas",
+        "resolution": "Días hasta resolver",
+        "offers": "Ofertas",
+        "kb": "Conocimiento actualizado",
+        "verified": "Contactos verificados"
+      }
+    },
+    "airlines": {
+      "search": "Buscar por nombre o código",
+      "inactive": "inactiva",
+      "neverVerified": "nunca",
+      "staleHint": "Se destacan los contactos no verificados en los últimos {days} días.",
+      "col": {
+        "airline": "Aerolínea",
+        "codes": "Códigos · país",
+        "contacts": "Contactos",
+        "verified": "Última verificación",
+        "kb": "Conocimiento"
+      }
+    },
+    "airline": {
+      "title": "Aerolínea",
+      "name": "Nombre",
+      "language": "Idioma de las reclamaciones",
+      "languageHint": "Código de dos letras del idioma en que se escriben las reclamaciones (p. ej. en, es).",
+      "website": "Web",
+      "euCarrier": "Compañía de la UE/EEE/CH (el EU261 se aplica a sus vuelos hacia la UE)",
+      "active": "Activa",
+      "notes": "Notas internas"
+    },
+    "knowledge": {
+      "title": "Conocimiento",
+      "description": "Última actualización: {date}.",
+      "tips": "Consejos para pasajeros",
+      "tipsHint": "Un consejo por línea. Se muestran a los pasajeros en su siguiente paso y en su panel, en su idioma (si falta, en inglés).",
+      "drafting": "Notas para la redacción con IA",
+      "draftingHint": "Notas prácticas en inglés que se añaden al prompt de redacción para esta aerolínea (p. ej. qué poner en el asunto). Se siguen aplicando los controles habituales.",
+      "formNotes": "Cómo funciona la reclamación (interno)",
+      "formNotesHint": "Campos del formulario, si pide iniciar sesión, particularidades, qué falta verificar.",
+      "statedDays": "Respuesta declarada (días)",
+      "typicalMin": "Respuesta habitual desde",
+      "typicalMax": "hasta (días)",
+      "maxMb": "Máx. adjuntos (MB)",
+      "creditFirst": "Ofrece crédito primero"
+    },
+    "contact": {
+      "title": "Contactos",
+      "description": "Cómo reclaman los pasajeros a esta aerolínea. Las direcciones de correo nunca se muestran a los pasajeros antes de enviar un mensaje.",
+      "purpose": "Finalidad",
+      "channel": "Canal",
+      "language": "Idioma",
+      "label": "Etiqueta",
+      "labelHint": "Lo que ven los pasajeros, p. ej. «Wizz Air – Claims & Compensation».",
+      "value": "Dirección o URL",
+      "valueHint": "Correo para el canal email, URL del formulario para formularios web.",
+      "steps": "Pasos para reclamar",
+      "stepsHint": "Un paso por línea, por idioma. Se muestran a los pasajeros en los formularios web.",
+      "notes": "Notas",
+      "markVerified": "Marcar como verificado hoy",
+      "verifiedOn": "verificado: {date}",
+      "delete": "Eliminar contacto",
+      "add": "Añadir contacto"
+    },
+    "purposes": {
+      "compensation": "Compensación",
+      "expenses": "Gastos",
+      "refund": "Reembolso",
+      "baggage": "Equipaje",
+      "general": "General",
+      "legal": "Legal"
+    },
+    "channels": {
+      "email": "Correo",
+      "web_form": "Formulario web",
+      "postal": "Correo postal",
+      "phone": "Teléfono"
+    },
+    "topics": {
+      "claim_process": "Proceso de reclamación",
+      "payment_practice": "Forma de pago",
+      "response_time": "Plazo de respuesta",
+      "rejection_pattern": "Motivos de rechazo",
+      "punctuality": "Puntualidad",
+      "escalation": "Escalado",
+      "tip": "Consejo",
+      "other": "Otro"
+    },
+    "reliability": {
+      "official": "Oficial (aerolínea)",
+      "enforcement_body": "Organismo supervisor",
+      "competitor": "Empresa de reclamaciones",
+      "forum": "Foro",
+      "own_data": "Datos propios"
+    },
+    "insights": {
+      "title": "Datos",
+      "description": "Información con fuente sobre esta aerolínea, redactada con nuestras palabras. Márcala como verificada cuando la compruebes.",
+      "verified": "verificado",
+      "unverified": "sin verificar",
+      "verify": "Marcar verificado",
+      "unverify": "Marcar sin verificar",
+      "delete": "Eliminar",
+      "add": "Añadir dato",
+      "topic": "Tema",
+      "reliability": "Tipo de fuente",
+      "observedOn": "Fecha",
+      "summary": "Resumen",
+      "summaryHint": "Con nuestras palabras; no pegues texto con derechos de autor.",
+      "sourceName": "Fuente",
+      "sourceUrl": "URL de la fuente",
+      "verifiedCheck": "Lo he verificado"
+    },
+    "review": {
+      "title": "Cola de revisión",
+      "description": "Mensajes y sucesos que necesitan a una persona: correos sin reclamación, pasajeros que nos escriben, ofertas y peticiones de documentos.",
+      "showOpen": "Ver abiertos",
+      "showDone": "Ver resueltos",
+      "empty": "No hay nada que revisar.",
+      "note": "Nota",
+      "claim": "Reclamación",
+      "from": "De",
+      "to": "Para",
+      "body": "Ver mensaje",
+      "link": "Vincular a la reclamación",
+      "alias": "Alias de la reclamación",
+      "aliasHint": "El código de 6 caracteres o la dirección airclaims_… completa.",
+      "resolve": "Marcar como resuelto",
+      "resolveNote": "Nota de resolución",
+      "kinds": {
+        "unmatched_email": "Correo sin reclamación",
+        "user_email": "Escribe el pasajero",
+        "support_email": "Soporte",
+        "email_needs_attention": "Requiere atención",
+        "email_draft_failed": "Borrador fallido"
+      }
+    },
+    "audit": {
+      "title": "Registro de cambios",
+      "description": "Los últimos 200 cambios: quién cambió qué, antes y después.",
+      "system": "sistema"
+    }
   }
 }

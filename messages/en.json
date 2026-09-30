@@ -8,7 +8,8 @@
     "signIn": "Sign in",
     "profile": "My profile",
     "signOut": "Sign out",
-    "claims": "My claims"
+    "claims": "My claims",
+    "admin": "Admin"
   },
   "LocaleSwitcher": {
     "label": "Language"
@@ -347,7 +348,8 @@
     "docsPendingBody": "Add your boarding pass and booking confirmation when you can: they make your claim stronger.",
     "addDocuments": "Add documents",
     "backToClaims": "Back to my claims",
-    "toDashboard": "Go to your claim"
+    "toDashboard": "Go to your claim",
+    "tipsTitle": "Tips for {airline}"
   },
   "Dashboard": {
     "back": "My claims",
@@ -516,5 +518,178 @@
     },
     "whatToDo": "What to do",
     "prepareOfferReply": "Prepare a reply asking to be paid in money"
+  },
+  "Admin": {
+    "title": "Admin",
+    "roleAdmin": "Role: admin",
+    "roleKb": "Role: knowledge editor",
+    "nav": {
+      "stats": "Airline stats",
+      "airlines": "Airlines",
+      "review": "Review queue",
+      "audit": "Audit log"
+    },
+    "saved": "Saved.",
+    "invalid": "Check the fields",
+    "error": "Couldn't save. Try again.",
+    "save": "Save",
+    "yes": "Yes",
+    "no": "No",
+    "unknown": "Unknown",
+    "stats": {
+      "title": "Airline stats",
+      "description": "Outcomes of claims handled here, per airline. Days are counted from the day the claim was sent.",
+      "empty": "No claims or knowledge yet.",
+      "avg": "avg",
+      "offerSplit": "credit {credit} · partial {partial} · full {full}",
+      "legend": "Outcome: won / partly won / lost. Success rate counts resolved claims only. First reply: median days until the airline's first answer. Overdue: sent more than a month ago without an answer.",
+      "col": {
+        "airline": "Airline",
+        "claims": "Claims",
+        "open": "Open",
+        "outcome": "Outcome",
+        "success": "Success",
+        "firstReply": "First reply (days)",
+        "overdue": "Overdue",
+        "resolution": "Days to resolve",
+        "offers": "Offers",
+        "kb": "Knowledge updated",
+        "verified": "Contacts verified"
+      }
+    },
+    "airlines": {
+      "search": "Search by name or code",
+      "inactive": "inactive",
+      "neverVerified": "never",
+      "staleHint": "Contacts not verified in the last {days} days are highlighted.",
+      "col": {
+        "airline": "Airline",
+        "codes": "Codes · country",
+        "contacts": "Contacts",
+        "verified": "Last verified",
+        "kb": "Knowledge"
+      }
+    },
+    "airline": {
+      "title": "Airline",
+      "name": "Name",
+      "language": "Claim language",
+      "languageHint": "Two-letter code of the language claims are written in (e.g. en, es).",
+      "website": "Website",
+      "euCarrier": "EU/EEA/CH carrier (EU261 applies to its flights into the EU)",
+      "active": "Active",
+      "notes": "Internal notes"
+    },
+    "knowledge": {
+      "title": "Knowledge",
+      "description": "Last updated: {date}.",
+      "tips": "Tips for passengers",
+      "tipsHint": "One tip per line. Shown to passengers on their next-step screen and dashboard, in their language (falls back to English).",
+      "drafting": "Notes for the AI drafting",
+      "draftingHint": "Practical notes in English added to the drafting prompt for this airline (e.g. what to put in the subject). The usual guardrails still apply.",
+      "formNotes": "How the claim process works (internal)",
+      "formNotesHint": "Form fields, login needed, quirks, anything still to verify.",
+      "statedDays": "Stated reply (days)",
+      "typicalMin": "Typical reply from",
+      "typicalMax": "to (days)",
+      "maxMb": "Max attachments (MB)",
+      "creditFirst": "Offers credit first"
+    },
+    "contact": {
+      "title": "Contacts",
+      "description": "How passengers claim with this airline. Email addresses are never shown to passengers before a message is sent.",
+      "purpose": "Purpose",
+      "channel": "Channel",
+      "language": "Language",
+      "label": "Label",
+      "labelHint": "What passengers see, e.g. \"Wizz Air – Claims & Compensation\".",
+      "value": "Address or URL",
+      "valueHint": "Email for the email channel, form URL for web forms.",
+      "steps": "Submission steps",
+      "stepsHint": "One step per line, per language. Shown to passengers for web forms.",
+      "notes": "Notes",
+      "markVerified": "Mark as verified today",
+      "verifiedOn": "verified: {date}",
+      "delete": "Delete contact",
+      "add": "Add contact"
+    },
+    "purposes": {
+      "compensation": "Compensation",
+      "expenses": "Expenses",
+      "refund": "Refund",
+      "baggage": "Baggage",
+      "general": "General",
+      "legal": "Legal"
+    },
+    "channels": {
+      "email": "Email",
+      "web_form": "Web form",
+      "postal": "Postal",
+      "phone": "Phone"
+    },
+    "topics": {
+      "claim_process": "Claim process",
+      "payment_practice": "Payment practice",
+      "response_time": "Response time",
+      "rejection_pattern": "Rejection pattern",
+      "punctuality": "Punctuality",
+      "escalation": "Escalation",
+      "tip": "Tip",
+      "other": "Other"
+    },
+    "reliability": {
+      "official": "Official (airline)",
+      "enforcement_body": "Enforcement body",
+      "competitor": "Claim company",
+      "forum": "Forum",
+      "own_data": "Our data"
+    },
+    "insights": {
+      "title": "Insights",
+      "description": "Sourced facts about this airline, written in our own words. Mark them verified once checked.",
+      "verified": "verified",
+      "unverified": "not verified",
+      "verify": "Mark verified",
+      "unverify": "Mark unverified",
+      "delete": "Delete",
+      "add": "Add insight",
+      "topic": "Topic",
+      "reliability": "Source type",
+      "observedOn": "Observed on",
+      "summary": "Summary",
+      "summaryHint": "In our own words; don't paste copyrighted text.",
+      "sourceName": "Source",
+      "sourceUrl": "Source URL",
+      "verifiedCheck": "I have verified this"
+    },
+    "review": {
+      "title": "Review queue",
+      "description": "Messages and events that need a person: unmatched mail, passengers writing to us, offers and document requests.",
+      "showOpen": "Show open",
+      "showDone": "Show resolved",
+      "empty": "Nothing to review.",
+      "note": "Note",
+      "claim": "Claim",
+      "from": "From",
+      "to": "To",
+      "body": "Show message",
+      "link": "Link to claim",
+      "alias": "Claim alias",
+      "aliasHint": "The 6-character code or the full airclaims_… address.",
+      "resolve": "Mark as done",
+      "resolveNote": "Resolution note",
+      "kinds": {
+        "unmatched_email": "Unmatched email",
+        "user_email": "Passenger wrote",
+        "support_email": "Support",
+        "email_needs_attention": "Needs attention",
+        "email_draft_failed": "Draft failed"
+      }
+    },
+    "audit": {
+      "title": "Audit log",
+      "description": "The last 200 changes: who changed what, before and after.",
+      "system": "system"
+    }
   }
 }

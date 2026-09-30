@@ -1,6 +1,6 @@
 import { getLocale, getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
-import { getCurrentUser } from "@/lib/supabase/server";
+import { canEditKnowledge, getCurrentUser } from "@/lib/supabase/server";
 import { signOut } from "@/app/[locale]/login/actions";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { LocaleSwitcher } from "@/components/locale-switcher";
@@ -17,6 +17,11 @@ export async function SiteHeader() {
         <LocaleSwitcher />
         {user ? (
           <>
+            {canEditKnowledge(user.roles) && (
+              <Link href="/admin" className={buttonVariants({ variant: "ghost", size: "sm" })}>
+                {t("admin")}
+              </Link>
+            )}
             <Link href="/claims" className={buttonVariants({ variant: "ghost", size: "sm" })}>
               {t("claims")}
             </Link>

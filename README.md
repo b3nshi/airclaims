@@ -50,6 +50,7 @@ Checks: `pnpm test` (eligibility, legal texts, messages, signatures), `pnpm type
 | `0009` | Draft edit/discard RPCs for users; `verify_webhook_signature` (n8n verifies webhooks via Supabase, secret in Vault) |
 | `0010` | Inbound email: `ingest_inbound_email`, `attach_inbound_files`, `apply_inbound_analysis`, `review_queue` for humans |
 | `0011` | `offer_reply` drafts; shared recipient rule (curated contact, or the offer's sender only on the airline's own domain) |
+| `0012` | Admin: roles (`kb_editor`, `admin`), `airline_knowledge`, `airline_insights`, `admin_audit_log`, review-queue actions, `admin_airline_stats`, passenger tips, per-airline drafting notes; Wizz knowledge seed |
 
 ## Claim wizard (M2)
 
@@ -73,6 +74,29 @@ dashboard for signed claims (drafts go back to the wizard): status, recommended 
 **Approve & send** (`approve_email` RPC, two-step confirm showing the recipient label), documents
 (opened via `/api/documents/{id}` → 60 s signed URL), expenses, timeline (`claim_events`) and
 withdraw. Email bodies are always shown as plain text; inbound HTML is never rendered.
+
+## Admin area
+
+`/[locale]/admin`, visible in the header for users with a role. Roles live in the user's
+`app_metadata` (only the service role can set it) and are enforced by RLS, not just the UI:
+
+| Role | Can |
+|---|---|
+| `kb_editor` | Airline stats; edit airlines, contacts (incl. curated emails), per-locale submission steps, knowledge (passenger tips, AI drafting notes, form facts, reply times), sourced insights; knowledge audit log |
+| `admin` | All of the above, plus the review queue (unmatched / support / passenger emails, offers, document requests: link to a claim, resolve) and the full audit log |
+
+Grant a role in the Supabase SQL editor; it applies from the user's next sign-in:
+
+```sql
+update auth.users
+set raw_app_meta_data = raw_app_meta_data || '{"roles": ["admin"]}'   -- or ["kb_editor"]
+where email = 'you@example.com';
+```
+
+Airline knowledge: tips are shown to passengers on the next-step screen and dashboard (their
+language, falling back to English); drafting notes are added to the AI drafting prompt for that
+airline. Claim templates themselves stay in code (tested, with guardrails). Every change to
+airline data and every review decision is recorded in `admin_audit_log`.
 
 ## Deploy (Vercel)
 
