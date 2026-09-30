@@ -8,6 +8,46 @@ import { createClient } from "@/lib/supabase/server";
 import { CopyButton } from "./copy-button";
 import { SubmissionForm } from "./submission-form";
 
+/** Claim text for this claim (compensation, expenses, or both in one). */
+export function claimTextFor(claim: ClaimRow, a: ClaimAssessment, purpose: "both" | "compensation" | "expenses") {
+  return buildClaimText({
+    airlineLanguage: a.airline?.preferred_language ?? "en",
+    airlineName: a.airline?.name ?? claim.flight_iata.slice(0, 2),
+    flight: claim.flight_iata,
+    flightDate: claim.flight_date,
+    departure: a.labels.departure,
+    arrival: a.labels.arrival,
+    finalDestination: a.labels.finalDestination,
+    bookingReference: claim.booking_reference,
+    disruption: claim.disruption,
+    arrivalDelayMinutes: claim.reported_arrival_delay_minutes,
+    arrivalDelayEstimated: claim.arrival_time_estimated,
+    cancellationNoticeDays: claim.cancellation_notice_days,
+    perPassengerEur: a.eligibility.perPassengerEur,
+    totalEur: a.eligibility.totalEur,
+    passengers: a.paidPassengers.map((p) => p.full_name),
+    expenses: a.expenses.map((x) => ({ category: x.category, amount: Number(x.amount), currency: x.currency })),
+    staffInstructions: claim.airline_instructions,
+    aliasEmail: aliasEmail(claim.alias_code),
+    departsSpain: a.departsSpain,
+    purpose,
+  });
+}
+
+/** The airline's web-form contact for a purpose (compensation / expenses), if curated. */
+export async function webFormContact(airlineId: string | null, purpose: "compensation" | "expenses") {
+  if (!airlineId) return null;
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("airline_contacts")
+    .select("value, label, submission_steps")
+    .eq("airline_id", airlineId)
+    .eq("purpose", purpose)
+    .eq("channel", "web_form")
+    .maybeSingle();
+  return data;
+}
+
 /** The airline's preferred compensation channel (curated emails stay hidden). */
 export async function airlineChannel(airlineId: string | null): Promise<ContactChannel | null> {
   if (!airlineId) return null;
@@ -57,50 +97,27 @@ export async function AirlineSubmission({
     );
   }
 
-  const { data: webForm } = a.airline
-    ? await supabase
-        .from("airline_contacts")
-        .select("value, submission_steps")
-        .eq("airline_id", a.airline.id)
-        .eq("purpose", "compensation")
-        .eq("channel", "web_form")
-        .maybeSingle()
-    : { data: null };
+  const [webForm, expensesForm] = await Promise.all([
+    webFormContact(a.airline?.id ?? null, "compensation"),
+    webFormContact(a.airline?.id ?? null, "expenses"),
+  ]);
   const stepsByLocale = (webForm?.submission_steps ?? {}) as Record<string, string[]>;
   const steps = stepsByLocale[locale] ?? stepsByLocale.en ?? [];
-
-  const claimText = buildClaimText({
-    airlineLanguage: a.airline?.preferred_language ?? "en",
-    airlineName,
-    flight: claim.flight_iata,
-    flightDate: claim.flight_date,
-    departure: a.labels.departure,
-    arrival: a.labels.arrival,
-    finalDestination: a.labels.finalDestination,
-    bookingReference: claim.booking_reference,
-    disruption: claim.disruption,
-    arrivalDelayMinutes: claim.reported_arrival_delay_minutes,
-    cancellationNoticeDays: claim.cancellation_notice_days,
-    perPassengerEur: a.eligibility.perPassengerEur,
-    totalEur: a.eligibility.totalEur,
-    passengers: a.paidPassengers.map((p) => p.full_name),
-    expenses: a.expenses.map((x) => ({ category: x.category, amount: Number(x.amount), currency: x.currency })),
-    staffInstructions: claim.airline_instructions,
-    aliasEmail: aliasEmail(claim.alias_code),
-    departsSpain: a.departsSpain,
-  });
+  // Airlines with a separate expenses form get a compensation-only text here.
+  const claimText = claimTextFor(claim, a, expensesForm ? "compensation" : "both");
 
   return (
     <div className="space-y-4">
       {channel === "web_form" && webForm ? (
         <>
           <p className="text-sm">{t("webFormIntro", { airline: airlineName })}</p>
+          {/* The steps refer to this button ("above"), so it comes first. */}
+          <a href={webForm.value} target="_blank" rel="noopener noreferrer" className={buttonVariants()}>
+            {t("openForm", { airline: airlineName })}
+          </a>
           <ol className="list-decimal space-y-1 pl-5 text-sm">
             {steps.map((s, i) => <li key={i}>{s}</li>)}
           </ol>
-          <a href={webForm.value} target="_blank" rel="noopener noreferrer" className={buttonVariants({ variant: "outline" })}>
-            {t("openForm", { airline: airlineName })}
-          </a>
         </>
       ) : (
         <p className="text-sm">{t("unknownBody")}</p>

@@ -107,3 +107,16 @@ export async function recordSubmission(locale: string, claimId: string, _prev: F
   revalidatePath(`/${locale}/claims/${claimId}`, "layout");
   return redirect({ href: `/claims/${claimId}`, locale });
 }
+
+/** The passenger submitted the airline's separate expenses claim (e.g. Wizz). */
+export async function recordExpensesSubmission(locale: string, claimId: string, _prev: FormState, formData: FormData): Promise<FormState> {
+  if (!(await getCurrentUser())) return redirect({ href: "/login", locale });
+  await getOwnClaim(claimId);
+  const reference = String(formData.get("reference") ?? "").trim();
+  if (reference.length > 100) return { status: "invalid", fieldErrors: { reference: true } };
+  const supabase = await createClient();
+  const { error } = await supabase.rpc("record_expenses_submission", { p_claim_id: claimId, p_reference: reference || null });
+  if (error) return { status: "error" };
+  revalidatePath(`/${locale}/claims/${claimId}`, "layout");
+  return { status: "saved" };
+}

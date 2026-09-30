@@ -56,7 +56,7 @@
         300
       ],
       "parameters": {
-        "jsCode": "// Forward Email posts mailparser's JSON (https://forwardemail.net/faq#do-you-support-webhooks):\n// addresses as {value:[{address,name}]}, attachments with content {type:'Buffer', data:[bytes]}.\nconst body = $('Webhook').first().json.body || {};\nconst addresses = (field) =>\n  [].concat(field || []).flatMap((f) => (f && f.value) || []).map((v) => String(v.address || '').toLowerCase()).filter(Boolean);\n\n// Plain text for storage and for the model; HTML is kept as-is but never rendered.\nconst htmlToText = (html) => String(html || '')\n  .replace(/<(script|style|head)[\\s\\S]*?<\\/\\1>/gi, '')\n  .replace(/<br\\s*\\/?>/gi, '\\n').replace(/<\\/(p|div|li|tr|h[1-6])>/gi, '\\n')\n  .replace(/<[^>]+>/g, '')\n  .replace(/&nbsp;/gi, ' ').replace(/&amp;/gi, '&').replace(/&lt;/gi, '<').replace(/&gt;/gi, '>').replace(/&quot;/gi, '\"')\n  .replace(/[ \\t]+\\n/g, '\\n').replace(/\\n{3,}/g, '\\n\\n').trim();\n\nconst ALLOWED = ['application/pdf', 'image/jpeg', 'image/png', 'image/webp', 'image/heic'];\nconst MAX_BYTES = 10 * 1024 * 1024;\nconst attachments = (body.attachments || [])\n  .map((a, index) => ({ index, filename: String(a.filename || `attachment-${index + 1}`).slice(0, 120),\n                        mime: String(a.contentType || '').toLowerCase(), size: a.size || 0 }))\n  .filter((a) => ALLOWED.includes(a.mime) && a.size <= MAX_BYTES)\n  .slice(0, 10);\n\nconst from = ((body.from && body.from.value) || [])[0] || {};\nconst text = (body.text && String(body.text).trim()) || htmlToText(body.html);\nreturn [{\n  json: {\n    email: {\n      message_id: body.messageId || null,\n      from_address: String(from.address || '').toLowerCase(),\n      from_name: from.name || null,\n      to_addresses: addresses(body.to),\n      cc_addresses: addresses(body.cc),\n      recipients: [].concat(body.recipients || [], (body.session && body.session.recipient) || []).map((r) => String(r).toLowerCase()),\n      subject: body.subject || '',\n      body_text: text,\n      body_html: typeof body.html === 'string' ? body.html : null,\n      in_reply_to: body.inReplyTo || null,\n      received_at: body.date || new Date().toISOString(),\n    },\n    attachments,\n  },\n}];\n"
+        "jsCode": "// Forward Email posts mailparser's JSON (https://forwardemail.net/faq#do-you-support-webhooks):\n// addresses as {value:[{address,name}]}, attachments with content {type:'Buffer', data:[bytes]}.\nconst body = $('Webhook').first().json.body || {};\nconst addresses = (field) =>\n  [].concat(field || []).flatMap((f) => (f && f.value) || []).map((v) => String(v.address || '').toLowerCase()).filter(Boolean);\n\n// Plain text for storage and for the model; HTML is kept as-is but never rendered.\nconst htmlToText = (html) => String(html || '')\n  .replace(/<(script|style|head)[\\s\\S]*?<\\/\\1>/gi, '')\n  .replace(/<br\\s*\\/?>/gi, '\\n').replace(/<\\/(p|div|li|tr|h[1-6])>/gi, '\\n')\n  .replace(/<[^>]+>/g, '')\n  .replace(/&nbsp;/gi, ' ').replace(/&amp;/gi, '&').replace(/&lt;/gi, '<').replace(/&gt;/gi, '>').replace(/&quot;/gi, '\"')\n  .replace(/[ \\t]+\\n/g, '\\n').replace(/\\n{3,}/g, '\\n\\n').trim();\n\nconst ALLOWED = ['application/pdf', 'image/jpeg', 'image/png', 'image/webp', 'image/heic'];\nconst MAX_BYTES = 10 * 1024 * 1024;\nconst attachments = (body.attachments || [])\n  .map((a, index) => ({ index, filename: String(a.filename || `attachment-${index + 1}`).slice(0, 120),\n                        mime: String(a.contentType || '').toLowerCase(), size: a.size || 0 }))\n  .filter((a) => ALLOWED.includes(a.mime) && a.size <= MAX_BYTES)\n  .slice(0, 10);\n\nconst from = ((body.from && body.from.value) || [])[0] || {};\nlet text = (body.text && String(body.text).trim()) || htmlToText(body.html);\n\n// \"Forward as attachment\": the original email arrives as a message/rfc822 attachment.\nconst attachedEmails = (body.attachments || []).filter((a) => /message\\/rfc822/i.test(a.contentType || '') && a.content && a.content.data);\nfor (const a of attachedEmails.slice(0, 3)) {\n  text += '\\n\\n--- Attached message ---\\n' + Buffer.from(a.content.data).toString('utf8').slice(0, 50000);\n}\n\n// Forwarded by the passenger? (Gmail, Outlook, Apple Mail, in several languages.) SQL only trusts it\n// when the sender is the passenger and their mail authenticated.\nconst subject = String(body.subject || '');\nconst forwardHint = /^\\s*(fwd?|rv|tr|wg|enc|i|doorst)\\s*:/i.test(subject)\n  || /(-{3,}\\s*(forwarded message|mensaje reenviado|missatge reenviat|message transféré|weitergeleitete nachricht)|begin forwarded message|^\\s*(from|de|von)\\s*:.*\\n\\s*(sent|date|enviado|fecha|enviat|data|gesendet)\\s*:)/im.test(text)\n  || attachedEmails.length > 0;\n\n// Forward Email passes mailauth's results (dmarc / spf / dkim).\nconst result = (x) => String((x && ((x.status && x.status.result) || x.result)) || '').toLowerCase();\nconst dkimPass = ((body.dkim && body.dkim.results) || []).some((r) => result(r) === 'pass');\nconst authPass = result(body.dmarc) === 'pass' || (result(body.spf) === 'pass' && dkimPass) || result(body.spf) === 'pass';\n\n// A mail provider asking to confirm a forwarding address (the passenger needs the code/link).\nconst fromAddress = String(from.address || '').toLowerCase();\nconst verificationHint = /forwarding-noreply@google\\.com$/.test(fromAddress)\n  || /(forwarding confirmation|confirmación de reenvío|confirmació de reenviament|confirm.*forward)/i.test(subject);\nreturn [{\n  json: {\n    email: {\n      message_id: body.messageId || null,\n      from_address: String(from.address || '').toLowerCase(),\n      from_name: from.name || null,\n      to_addresses: addresses(body.to),\n      cc_addresses: addresses(body.cc),\n      recipients: [].concat(body.recipients || [], (body.session && body.session.recipient) || []).map((r) => String(r).toLowerCase()),\n      subject: body.subject || '',\n      body_text: text,\n      body_html: typeof body.html === 'string' ? body.html : null,\n      in_reply_to: body.inReplyTo || null,\n      received_at: body.date || new Date().toISOString(),\n      forward_hint: forwardHint,\n      auth_pass: authPass,\n      verification_hint: verificationHint,\n    },\n    attachments,\n  },\n}];\n"
       }
     },
     {
@@ -586,6 +586,38 @@
           "name": "AirClaims Supabase (service role)"
         }
       }
+    },
+    {
+      "id": "8fdba352-a78c-504a-b6da-86ddfe16daac",
+      "name": "Verification?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        1200,
+        620
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose"
+          },
+          "conditions": [
+            {
+              "id": "4070b193-695c-509e-8e77-d1941b1cdf5c",
+              "leftValue": "={{ $('Ingest').first().json.mode }}",
+              "rightValue": "verification",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      }
     }
   ],
   "connections": {
@@ -656,6 +688,11 @@
             "node": "Needs AI?",
             "type": "main",
             "index": 0
+          },
+          {
+            "node": "Verification?",
+            "type": "main",
+            "index": 0
           }
         ]
       ]
@@ -698,6 +735,17 @@
         [
           {
             "node": "Attach files",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Verification?": {
+      "main": [
+        [
+          {
+            "node": "Build forward",
             "type": "main",
             "index": 0
           }

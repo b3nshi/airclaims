@@ -37,7 +37,8 @@ export default async function ReviewStep({ params }: PageProps<"/[locale]/claims
       label: tw("steps.disruption"),
       value: [
         td(`types.${claim.disruption}`),
-        delay !== null && t("delay", { hours: Math.floor(delay / 60), minutes: delay % 60 }),
+        delay !== null &&
+          t(claim.arrival_time_estimated ? "delayEstimated" : "delay", { hours: Math.floor(delay / 60), minutes: delay % 60 }),
         claim.cancellation_notice_days !== null && t("noticeDays", { days: claim.cancellation_notice_days }),
         a.reason.category && td(`reasons.${a.reason.category}`),
       ].filter(Boolean).join(" · "),

@@ -127,13 +127,9 @@
     "flightNumber": "Número de vol",
     "flightNumberHint": "Com apareix a la reserva, p. ex. VY1234.",
     "date": "Data de sortida prevista",
-    "lookup": "Cerca el meu vol",
     "lookingUp": "Cercant…",
-    "lookupFound": "Hem trobat el teu vol i hem omplert la ruta. Revisa-la, si us plau.",
-    "lookupFoundDelay": "Segons les nostres dades, vas arribar amb unes {hours} h {minutes} min de retard. Ho confirmaràs al pas següent.",
     "lookupNotFound": "No hem trobat aquest vol. Introdueix la ruta tu mateix.",
     "lookupUnavailable": "La cerca de vols no està disponible ara. Introdueix la ruta tu mateix.",
-    "lookupInvalid": "Primer introdueix un número de vol vàlid i una data passada.",
     "from": "Origen",
     "to": "Destinació",
     "airportPlaceholder": "Ciutat o codi d'aeroport",
@@ -144,8 +140,21 @@
     "bookingReference": "Localitzador de la reserva",
     "bookingReferenceHint": "El codi de la confirmació de reserva, p. ex. ABC123.",
     "lookupChecking": "Estem confirmant aquest vol amb les nostres dades de vols. Pots continuar: les dades s'afegiran a la teva reclamació tan aviat com es confirmin.",
-    "lookupFoundCancelled": "Segons les nostres dades, aquest vol va ser cancel·lat.",
-    "lookupRateLimited": "Avui has consultat molts vols. Introdueix la ruta tu mateix; confirmarem el vol més tard."
+    "lookupRateLimited": "Avui has consultat molts vols. Introdueix la ruta tu mateix; confirmarem el vol més tard.",
+    "airline": "Aerolínia",
+    "airlineHint": "Deixa-ho en automàtic tret que el vol l'operés una altra aerolínia (vols en codi compartit).",
+    "airlineAuto": "Detecta pel número de vol",
+    "scheduledDepTime": "Hora de sortida prevista",
+    "scheduledDepTimeHint": "Hora local a l'aeroport de sortida.",
+    "scheduledArr": "Arribada prevista",
+    "scheduledArrFinal": "Arribada prevista a la teva destinació final",
+    "scheduledArrHint": "Hora local, com a la teva reserva.",
+    "foundTitle": "Hem trobat el teu vol",
+    "foundProvisional": "Hem trobat el teu vol (encara s'està confirmant)",
+    "foundScheduled": "Previst",
+    "foundActual": "El que va passar",
+    "foundStatus": "Estat: {status}",
+    "foundFilled": "Hem omplert les dades de sota amb la nostra informació de vols. Revisa-les i canvia el que no sigui correcte."
   },
   "Disruption": {
     "title": "Què va passar",
@@ -156,8 +165,7 @@
       "denied_boarding": "Em van denegar l'embarcament",
       "missed_connection": "Vaig perdre la connexió"
     },
-    "delayLabel": "Amb quant de retard vas arribar a la destinació final?",
-    "delayHint": "Des de l'hora d'arribada prevista fins que es van obrir les portes de l'avió.",
+    "delayLabel": "Quan vas arribar?",
     "noticeLabel": "Quants dies abans de la sortida et van avisar de la cancel·lació?",
     "noticeHint": "Posa 0 si te'n vas assabentar a l'aeroport.",
     "reroutingLabel": "L'aerolínia et va oferir un vol alternatiu?",
@@ -185,7 +193,20 @@
       "transport": "Transport a l'hotel o a casa"
     },
     "instructionsLabel": "Què et va dir el personal de l'aerolínia que fessis?",
-    "instructionsHint": "P. ex. «Agafi un taxi a casa i reclami-ho». Indica qui, quan i on si ho recordes."
+    "instructionsHint": "P. ex. «Agafi un taxi a casa i reclami-ho». Indica qui, quan i on si ho recordes.",
+    "scheduledArrLabel": "Arribada prevista a la teva destinació final",
+    "localTimeHint": "Hora local en aquest aeroport.",
+    "arrivalKnownLabel": "Què saps?",
+    "modeArrival": "Sé quan vam arribar",
+    "modeDeparture": "Només sé quan va sortir",
+    "actualArrLabel": "Arribada real (quan es van obrir les portes)",
+    "actualArrHint": "La llei compta el retard a la teva destinació final, quan vas poder sortir de l'avió.",
+    "scheduledDepLabel": "Sortida prevista (local)",
+    "actualDepLabel": "Sortida real (local)",
+    "computed": "Són {hours} h {minutes} min de retard a la teva destinació final.",
+    "computedEstimated": "Unes {hours} h {minutes} min de retard a la teva destinació final (estimat a partir de l'hora de sortida i la durada prevista del vol).",
+    "computedMissing": "Introdueix les hores i calcularem el retard.",
+    "onTime": "Vas arribar a l'hora o abans."
   },
   "Passengers": {
     "title": "Passatgers",
@@ -309,7 +330,8 @@
     "flightDataDelay": "Va arribar amb {hours} h {minutes} min de retard",
     "flightDataCancelled": "Cancel·lat",
     "flightDataOnTime": "Va arribar a l'hora o amb menys de 15 min de retard",
-    "flightDataPending": "En confirmació"
+    "flightDataPending": "En confirmació",
+    "delayEstimated": "unes {hours} h {minutes} min de retard (estimat)"
   },
   "Sign": {
     "title": "Signatura",
@@ -335,9 +357,9 @@
     "webFormIntro": "{airline} rep les reclamacions a través del seu web. L'envies tu; es triga uns 5 minuts.",
     "openForm": "Obre el formulari de {airline}",
     "claimText": "Text de la reclamació per enganxar",
-    "claimTextHint": "Enganxa'l al camp de descripció del formulari. Demana el pagament en diners, no en vals.",
+    "claimTextHint": "Si el formulari de l'aerolínia té un camp de text, enganxa-ho allà. Si no en té (com el formulari de compensació de Wizz), desa-ho: és la teva reclamació per escrit per a altres canals i per a AESA.",
     "referenceLabel": "Referència de la reclamació de l'aerolínia",
-    "referenceHint": "Apareix a la pantalla o al correu de confirmació després d'enviar-la.",
+    "referenceHint": "Apareix a la pantalla o al correu de confirmació. Si et van donar més d'un número de reclamació, afegeix-los separats per comes.",
     "markSubmitted": "Ja he enviat la meva reclamació",
     "emailBody": "{airline} accepta reclamacions per correu. Estem preparant el correu de la teva reclamació: el llegiràs i l'aprovaràs abans que s'enviï res.",
     "unknownBody": "Encara no tenim el canal de reclamació d'aquesta aerolínia. El cercarem i t'enviarem el pas següent per correu. Mentrestant, aquí tens el text de la teva reclamació.",
@@ -349,7 +371,15 @@
     "addDocuments": "Afegeix documents",
     "backToClaims": "Torna a les meves reclamacions",
     "toDashboard": "Ves a la teva reclamació",
-    "tipsTitle": "Consells per a {airline}"
+    "tipsTitle": "Consells per a {airline}",
+    "expensesTitle": "Despeses: una reclamació a part a {airline}",
+    "expensesIntro": "{airline} exigeix reclamar les despeses per separat de la compensació, amb el seu propi número de reclamació.",
+    "openExpensesForm": "Obre el formulari de despeses de {airline}",
+    "receiptsToUpload": "Rebuts per pujar",
+    "expensesText": "Text de despeses per enganxar",
+    "expensesReference": "Número de la reclamació de despeses",
+    "markExpensesSubmitted": "Ja he enviat la reclamació de despeses",
+    "expensesRecorded": "Reclamació de despeses registrada."
   },
   "Dashboard": {
     "back": "Les meves reclamacions",
@@ -412,6 +442,10 @@
       "none": {
         "title": "No hi ha res a fer",
         "body": "Aquesta reclamació està tancada."
+      },
+      "respond_to_airline": {
+        "title": "Respon a l'aerolínia",
+        "body": "Hem llegit la resposta de l'aerolínia i el que no quadra. Tria què ha de dir la teva resposta."
       }
     },
     "aesaUntil": "Últim dia per anar a AESA: {date}.",
@@ -464,7 +498,10 @@
       "email_edited": "Vas editar un missatge",
       "email_discarded": "Vas descartar un esborrany",
       "email_analyzed": "Vam llegir un missatge sobre la teva reclamació",
-      "email_analysis_failed": "No vam poder resumir un missatge"
+      "email_analysis_failed": "No vam poder resumir un missatge",
+      "expenses_submitted": "Reclamació de despeses enviada a l'aerolínia",
+      "airline_response_reported": "Vas informar de la resposta de l'aerolínia",
+      "airline_response_analyzed": "Vam llegir la resposta de l'aerolínia"
     },
     "documentsTitle": "Documents",
     "noDocuments": "Encara no hi ha documents.",
@@ -517,7 +554,10 @@
       "title": "L'aerolínia demana"
     },
     "whatToDo": "Què cal fer",
-    "prepareOfferReply": "Prepara una resposta demanant el pagament en diners"
+    "prepareOfferReply": "Prepara una resposta demanant el pagament en diners",
+    "goToAnswer": "Mostra la resposta de l'aerolínia",
+    "pasteInto": "Text per enganxar a {label}",
+    "pasteHint": "Copia'l al formulari de l'aerolínia (per exemple «Service complaints» o el formulari de despeses). No l'enviem nosaltres."
   },
   "Admin": {
     "title": "Administració",
@@ -723,5 +763,115 @@
         "source": "Font"
       }
     }
+  },
+  "AirlineResponse": {
+    "title": "La resposta de l'aerolínia",
+    "intro": "L'aerolínia ha respost o el seu formulari ha rebutjat la teva reclamació? Explica'ns què et van dir: ho llegirem, et direm què no quadra i t'ajudarem a respondre.",
+    "report": "Informa de la resposta de l'aerolínia",
+    "reportAnother": "Informa d'una altra resposta",
+    "channel": "Com van respondre?",
+    "channels": {
+      "web_form": "El seu formulari web (missatge automàtic)",
+      "email": "Correu electrònic",
+      "letter": "Carta",
+      "phone": "Telèfon",
+      "chat": "Xat",
+      "other": "Altres"
+    },
+    "receivedOn": "Data",
+    "airlineText": "El que van dir",
+    "airlineTextHint": "Enganxa el seu missatge tal qual, o el text que va mostrar el seu formulari.",
+    "needText": "Enganxa el que va dir l'aerolínia o explica-ho a sota.",
+    "explanation": "Què va passar, amb les teves paraules",
+    "explanationHint": "Tot el que ajudi: què vas seleccionar, què et va dir el personal, què no quadra (p. ex. van mesurar el retard sobre el vol reprogramat).",
+    "screenshots": "Captures de pantalla",
+    "screenshotsHint": "Afegeix captures de la resposta: són proves si vas a AESA.",
+    "addScreenshot": "Afegeix una captura",
+    "submit": "Envia per revisar",
+    "reported": "Gràcies. Estem llegint la seva resposta: triga un moment.",
+    "theirAnswer": "La seva resposta",
+    "analyzing": "Estem llegint la resposta de l'aerolínia…",
+    "analysisFailed": "Aquesta vegada no hem pogut llegir la resposta.",
+    "retry": "Torna-ho a provar",
+    "conflicts": "El que no quadra",
+    "options": "Les teves opcions",
+    "recommended": "Recomanat",
+    "optionCodes": {
+      "request_evidence": "Demanar proves de la circumstància extraordinària",
+      "contest_delay_calculation": "Rebatre com van mesurar el retard",
+      "contest_notice": "Rebatre l'avís que diuen haver donat",
+      "decline_offer": "Rebutjar l'oferta i demanar diners",
+      "send_documents": "Enviar els documents que demanen",
+      "accept_payment": "Comprovar el pagament i confirmar-lo",
+      "wait": "Esperar la seva resposta",
+      "go_to_aesa": "Anar a AESA"
+    },
+    "replyTitle": "Prepara la teva resposta",
+    "replyIncludes": "La teva resposta ha de…",
+    "opt": {
+      "request_evidence": "Demanar-los que diguin quina circumstància extraordinària va ser i ho demostrin",
+      "request_evidenceHint": "L'aerolínia l'ha de demostrar i demostrar que va prendre totes les mesures raonables (art. 5.3, sentència Wallentin-Hermann C-549/07).",
+      "contest_delay": "Rebatre el càlcul del retard",
+      "contest_delayHint": "El retard es mesura a l'arribada respecte a l'horari previst original (sentència Sturgeon C-402/07).",
+      "decline_offer": "Rebutjar qualsevol val, crèdit o import parcial",
+      "include_expenses": "Demanar també les meves despeses",
+      "mention_aesa": "Dir que aniré a AESA si no donen una resposta fonamentada",
+      "mention_neb": "Dir que aniré a l'organisme nacional competent si no donen una resposta fonamentada",
+      "mention_aesaHint": "Recomanat: és un pas següent real amb termini, i AESA demanarà la seva resposta igualment."
+    },
+    "deadline": "Termini per a la seva resposta",
+    "days": "{days} dies",
+    "notes": "Alguna cosa més per incloure",
+    "notesHint": "Amb les teves paraules; ho escriurem en l'idioma de l'aerolínia.",
+    "deliveryPaste": "Aquesta aerolínia rep reclamacions per formulari: tindràs un text per copiar i enganxar (p. ex. a «Service complaints» o al formulari de despeses). No enviem res.",
+    "deliveryEmail": "Tindràs un correu per revisar, editar i aprovar abans d'enviar-lo des del correu de la teva reclamació.",
+    "draftReply": "Redacta la meva resposta",
+    "drafting": "Estem redactant la teva resposta. Apareixerà a Missatges en un moment.",
+    "draftError": "No hem pogut començar la resposta. Torna-ho a provar d'aquí a uns minuts.",
+    "draftWaiting": "La teva resposta està a punt a Missatges.",
+    "sources": {
+      "reported": "Informat per tu",
+      "forwarded": "Reenviat per tu",
+      "inbound": "Rebut al correu de la teva reclamació"
+    }
+  },
+  "Forwarding": {
+    "title": "Rep els correus de {airline} a la teva reclamació",
+    "theAirline": "l'aerolínia",
+    "airlineDomain": "el domini de l'aerolínia",
+    "intro": "Aquesta aerolínia respon al teu propi correu, no al de la reclamació. Reenvia els seus correus al correu de la reclamació i els llegirem, et direm què signifiquen i t'ajudarem a respondre.",
+    "onceTitle": "Cada vegada: reenvia'l",
+    "onceBody": "Quan arribi un correu de l'aerolínia, reenvia'l al correu de la teva reclamació. Serveix qualsevol aplicació de correu.",
+    "filterTitle": "O configura-ho una vegada: un filtre",
+    "filterBody": "Crea una regla que reenviï només els correus de {domain} al correu de la reclamació. No ens arriba res més de la teva safata.",
+    "providers": {
+      "gmail": {
+        "name": "Gmail",
+        "steps": [
+          "Obre Gmail en un ordinador > Configuració (engranatge) > Mostra tota la configuració > Reenviament i POP/IMAP.",
+          "Fes clic a «Afegeix una adreça de reenviament» i escriu {alias}.",
+          "Gmail envia un codi de confirmació a aquesta adreça: te'l reenviarem per correu en uns minuts. Introdueix-lo a Gmail.",
+          "Ves a Filtres i adreces bloquejades > Crea un filtre. A «De» escriu {domain}.",
+          "Fes clic a «Crea un filtre», marca «Reenvia-ho a» i tria {alias}. Desa."
+        ]
+      },
+      "outlook": {
+        "name": "Outlook / Hotmail",
+        "steps": [
+          "Obre Outlook.com > Configuració > Correu > Regles > Afegeix una regla nova.",
+          "Posa-li nom (p. ex. Reclamació aerolínia). Condició: «De» conté {domain}.",
+          "Acció: «Reenvia a» {alias}. Desa."
+        ]
+      },
+      "icloud": {
+        "name": "iCloud Mail",
+        "steps": [
+          "Obre iCloud.com > Mail > Configuració (engranatge) > Regles > Afegeix una regla.",
+          "Si un missatge «és de» {domain}, llavors «Reenvia a» {alias}.",
+          "Desa la regla."
+        ]
+      }
+    },
+    "privacy": "Només fem servir els correus reenviats per a aquesta reclamació. Comprovem que els reenviaments vénen de debò de la teva bústia abans de llegir-los."
   }
 }

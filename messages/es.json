@@ -127,13 +127,9 @@
     "flightNumber": "Número de vuelo",
     "flightNumberHint": "Como aparece en tu reserva, p. ej. VY1234.",
     "date": "Fecha de salida prevista",
-    "lookup": "Buscar mi vuelo",
     "lookingUp": "Buscando…",
-    "lookupFound": "Hemos encontrado tu vuelo y hemos rellenado la ruta. Revísala, por favor.",
-    "lookupFoundDelay": "Según nuestros datos, llegaste con unas {hours} h {minutes} min de retraso. Lo confirmarás en el siguiente paso.",
     "lookupNotFound": "No hemos encontrado este vuelo. Introduce la ruta tú mismo.",
     "lookupUnavailable": "La búsqueda de vuelos no está disponible ahora. Introduce la ruta tú mismo.",
-    "lookupInvalid": "Primero introduce un número de vuelo válido y una fecha pasada.",
     "from": "Origen",
     "to": "Destino",
     "airportPlaceholder": "Ciudad o código de aeropuerto",
@@ -144,8 +140,21 @@
     "bookingReference": "Localizador de la reserva",
     "bookingReferenceHint": "El código de tu confirmación de reserva, p. ej. ABC123.",
     "lookupChecking": "Estamos confirmando este vuelo con nuestros datos de vuelos. Puedes continuar: los datos se añadirán a tu reclamación en cuanto se confirmen.",
-    "lookupFoundCancelled": "Según nuestros datos, este vuelo fue cancelado.",
-    "lookupRateLimited": "Hoy has consultado muchos vuelos. Introduce la ruta tú mismo; confirmaremos el vuelo más tarde."
+    "lookupRateLimited": "Hoy has consultado muchos vuelos. Introduce la ruta tú mismo; confirmaremos el vuelo más tarde.",
+    "airline": "Aerolínea",
+    "airlineHint": "Déjalo en automático salvo que el vuelo lo operara otra aerolínea (vuelos en código compartido).",
+    "airlineAuto": "Detectar por el número de vuelo",
+    "scheduledDepTime": "Hora de salida prevista",
+    "scheduledDepTimeHint": "Hora local en el aeropuerto de salida.",
+    "scheduledArr": "Llegada prevista",
+    "scheduledArrFinal": "Llegada prevista a tu destino final",
+    "scheduledArrHint": "Hora local, como en tu reserva.",
+    "foundTitle": "Hemos encontrado tu vuelo",
+    "foundProvisional": "Hemos encontrado tu vuelo (aún se está confirmando)",
+    "foundScheduled": "Previsto",
+    "foundActual": "Lo que pasó",
+    "foundStatus": "Estado: {status}",
+    "foundFilled": "Hemos rellenado los datos de abajo con nuestra información de vuelos. Revísalos y cambia lo que no sea correcto."
   },
   "Disruption": {
     "title": "Qué pasó",
@@ -156,8 +165,7 @@
       "denied_boarding": "Me denegaron el embarque",
       "missed_connection": "Perdí mi conexión"
     },
-    "delayLabel": "¿Con cuánto retraso llegaste a tu destino final?",
-    "delayHint": "Desde la hora de llegada prevista hasta que se abrieron las puertas del avión.",
+    "delayLabel": "¿Cuándo llegaste?",
     "noticeLabel": "¿Cuántos días antes de la salida te avisaron de la cancelación?",
     "noticeHint": "Pon 0 si te enteraste en el aeropuerto.",
     "reroutingLabel": "¿Te ofreció la aerolínea un vuelo alternativo?",
@@ -185,7 +193,20 @@
       "transport": "Transporte al hotel o a casa"
     },
     "instructionsLabel": "¿Qué te dijo el personal de la aerolínea que hicieras?",
-    "instructionsHint": "P. ej. «Coja un taxi a casa y reclámelo». Indica quién, cuándo y dónde si lo recuerdas."
+    "instructionsHint": "P. ej. «Coja un taxi a casa y reclámelo». Indica quién, cuándo y dónde si lo recuerdas.",
+    "scheduledArrLabel": "Llegada prevista a tu destino final",
+    "localTimeHint": "Hora local en ese aeropuerto.",
+    "arrivalKnownLabel": "¿Qué sabes?",
+    "modeArrival": "Sé cuándo llegamos",
+    "modeDeparture": "Solo sé cuándo salió",
+    "actualArrLabel": "Llegada real (cuando se abrieron las puertas)",
+    "actualArrHint": "La ley cuenta el retraso en tu destino final, cuando pudiste salir del avión.",
+    "scheduledDepLabel": "Salida prevista (local)",
+    "actualDepLabel": "Salida real (local)",
+    "computed": "Son {hours} h {minutes} min de retraso en tu destino final.",
+    "computedEstimated": "Unas {hours} h {minutes} min de retraso en tu destino final (estimado a partir de la hora de salida y la duración prevista del vuelo).",
+    "computedMissing": "Introduce las horas y calcularemos el retraso.",
+    "onTime": "Llegaste a tiempo o antes."
   },
   "Passengers": {
     "title": "Pasajeros",
@@ -309,7 +330,8 @@
     "flightDataDelay": "Llegó con {hours} h {minutes} min de retraso",
     "flightDataCancelled": "Cancelado",
     "flightDataOnTime": "Llegó a tiempo o con menos de 15 min de retraso",
-    "flightDataPending": "En confirmación"
+    "flightDataPending": "En confirmación",
+    "delayEstimated": "unas {hours} h {minutes} min de retraso (estimado)"
   },
   "Sign": {
     "title": "Firma",
@@ -335,9 +357,9 @@
     "webFormIntro": "{airline} recibe las reclamaciones a través de su web. La envías tú; se tarda unos 5 minutos.",
     "openForm": "Abrir el formulario de {airline}",
     "claimText": "Texto de la reclamación para pegar",
-    "claimTextHint": "Pégalo en el campo de descripción del formulario. Pide el pago en dinero, no en bonos.",
+    "claimTextHint": "Si el formulario de la aerolínea tiene un campo de texto, pégalo ahí. Si no lo tiene (como el formulario de compensación de Wizz), guárdalo: es tu reclamación por escrito para otros canales y para AESA.",
     "referenceLabel": "Referencia de la reclamación de la aerolínea",
-    "referenceHint": "Aparece en pantalla o en el correo de confirmación después de enviarla.",
+    "referenceHint": "Aparece en pantalla o en el correo de confirmación. Si te dieron más de un número de reclamación, añádelos separados por comas.",
     "markSubmitted": "Ya he enviado mi reclamación",
     "emailBody": "{airline} acepta reclamaciones por correo. Estamos preparando el correo de tu reclamación: lo leerás y lo aprobarás antes de que se envíe nada.",
     "unknownBody": "Aún no tenemos el canal de reclamación de esta aerolínea. Lo buscaremos y te enviaremos el siguiente paso por correo. Mientras tanto, aquí tienes el texto de tu reclamación.",
@@ -349,7 +371,15 @@
     "addDocuments": "Añadir documentos",
     "backToClaims": "Volver a mis reclamaciones",
     "toDashboard": "Ir a tu reclamación",
-    "tipsTitle": "Consejos para {airline}"
+    "tipsTitle": "Consejos para {airline}",
+    "expensesTitle": "Gastos: una reclamación aparte a {airline}",
+    "expensesIntro": "{airline} exige reclamar los gastos por separado de la compensación, con su propio número de reclamación.",
+    "openExpensesForm": "Abrir el formulario de gastos de {airline}",
+    "receiptsToUpload": "Recibos que subir",
+    "expensesText": "Texto de gastos para pegar",
+    "expensesReference": "Número de la reclamación de gastos",
+    "markExpensesSubmitted": "Ya he enviado la reclamación de gastos",
+    "expensesRecorded": "Reclamación de gastos registrada."
   },
   "Dashboard": {
     "back": "Mis reclamaciones",
@@ -412,6 +442,10 @@
       "none": {
         "title": "No hay nada que hacer",
         "body": "Esta reclamación está cerrada."
+      },
+      "respond_to_airline": {
+        "title": "Responde a la aerolínea",
+        "body": "Hemos leído la respuesta de la aerolínea y lo que no cuadra. Elige qué debe decir tu respuesta."
       }
     },
     "aesaUntil": "Último día para acudir a AESA: {date}.",
@@ -464,7 +498,10 @@
       "email_edited": "Editaste un mensaje",
       "email_discarded": "Descartaste un borrador",
       "email_analyzed": "Leímos un mensaje sobre tu reclamación",
-      "email_analysis_failed": "No pudimos resumir un mensaje"
+      "email_analysis_failed": "No pudimos resumir un mensaje",
+      "expenses_submitted": "Reclamación de gastos enviada a la aerolínea",
+      "airline_response_reported": "Informaste de la respuesta de la aerolínea",
+      "airline_response_analyzed": "Leímos la respuesta de la aerolínea"
     },
     "documentsTitle": "Documentos",
     "noDocuments": "Aún no hay documentos.",
@@ -517,7 +554,10 @@
       "title": "La aerolínea pide"
     },
     "whatToDo": "Qué hacer",
-    "prepareOfferReply": "Preparar una respuesta pidiendo el pago en dinero"
+    "prepareOfferReply": "Preparar una respuesta pidiendo el pago en dinero",
+    "goToAnswer": "Ver la respuesta de la aerolínea",
+    "pasteInto": "Texto para pegar en {label}",
+    "pasteHint": "Cópialo en el formulario de la aerolínea (por ejemplo «Service complaints» o el formulario de gastos). No lo enviamos nosotros."
   },
   "Admin": {
     "title": "Administración",
@@ -723,5 +763,115 @@
         "source": "Fuente"
       }
     }
+  },
+  "AirlineResponse": {
+    "title": "La respuesta de la aerolínea",
+    "intro": "¿Ha respondido la aerolínea o su formulario ha rechazado tu reclamación? Cuéntanos qué te dijeron: lo leeremos, te diremos qué no cuadra y te ayudaremos a responder.",
+    "report": "Informar de la respuesta de la aerolínea",
+    "reportAnother": "Informar de otra respuesta",
+    "channel": "¿Cómo respondieron?",
+    "channels": {
+      "web_form": "Su formulario web (mensaje automático)",
+      "email": "Correo electrónico",
+      "letter": "Carta",
+      "phone": "Teléfono",
+      "chat": "Chat",
+      "other": "Otro"
+    },
+    "receivedOn": "Fecha",
+    "airlineText": "Lo que dijeron",
+    "airlineTextHint": "Pega su mensaje tal cual, o el texto que mostró su formulario.",
+    "needText": "Pega lo que dijo la aerolínea o explícalo abajo.",
+    "explanation": "Qué pasó, con tus palabras",
+    "explanationHint": "Todo lo que ayude: qué seleccionaste, qué te dijo el personal, qué no cuadra (p. ej. midieron el retraso sobre el vuelo reprogramado).",
+    "screenshots": "Capturas de pantalla",
+    "screenshotsHint": "Añade capturas de su respuesta: son pruebas si acudes a AESA.",
+    "addScreenshot": "Añadir captura",
+    "submit": "Enviar para revisar",
+    "reported": "Gracias. Estamos leyendo su respuesta: tarda un momento.",
+    "theirAnswer": "Su respuesta",
+    "analyzing": "Estamos leyendo la respuesta de la aerolínea…",
+    "analysisFailed": "Esta vez no hemos podido leer la respuesta.",
+    "retry": "Reintentar",
+    "conflicts": "Lo que no cuadra",
+    "options": "Tus opciones",
+    "recommended": "Recomendado",
+    "optionCodes": {
+      "request_evidence": "Pedir pruebas de la circunstancia extraordinaria",
+      "contest_delay_calculation": "Rebatir cómo midieron el retraso",
+      "contest_notice": "Rebatir el aviso que dicen haber dado",
+      "decline_offer": "Rechazar la oferta y pedir dinero",
+      "send_documents": "Enviar los documentos que piden",
+      "accept_payment": "Comprobar el pago y confirmarlo",
+      "wait": "Esperar su respuesta",
+      "go_to_aesa": "Acudir a AESA"
+    },
+    "replyTitle": "Prepara tu respuesta",
+    "replyIncludes": "Tu respuesta debe…",
+    "opt": {
+      "request_evidence": "Pedirles que digan qué circunstancia extraordinaria fue y lo demuestren",
+      "request_evidenceHint": "La aerolínea debe demostrarla y demostrar que tomó todas las medidas razonables (art. 5.3, sentencia Wallentin-Hermann C-549/07).",
+      "contest_delay": "Rebatir el cálculo del retraso",
+      "contest_delayHint": "El retraso se mide a la llegada respecto al horario previsto original (sentencia Sturgeon C-402/07).",
+      "decline_offer": "Rechazar cualquier bono, crédito o importe parcial",
+      "include_expenses": "Pedir también mis gastos",
+      "mention_aesa": "Decir que acudiré a AESA si no dan una respuesta fundamentada",
+      "mention_neb": "Decir que acudiré al organismo nacional competente si no dan una respuesta fundamentada",
+      "mention_aesaHint": "Recomendado: es un siguiente paso real con plazo, y AESA pedirá su respuesta de todos modos."
+    },
+    "deadline": "Plazo para su respuesta",
+    "days": "{days} días",
+    "notes": "Algo más que incluir",
+    "notesHint": "Con tus palabras; lo escribiremos en el idioma de la aerolínea.",
+    "deliveryPaste": "Esta aerolínea recibe reclamaciones por formulario: tendrás un texto para copiar y pegar (p. ej. en «Service complaints» o en el formulario de gastos). No enviamos nada.",
+    "deliveryEmail": "Tendrás un correo para revisar, editar y aprobar antes de enviarlo desde el correo de tu reclamación.",
+    "draftReply": "Redactar mi respuesta",
+    "drafting": "Estamos redactando tu respuesta. Aparecerá en Mensajes en un momento.",
+    "draftError": "No hemos podido empezar la respuesta. Inténtalo de nuevo en unos minutos.",
+    "draftWaiting": "Tu respuesta está lista en Mensajes.",
+    "sources": {
+      "reported": "Informado por ti",
+      "forwarded": "Reenviado por ti",
+      "inbound": "Recibido en el correo de tu reclamación"
+    }
+  },
+  "Forwarding": {
+    "title": "Recibe los correos de {airline} en tu reclamación",
+    "theAirline": "la aerolínea",
+    "airlineDomain": "el dominio de la aerolínea",
+    "intro": "Esta aerolínea responde a tu propio correo, no al de tu reclamación. Reenvía sus correos al correo de tu reclamación y los leeremos, te diremos qué significan y te ayudaremos a responder.",
+    "onceTitle": "Cada vez: reenvíalo",
+    "onceBody": "Cuando llegue un correo de la aerolínea, reenvíalo al correo de tu reclamación. Sirve cualquier aplicación de correo.",
+    "filterTitle": "O configúralo una vez: un filtro",
+    "filterBody": "Crea una regla que reenvíe solo los correos de {domain} al correo de tu reclamación. Nada más de tu bandeja nos llega.",
+    "providers": {
+      "gmail": {
+        "name": "Gmail",
+        "steps": [
+          "Abre Gmail en un ordenador > Configuración (engranaje) > Ver todos los ajustes > Reenvío y correo POP/IMAP.",
+          "Pulsa «Añadir una dirección de reenvío» y escribe {alias}.",
+          "Gmail envía un código de confirmación a esa dirección: te lo reenviaremos por correo en unos minutos. Introdúcelo en Gmail.",
+          "Ve a Filtros y direcciones bloqueadas > Crear un filtro. En «De» escribe {domain}.",
+          "Pulsa «Crear filtro», marca «Reenviar a» y elige {alias}. Guarda."
+        ]
+      },
+      "outlook": {
+        "name": "Outlook / Hotmail",
+        "steps": [
+          "Abre Outlook.com > Configuración > Correo > Reglas > Agregar nueva regla.",
+          "Ponle nombre (p. ej. Reclamación aerolínea). Condición: «De» contiene {domain}.",
+          "Acción: «Reenviar a» {alias}. Guarda."
+        ]
+      },
+      "icloud": {
+        "name": "iCloud Mail",
+        "steps": [
+          "Abre iCloud.com > Mail > Ajustes (engranaje) > Reglas > Añadir una regla.",
+          "Si un mensaje «es de» {domain}, entonces «Reenviar a» {alias}.",
+          "Guarda la regla."
+        ]
+      }
+    },
+    "privacy": "Solo usamos los correos reenviados para esta reclamación. Comprobamos que los reenvíos vienen de verdad de tu buzón antes de leerlos."
   }
 }

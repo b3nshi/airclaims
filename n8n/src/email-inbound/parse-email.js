@@ -21,7 +21,30 @@ const attachments = (body.attachments || [])
   .slice(0, 10);
 
 const from = ((body.from && body.from.value) || [])[0] || {};
-const text = (body.text && String(body.text).trim()) || htmlToText(body.html);
+let text = (body.text && String(body.text).trim()) || htmlToText(body.html);
+
+// "Forward as attachment": the original email arrives as a message/rfc822 attachment.
+const attachedEmails = (body.attachments || []).filter((a) => /message\/rfc822/i.test(a.contentType || '') && a.content && a.content.data);
+for (const a of attachedEmails.slice(0, 3)) {
+  text += '\n\n--- Attached message ---\n' + Buffer.from(a.content.data).toString('utf8').slice(0, 50000);
+}
+
+// Forwarded by the passenger? (Gmail, Outlook, Apple Mail, in several languages.) SQL only trusts it
+// when the sender is the passenger and their mail authenticated.
+const subject = String(body.subject || '');
+const forwardHint = /^\s*(fwd?|rv|tr|wg|enc|i|doorst)\s*:/i.test(subject)
+  || /(-{3,}\s*(forwarded message|mensaje reenviado|missatge reenviat|message transféré|weitergeleitete nachricht)|begin forwarded message|^\s*(from|de|von)\s*:.*\n\s*(sent|date|enviado|fecha|enviat|data|gesendet)\s*:)/im.test(text)
+  || attachedEmails.length > 0;
+
+// Forward Email passes mailauth's results (dmarc / spf / dkim).
+const result = (x) => String((x && ((x.status && x.status.result) || x.result)) || '').toLowerCase();
+const dkimPass = ((body.dkim && body.dkim.results) || []).some((r) => result(r) === 'pass');
+const authPass = result(body.dmarc) === 'pass' || (result(body.spf) === 'pass' && dkimPass) || result(body.spf) === 'pass';
+
+// A mail provider asking to confirm a forwarding address (the passenger needs the code/link).
+const fromAddress = String(from.address || '').toLowerCase();
+const verificationHint = /forwarding-noreply@google\.com$/.test(fromAddress)
+  || /(forwarding confirmation|confirmación de reenvío|confirmació de reenviament|confirm.*forward)/i.test(subject);
 return [{
   json: {
     email: {
@@ -36,6 +59,9 @@ return [{
       body_html: typeof body.html === 'string' ? body.html : null,
       in_reply_to: body.inReplyTo || null,
       received_at: body.date || new Date().toISOString(),
+      forward_hint: forwardHint,
+      auth_pass: authPass,
+      verification_hint: verificationHint,
     },
     attachments,
   },

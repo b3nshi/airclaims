@@ -45,6 +45,21 @@ describe("buildClaimText", () => {
       expect(buildClaimText({ ...input, airlineLanguage: lang }).body).not.toMatch(/law firm|lawyer|abogad/i);
     }
   });
+  it("says approximately when the arrival time is estimated", () => {
+    expect(buildClaimText({ ...input, arrivalDelayEstimated: true }).body).toContain("approximately 4 hours and 5 minutes late");
+    expect(buildClaimText({ ...input, airlineLanguage: "es", arrivalDelayEstimated: true }).body).toContain("aproximadamente 4 horas");
+  });
+  it("splits compensation and expenses for airlines that need separate submissions", () => {
+    const comp = buildClaimText({ ...input, purpose: "compensation" });
+    expect(comp.body).toContain("€800");
+    expect(comp.body).not.toContain("Meals");
+    const exp = buildClaimText({ ...input, purpose: "expenses" });
+    expect(exp.subject).toContain("Reimbursement of expenses");
+    expect(exp.body).toContain("- Meals: €18.50");
+    expect(exp.body).toContain("Articles 8 and 9");
+    expect(exp.body).not.toContain("€800");
+    expect(exp.body).toMatch(/bank transfer/);
+  });
   it("writes Spanish for Spanish-language airlines", () => {
     const { body } = buildClaimText({ ...input, airlineLanguage: "es", disruption: "cancellation", cancellationNoticeDays: 3 });
     expect(body).toContain("se me informó 3 días antes");

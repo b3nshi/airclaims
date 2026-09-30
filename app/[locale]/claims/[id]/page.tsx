@@ -4,6 +4,8 @@ import { buttonVariants } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { AirlineSubmission, airlineChannel } from "@/components/claims/airline-submission";
 import { CopyButton } from "@/components/claims/copy-button";
+import { ExpensesSubmission, expensesSubmitted } from "@/components/claims/expenses-submission";
+import { ForwardingGuide } from "@/components/claims/forwarding-guide";
 import {
   Badge,
   Deadlines,
@@ -14,6 +16,7 @@ import {
   Timeline,
   type EmailAnalysis,
 } from "@/components/dashboard/sections";
+import { AirlineResponsePanel } from "@/components/dashboard/airline-response-panel";
 import { RequestDraft } from "@/components/dashboard/request-draft";
 import { WithdrawClaim } from "@/components/dashboard/withdraw-claim";
 import { aesaAvailable, airlineReplyDue, claimLimitDate } from "@/lib/eligibility";
@@ -29,12 +32,12 @@ const CLOSED = ["won", "partially_won", "lost", "withdrawn"];
 export default async function ClaimDashboard({ params }: PageProps<"/[locale]/claims/[id]">) {
   const { locale, id } = await params;
   setRequestLocale(locale);
-  await requireUser(locale, `/claims/${id}`);
+  const user = await requireUser(locale, `/claims/${id}`);
   const claim = await getOwnClaim(id);
   if (isDraft(claim.status)) return redirect({ href: `/claims/${id}/flight`, locale });
 
   const supabase = await createClient();
-  const [t, tc, format, a, channel, emailsRes, eventsRes, docsRes] = await Promise.all([
+  const [t, tc, format, a, channel, emailsRes, eventsRes, docsRes, responsesRes] = await Promise.all([
     getTranslations("Dashboard"),
     getTranslations("Claims"),
     getFormatter(),
@@ -43,12 +46,24 @@ export default async function ClaimDashboard({ params }: PageProps<"/[locale]/cl
     supabase.from("my_emails").select("*").eq("claim_id", claim.id),
     supabase.from("claim_events").select("*").eq("claim_id", claim.id).order("created_at"),
     supabase.from("documents").select("id, doc_type, validation, created_at").eq("claim_id", claim.id).order("created_at"),
+    supabase.from("airline_responses").select("*").eq("claim_id", claim.id).order("created_at", { ascending: false }),
   ]);
-  for (const r of [emailsRes, eventsRes, docsRes]) if (r.error) throw r.error;
+  for (const r of [emailsRes, eventsRes, docsRes, responsesRes]) if (r.error) throw r.error;
+  const responses = responsesRes.data ?? [];
+  const events = eventsRes.data ?? [];
+  // An analysed airline answer the passenger hasn't drafted a reply to yet.
+  const latestResponse = responses[0];
+  const answeredLatest = events.some(
+    (e) => e.event_type === "email_drafted" && (e.payload as { response_id?: string } | null)?.response_id === latestResponse?.id,
+  );
+  const airlineAnswerToHandle = latestResponse?.status === "analyzed" && !answeredLatest;
+  const hasOpenDraft = (emailsRes.data ?? []).some(
+    (e) => e.direction === "outbound" && ["pending_approval", "approved", "sending", "draft"].includes(e.status),
+  );
   const emails = emailsRes.data ?? [];
 
   // The AI's reading of the most recent message (offers, document requests), if any.
-  const latestAnalysis = [...(eventsRes.data ?? [])].reverse().find((e) => e.event_type === "email_analyzed");
+  const latestAnalysis = [...events].reverse().find((e) => e.event_type === "email_analyzed");
   const analysis = latestAnalysis ? (latestAnalysis.payload as unknown as EmailAnalysis) : null;
 
   const today = todayInMadrid();
@@ -58,6 +73,7 @@ export default async function ClaimDashboard({ params }: PageProps<"/[locale]/cl
     status: claim.status,
     channel,
     hasPendingApproval: emails.some((e) => e.status === "pending_approval"),
+    airlineAnswerToHandle,
     submittedAt: claim.submitted_airline_at,
     aesaDeadline: claim.aesa_deadline,
     flightDate: claim.flight_date,
@@ -121,6 +137,9 @@ export default async function ClaimDashboard({ params }: PageProps<"/[locale]/cl
           {(action.kind === "approve_email" || action.kind === "read_reply") && (
             <a href="#messages" className={buttonVariants()}>{t("goToMessages")}</a>
           )}
+          {action.kind === "respond_to_airline" && (
+            <a href="#airline-answer" className={buttonVariants()}>{t("goToAnswer")}</a>
+          )}
           {action.kind === "preparing_email" && (
             <RequestDraft locale={locale} claimId={claim.id} template="initial_claim" />
           )}
@@ -146,11 +165,30 @@ export default async function ClaimDashboard({ params }: PageProps<"/[locale]/cl
         />
       )}
 
+      {!CLOSED.includes(claim.status) && !expensesSubmitted(events) && (
+        <ExpensesSubmission locale={locale} claim={claim} assessment={a} />
+      )}
+
+      {!CLOSED.includes(claim.status) && channel !== "email" && <ForwardingGuide claim={claim} />}
+
+      {!CLOSED.includes(claim.status) && (
+        <AirlineResponsePanel
+          locale={locale}
+          claim={claim}
+          userId={user.id}
+          responses={responses}
+          hasExpenses={a.expenses.length > 0}
+          departsSpain={a.departsSpain}
+          delivery={channel === "email" ? "email" : "paste"}
+          hasOpenDraft={hasOpenDraft}
+        />
+      )}
+
       <Deadlines today={today} items={deadlines} />
       <Messages locale={locale} claimId={claim.id} alias={alias} emails={emails} />
       <Documents claimId={claim.id} documents={docsRes.data ?? []} canAdd={canAddDocuments(claim.status)} />
       <Expenses claimId={claim.id} expenses={a.expenses} totalEur={Number(claim.expenses_total_eur)} canEdit={canEditDocuments(claim.status)} />
-      <Timeline createdAt={claim.created_at} events={eventsRes.data ?? []} />
+      <Timeline createdAt={claim.created_at} events={events} />
 
       {!CLOSED.includes(claim.status) && (
         <div className="border-t pt-6">

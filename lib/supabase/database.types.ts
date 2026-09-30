@@ -135,6 +135,11 @@ export type ClaimRow = {
   resolved_at: string | null;
   amount_received_eur: number | null;
   fee_pct_locked: number | null;
+  reported_scheduled_dep_local: string | null;
+  reported_scheduled_arr_local: string | null;
+  reported_actual_dep_local: string | null;
+  reported_actual_arr_local: string | null;
+  arrival_time_estimated: boolean;
   created_at: string;
   updated_at: string;
 };
@@ -145,6 +150,8 @@ type ClaimWritable = Pick<
   | "flight_iata" | "flight_date" | "airline_id" | "flight_id" | "dep_iata" | "arr_iata" | "final_destination_iata"
   | "booking_reference" | "disruption" | "reported_arrival_delay_minutes" | "cancellation_notice_days"
   | "care_provided" | "airline_instructions" | "reason_given_by_airline" | "compensation_eur"
+  | "reported_scheduled_dep_local" | "reported_scheduled_arr_local" | "reported_actual_dep_local"
+  | "reported_actual_arr_local" | "arrival_time_estimated"
 >;
 
 export type ClaimPassengerRow = {
@@ -320,6 +327,38 @@ export type AirlineStatsRow = {
   contacts_last_verified: string | null;
 };
 
+export type AirlineResponseChannel = "web_form" | "email" | "letter" | "phone" | "chat" | "other";
+
+// AI reading of an airline answer (n8n/src/airline-response/system-prompt.md).
+export type AirlineResponseAnalysis = {
+  kind: "auto_rejection" | "rejection" | "offer" | "request_info" | "acknowledgement" | "payment_confirmed" | "other";
+  airline_position: string;
+  reasons: { code: string; detail: string }[];
+  airline_measured_delay_minutes: number | null;
+  conflicts: string[];
+  options: { code: string; recommended: boolean; explanation: string }[];
+  aesa_advice: string;
+  summary: string;
+};
+
+export type AirlineResponseRow = {
+  id: string;
+  claim_id: string;
+  reported_by: string;
+  channel: AirlineResponseChannel;
+  received_on: string;
+  airline_text: string | null;
+  user_explanation: string | null;
+  status: "pending" | "analyzed" | "failed";
+  analysis: Json | null;
+  analyzed_at: string | null;
+  created_at: string;
+  source: "reported" | "forwarded" | "inbound";
+  email_id: string | null;
+  attempts: number;
+  locked_at: string | null;
+};
+
 export type Database = {
   public: {
     Tables: {
@@ -341,6 +380,7 @@ export type Database = {
       >;
       review_queue: Table<ReviewQueueRow, never>;
       admin_audit_log: Table<AuditLogRow, never, never>;
+      airline_responses: Table<AirlineResponseRow, never, never>;
       emails: Table<EmailRow, never, never>;
       flights: Table<FlightRow, never, never>;
       flight_risk_flags: Table<FlightRiskFlagRow, never, never>;
@@ -381,6 +421,12 @@ export type Database = {
       airline_passenger_tips: { Args: { p_airline_id: string; p_locale: string }; Returns: string[] };
       admin_airline_stats: { Args: Record<string, never>; Returns: AirlineStatsRow[] };
       admin_resolve_review: { Args: { p_id: string; p_note: string | null }; Returns: undefined };
+      report_airline_response: {
+        Args: { p_claim_id: string; p_channel: string; p_received_on: string; p_airline_text: string | null; p_explanation: string | null };
+        Returns: string;
+      };
+      retry_airline_response: { Args: { p_response_id: string }; Returns: undefined };
+      record_expenses_submission: { Args: { p_claim_id: string; p_reference: string | null }; Returns: undefined };
       admin_upsert_flight: { Args: { p: Json }; Returns: string };
       admin_link_email_to_claim: { Args: { p_email_id: string; p_alias_code: string }; Returns: string };
       request_flight_check: { Args: { p_flight_iata: string; p_flight_date: string }; Returns: Json };

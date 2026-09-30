@@ -10,6 +10,7 @@ import { saveDisruption } from "@/app/[locale]/claims/_actions/details";
 import { initialFormState } from "@/lib/claims/form-state";
 import { minutesToParts, REASON_CATEGORIES, type CareProvided, type ReasonCategory } from "@/lib/claims/model";
 import type { DisruptionType } from "@/lib/supabase/database.types";
+import { DelayTimes, type DelayTimesValues } from "./delay-times";
 import { DurationInput } from "./duration-input";
 import { WizardNav } from "./wizard-nav";
 
@@ -17,7 +18,9 @@ const TYPES: DisruptionType[] = ["delay", "cancellation", "denied_boarding", "mi
 
 export type DisruptionFormValues = {
   disruption: DisruptionType;
-  delayMinutes: number | null;
+  times: DelayTimesValues;
+  depTz: string | null;
+  arrTz: string | null; // final destination
   noticeDays: number | null;
   care: CareProvided;
   reasonCategory: ReasonCategory | null;
@@ -32,7 +35,6 @@ export function DisruptionForm({ locale, claimId, initial }: { locale: string; c
   const [type, setType] = useState<DisruptionType>(initial.disruption);
   const [rerouting, setRerouting] = useState(initial.care.rerouting?.offered ? "yes" : initial.care.rerouting ? "no" : "");
   const err = (k: string) => state.fieldErrors?.[k];
-  const delay = minutesToParts(initial.delayMinutes);
   const earlier = minutesToParts(initial.care.rerouting?.earlier_departure_minutes ?? null);
   const later = minutesToParts(initial.care.rerouting?.later_arrival_minutes ?? null);
 
@@ -61,16 +63,12 @@ export function DisruptionForm({ locale, claimId, initial }: { locale: string; c
       </fieldset>
 
       {(type === "delay" || type === "missed_connection") && (
-        <Field id="delay_hours" label={t("delayLabel")} hint={t("delayHint")} error={(err("delay_hours") || err("delay_minutes")) && tw("errorInvalid")}>
-          <DurationInput
-            id="delay_hours"
-            name="delay"
-            defaultHours={delay.hours}
-            defaultMinutes={delay.minutes}
-            invalid={err("delay_hours") || err("delay_minutes")}
-            describedBy="delay_hours-hint"
-          />
-        </Field>
+        <DelayTimes
+          initial={initial.times}
+          depTz={initial.depTz}
+          arrTz={initial.arrTz}
+          invalid={Boolean(err("scheduled_arr") || err("actual_arr") || err("scheduled_dep") || err("actual_dep"))}
+        />
       )}
 
       {type === "cancellation" && (

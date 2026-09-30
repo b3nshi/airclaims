@@ -4,6 +4,8 @@ import { buttonVariants } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { AirlineSubmission, airlineChannel } from "@/components/claims/airline-submission";
 import { CopyButton } from "@/components/claims/copy-button";
+import { ExpensesSubmission } from "@/components/claims/expenses-submission";
+import { ForwardingGuide } from "@/components/claims/forwarding-guide";
 import { StepHeader } from "@/components/claims/wizard-shell";
 import { assessClaim } from "@/lib/claims/assess";
 import { aliasEmail } from "@/lib/claims/model";
@@ -52,6 +54,8 @@ export default async function DoneStep({ params }: PageProps<"/[locale]/claims/[
           <section className="space-y-4">
             <h3 className="font-medium">{t("nextTitle")}</h3>
             <AirlineSubmission locale={locale} claim={claim} assessment={a} channel={channel} />
+            <ExpensesSubmission locale={locale} claim={claim} assessment={a} />
+            {channel !== "email" && <ForwardingGuide claim={claim} open />}
           </section>
         )}
 

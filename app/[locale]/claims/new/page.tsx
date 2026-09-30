@@ -3,12 +3,14 @@ import { Card, CardContent } from "@/components/ui/card";
 import { FlightForm } from "@/components/claims/flight-form";
 import { StepHeader, WizardShell } from "@/components/claims/wizard-shell";
 import { requireUser } from "@/lib/claims/server";
+import { createClient } from "@/lib/supabase/server";
 
 export default async function NewClaimPage({ params }: PageProps<"/[locale]/claims/new">) {
   const { locale } = await params;
   setRequestLocale(locale);
   await requireUser(locale, "/claims/new");
-  const [tw, t] = await Promise.all([getTranslations("Wizard"), getTranslations("Flight")]);
+  const [tw, t, supabase] = await Promise.all([getTranslations("Wizard"), getTranslations("Flight"), createClient()]);
+  const { data: airlines } = await supabase.from("airlines").select("id, name, iata").eq("is_active", true).order("name");
 
   return (
     <WizardShell title={tw("newTitle")} claimId={null} editable>
@@ -18,7 +20,11 @@ export default async function NewClaimPage({ params }: PageProps<"/[locale]/clai
           <FlightForm
             locale={locale}
             claimId={null}
-            initial={{ flight_iata: "", flight_date: "", dep: null, arr: null, final: null, booking_reference: "", flight_id: "" }}
+            airlines={airlines ?? []}
+            initial={{
+              flight_iata: "", flight_date: "", dep: null, arr: null, final: null, booking_reference: "", flight_id: "",
+              airline_id: "", scheduled_dep_time: "", scheduled_arr: "",
+            }}
           />
         </CardContent>
       </Card>

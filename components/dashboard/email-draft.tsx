@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { approveEmail, discardEmailDraft, editEmailDraft } from "@/app/[locale]/claims/_actions/dashboard";
+import { CopyButton } from "@/components/claims/copy-button";
 
 type Mode = "view" | "edit" | "confirm_send" | "confirm_discard";
 
@@ -19,11 +20,14 @@ export function EmailDraft({
   claimId,
   email,
   alias,
+  mode: delivery = "send",
 }: {
   locale: string;
   claimId: string;
   email: { id: string; subject: string; body: string; recipient: string };
   alias: string;
+  // send: an email to approve; paste: a text for the passenger to paste into the airline's form.
+  mode?: "send" | "paste";
 }) {
   const t = useTranslations("Dashboard");
   const [mode, setMode] = useState<Mode>("view");
@@ -91,13 +95,18 @@ export function EmailDraft({
 
       {mode === "view" && (
         <div className="flex flex-wrap gap-2">
-          <Button onClick={() => setMode("confirm_send")}>{t("approve")}</Button>
+          {delivery === "paste" ? (
+            <CopyButton value={email.body} />
+          ) : (
+            <Button onClick={() => setMode("confirm_send")}>{t("approve")}</Button>
+          )}
           <Button variant="outline" onClick={() => setMode("edit")}>{t("edit")}</Button>
           <Button variant="ghost" className="text-muted-foreground" onClick={() => setMode("confirm_discard")}>
             {t("discard")}
           </Button>
         </div>
       )}
+      {mode === "view" && delivery === "paste" && <p className="text-xs text-muted-foreground">{t("pasteHint")}</p>}
 
       {mode === "confirm_send" && (
         <div role="alertdialog" aria-labelledby={`send-${email.id}`} className="space-y-3 rounded-lg border p-3">

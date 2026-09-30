@@ -85,11 +85,15 @@ export async function Messages({
       ) : (
         <ul className="space-y-3">
           {sorted.map((e) => {
-            const pending = e.status === "pending_approval";
+            // Drafts waiting for the passenger: emails to approve, or texts to paste into a form.
+            const paste = e.direction === "outbound" && e.status === "draft";
+            const pending = e.status === "pending_approval" || paste;
             const who =
               e.direction === "inbound"
                 ? t("from", { from: e.from_address ?? "—" })
-                : t("to", { to: e.status === "sent" ? (e.to_addresses?.join(", ") ?? "") : (e.recipient_label ?? "—") });
+                : e.status === "draft"
+                  ? t("pasteInto", { label: e.recipient_label ?? "—" })
+                  : t("to", { to: e.status === "sent" ? (e.to_addresses?.join(", ") ?? "") : (e.recipient_label ?? "—") });
             const when = e.sent_at ?? e.received_at ?? e.created_at;
             const body = emailBodyText(e.body_text, e.body_html);
             return (
@@ -109,6 +113,7 @@ export async function Messages({
                     claimId={claimId}
                     email={{ id: e.id, subject: e.subject ?? "", body, recipient: e.recipient_label ?? "—" }}
                     alias={alias}
+                    mode={paste ? "paste" : "send"}
                   />
                 ) : (
                   body && (
@@ -218,7 +223,8 @@ export async function Timeline({ createdAt, events }: { createdAt: string; event
   const known = [
     "status_changed", "email_approved", "submitted_airline", "email_received", "email_sent", "document_validated",
     "email_drafted", "email_failed", "email_draft_failed", "email_edited", "email_discarded",
-    "email_analyzed", "email_analysis_failed",
+    "email_analyzed", "email_analysis_failed", "expenses_submitted",
+    "airline_response_reported", "airline_response_analyzed",
   ];
   const label = (e: ClaimEventRow) => {
     if (e.event_type === "status_changed") {

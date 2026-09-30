@@ -14,9 +14,10 @@ export default async function FlightStep({ params }: PageProps<"/[locale]/claims
 
   const codes = [claim.dep_iata, claim.arr_iata, claim.final_destination_iata].filter((c): c is string => !!c);
   const supabase = await createClient();
-  const { data: airports } = codes.length
-    ? await supabase.from("airports").select("iata, name, city").in("iata", codes)
-    : { data: [] };
+  const [{ data: airports }, { data: airlines }] = await Promise.all([
+    codes.length ? supabase.from("airports").select("iata, name, city").in("iata", codes) : Promise.resolve({ data: [] }),
+    supabase.from("airlines").select("id, name, iata").eq("is_active", true).order("name"),
+  ]);
   const value = (code: string | null) =>
     code ? { iata: code, label: airportLabel(airports?.find((a) => a.iata === code), code) } : null;
 
@@ -27,6 +28,7 @@ export default async function FlightStep({ params }: PageProps<"/[locale]/claims
         <FlightForm
           locale={locale}
           claimId={claim.id}
+          airlines={airlines ?? []}
           initial={{
             flight_iata: claim.flight_iata,
             flight_date: claim.flight_date,
@@ -35,6 +37,9 @@ export default async function FlightStep({ params }: PageProps<"/[locale]/claims
             final: value(claim.final_destination_iata),
             booking_reference: claim.booking_reference ?? "",
             flight_id: claim.flight_id ?? "",
+            airline_id: claim.airline_id ?? "",
+            scheduled_dep_time: claim.reported_scheduled_dep_local?.slice(11, 16) ?? "",
+            scheduled_arr: claim.reported_scheduled_arr_local?.slice(0, 16) ?? "",
           }}
         />
       </CardContent>

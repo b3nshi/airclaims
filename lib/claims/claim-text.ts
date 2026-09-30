@@ -13,6 +13,8 @@ export type ClaimTextInput = {
   bookingReference: string | null;
   disruption: DisruptionType;
   arrivalDelayMinutes: number | null;
+  arrivalDelayEstimated?: boolean; // estimated from the departure time
+
   cancellationNoticeDays: number | null;
   perPassengerEur: number | null;
   totalEur: number | null;
@@ -21,6 +23,8 @@ export type ClaimTextInput = {
   staffInstructions: string | null;
   aliasEmail: string;
   departsSpain: boolean; // AESA is the enforcement body for flights from Spain
+  // Airlines that require separate submissions (e.g. Wizz) get one text each.
+  purpose?: "both" | "compensation" | "expenses";
 };
 
 type Lang = "en" | "es";
@@ -28,13 +32,18 @@ type Lang = "en" | "es";
 const T = {
   en: {
     subject: (f: string, d: string) => `EU261 compensation claim – flight ${f} on ${d}`,
+    expensesSubject: (f: string, d: string) => `Reimbursement of expenses – flight ${f} on ${d}`,
+    expensesIntroOnly: (f: string, from: string, to: string, d: string, pnr: string | null) =>
+      `I am writing to request reimbursement of the expenses I incurred because of the disruption of flight ${f} from ${from} to ${to} on ${d}${pnr ? ` (booking reference ${pnr})` : ""}.`,
+    careDuty:
+      "Under Articles 8 and 9 of Regulation (EC) No 261/2004, the airline must provide care (meals and refreshments, accommodation and transport) during the wait. As this was not provided, I paid the following myself; the receipts are attached:",
     greeting: (a: string) => `Dear ${a} Customer Relations,`,
     intro: (f: string, from: string, to: string, d: string, pnr: string | null) =>
       `I am writing to claim compensation under Regulation (EC) No 261/2004 for flight ${f} from ${from} to ${to} on ${d}${pnr ? ` (booking reference ${pnr})` : ""}.`,
-    delay: (dest: string, h: number, m: number) =>
-      `The flight arrived at my final destination, ${dest}, ${h} hours and ${m} minutes late.`,
-    missed: (dest: string, h: number, m: number) =>
-      `Because of the delay I missed my connection and reached my final destination, ${dest}, ${h} hours and ${m} minutes late.`,
+    delay: (dest: string, h: number, m: number, approx: boolean) =>
+      `The flight arrived at my final destination, ${dest}, ${approx ? "approximately " : ""}${h} hours and ${m} minutes late.`,
+    missed: (dest: string, h: number, m: number, approx: boolean) =>
+      `Because of the delay I missed my connection and reached my final destination, ${dest}, ${approx ? "approximately " : ""}${h} hours and ${m} minutes late.`,
     delayUnknown: (dest: string) => `The flight arrived at my final destination, ${dest}, more than three hours late.`,
     cancellation: (n: number | null) =>
       n === null ? "The flight was cancelled." : `The flight was cancelled and I was informed ${n} days before departure.`,
@@ -65,13 +74,18 @@ const T = {
   },
   es: {
     subject: (f: string, d: string) => `Reclamación de compensación EU261 – vuelo ${f} del ${d}`,
+    expensesSubject: (f: string, d: string) => `Reembolso de gastos – vuelo ${f} del ${d}`,
+    expensesIntroOnly: (f: string, from: string, to: string, d: string, pnr: string | null) =>
+      `Les escribo para solicitar el reembolso de los gastos que tuve por la incidencia del vuelo ${f} de ${from} a ${to} del ${d}${pnr ? ` (localizador ${pnr})` : ""}.`,
+    careDuty:
+      "Según los artículos 8 y 9 del Reglamento (CE) n.º 261/2004, la aerolínea debe prestar asistencia (comida y bebida, alojamiento y transporte) durante la espera. Como no se me prestó, pagué yo mismo lo siguiente; adjunto los justificantes:",
     greeting: (a: string) => `Estimado servicio de atención al cliente de ${a}:`,
     intro: (f: string, from: string, to: string, d: string, pnr: string | null) =>
       `Les escribo para reclamar la compensación prevista en el Reglamento (CE) n.º 261/2004 por el vuelo ${f} de ${from} a ${to} del ${d}${pnr ? ` (localizador ${pnr})` : ""}.`,
-    delay: (dest: string, h: number, m: number) =>
-      `El vuelo llegó a mi destino final, ${dest}, con ${h} horas y ${m} minutos de retraso.`,
-    missed: (dest: string, h: number, m: number) =>
-      `Debido al retraso perdí mi conexión y llegué a mi destino final, ${dest}, con ${h} horas y ${m} minutos de retraso.`,
+    delay: (dest: string, h: number, m: number, approx: boolean) =>
+      `El vuelo llegó a mi destino final, ${dest}, con ${approx ? "aproximadamente " : ""}${h} horas y ${m} minutos de retraso.`,
+    missed: (dest: string, h: number, m: number, approx: boolean) =>
+      `Debido al retraso perdí mi conexión y llegué a mi destino final, ${dest}, con ${approx ? "aproximadamente " : ""}${h} horas y ${m} minutos de retraso.`,
     delayUnknown: (dest: string) => `El vuelo llegó a mi destino final, ${dest}, con más de tres horas de retraso.`,
     cancellation: (n: number | null) =>
       n === null ? "El vuelo fue cancelado." : `El vuelo fue cancelado y se me informó ${n} días antes de la salida.`,
@@ -120,7 +134,28 @@ export function buildClaimText(input: ClaimTextInput): { subject: string; body: 
               input.finalDestination,
               Math.floor(delay / 60),
               delay % 60,
+              Boolean(input.arrivalDelayEstimated),
             );
+
+  const purpose = input.purpose ?? "both";
+  const expenseLines = input.expenses.map((e) => `- ${t.categories[e.category]}: ${money(e.amount, e.currency)}`).join("\n");
+  const closing = [
+    t.payment,
+    t.reply(input.aliasEmail) + " " + t.escalate(input.departsSpain),
+    `${t.closing}\n${input.passengers[0] ?? ""}`,
+  ];
+
+  if (purpose === "expenses") {
+    const paragraphs = [
+      t.greeting(input.airlineName),
+      t.expensesIntroOnly(input.flight, input.departure, input.arrival, input.flightDate, input.bookingReference),
+      facts,
+      t.careDuty + "\n" + expenseLines,
+      ...(input.staffInstructions ? [t.instructions(input.staffInstructions)] : []),
+      ...closing,
+    ];
+    return { subject: t.expensesSubject(input.flight, input.flightDate), body: paragraphs.join("\n\n") };
+  }
 
   const paragraphs = [
     t.greeting(input.airlineName),
@@ -129,15 +164,9 @@ export function buildClaimText(input: ClaimTextInput): { subject: string; body: 
     t.legal[input.disruption] + t.amount(input.perPassengerEur, input.totalEur) + "\n" +
       input.passengers.map((p) => `- ${p}`).join("\n"),
   ];
-  if (input.expenses.length) {
-    paragraphs.push(
-      t.expensesIntro + "\n" +
-        input.expenses.map((e) => `- ${t.categories[e.category]}: ${money(e.amount, e.currency)}`).join("\n"),
-    );
-  }
+  if (purpose === "both" && input.expenses.length) paragraphs.push(t.expensesIntro + "\n" + expenseLines);
   if (input.staffInstructions) paragraphs.push(t.instructions(input.staffInstructions));
-  paragraphs.push(t.payment, t.reply(input.aliasEmail) + " " + t.escalate(input.departsSpain));
-  paragraphs.push(`${t.closing}\n${input.passengers[0] ?? ""}`);
+  paragraphs.push(...closing);
 
   return { subject: t.subject(input.flight, input.flightDate), body: paragraphs.join("\n\n") };
 }

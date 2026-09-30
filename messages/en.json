@@ -127,13 +127,9 @@
     "flightNumber": "Flight number",
     "flightNumberHint": "As on your booking, e.g. VY1234.",
     "date": "Scheduled departure date",
-    "lookup": "Look up my flight",
     "lookingUp": "Looking up…",
-    "lookupFound": "We found your flight and filled in the route. Please check it.",
-    "lookupFoundDelay": "Our flight data suggests you arrived about {hours} h {minutes} min late. You'll confirm it in the next step.",
     "lookupNotFound": "We couldn't find this flight. Enter the route yourself.",
     "lookupUnavailable": "Flight lookup isn't available right now. Enter the route yourself.",
-    "lookupInvalid": "Enter a valid flight number and a past date first.",
     "from": "From",
     "to": "To",
     "airportPlaceholder": "City or airport code",
@@ -144,8 +140,21 @@
     "bookingReference": "Booking reference",
     "bookingReferenceHint": "The code on your booking confirmation, e.g. ABC123.",
     "lookupChecking": "We're confirming this flight with our flight data. You can carry on: the data is added to your claim as soon as it's confirmed.",
-    "lookupFoundCancelled": "Our flight data shows this flight was cancelled.",
-    "lookupRateLimited": "You've checked many flights today. Enter the route yourself; we'll confirm the flight later."
+    "lookupRateLimited": "You've checked many flights today. Enter the route yourself; we'll confirm the flight later.",
+    "airline": "Airline",
+    "airlineHint": "Leave it on automatic unless another airline operated the flight (codeshares).",
+    "airlineAuto": "Detect from the flight number",
+    "scheduledDepTime": "Scheduled departure time",
+    "scheduledDepTimeHint": "Local time at the departure airport.",
+    "scheduledArr": "Scheduled arrival",
+    "scheduledArrFinal": "Scheduled arrival at your final destination",
+    "scheduledArrHint": "Local time, as on your booking.",
+    "foundTitle": "We found your flight",
+    "foundProvisional": "We found your flight (still being confirmed)",
+    "foundScheduled": "Scheduled",
+    "foundActual": "What happened",
+    "foundStatus": "Status: {status}",
+    "foundFilled": "We've filled in the details below from our flight data. Check them and change anything that isn't right."
   },
   "Disruption": {
     "title": "What happened",
@@ -156,8 +165,7 @@
       "denied_boarding": "I was denied boarding",
       "missed_connection": "I missed my connection"
     },
-    "delayLabel": "How late did you arrive at your final destination?",
-    "delayHint": "From the scheduled arrival time to when the aircraft doors opened.",
+    "delayLabel": "When did you arrive?",
     "noticeLabel": "How many days before departure were you told about the cancellation?",
     "noticeHint": "Enter 0 if you found out at the airport.",
     "reroutingLabel": "Did the airline offer you an alternative flight?",
@@ -185,7 +193,20 @@
       "transport": "Transport to the hotel or home"
     },
     "instructionsLabel": "What did airline staff tell you to do?",
-    "instructionsHint": "E.g. \"Take a taxi home and claim it back\". Include who, when and where if you remember."
+    "instructionsHint": "E.g. \"Take a taxi home and claim it back\". Include who, when and where if you remember.",
+    "scheduledArrLabel": "Scheduled arrival at your final destination",
+    "localTimeHint": "Local time at that airport.",
+    "arrivalKnownLabel": "What do you know?",
+    "modeArrival": "I know when we arrived",
+    "modeDeparture": "I only know when it departed",
+    "actualArrLabel": "Actual arrival (when the doors opened)",
+    "actualArrHint": "The law counts the delay at your final destination, when you could leave the aircraft.",
+    "scheduledDepLabel": "Scheduled departure (local)",
+    "actualDepLabel": "Actual departure (local)",
+    "computed": "That's {hours} h {minutes} min late at your final destination.",
+    "computedEstimated": "About {hours} h {minutes} min late at your final destination (estimated from the departure time and the scheduled flight time).",
+    "computedMissing": "Enter the times and we'll calculate the delay.",
+    "onTime": "You arrived on time or early."
   },
   "Passengers": {
     "title": "Passengers",
@@ -309,7 +330,8 @@
     "flightDataDelay": "Arrived {hours} h {minutes} min late",
     "flightDataCancelled": "Cancelled",
     "flightDataOnTime": "Arrived on time or less than 15 min late",
-    "flightDataPending": "Being confirmed"
+    "flightDataPending": "Being confirmed",
+    "delayEstimated": "about {hours} h {minutes} min late (estimated)"
   },
   "Sign": {
     "title": "Sign",
@@ -335,9 +357,9 @@
     "webFormIntro": "{airline} takes claims through its website. You submit it yourself; it takes about 5 minutes.",
     "openForm": "Open the {airline} claim form",
     "claimText": "Claim text to paste",
-    "claimTextHint": "Paste it into the form's description field. It asks for payment in money, not vouchers.",
+    "claimTextHint": "If the airline's form has a text field, paste this there. If it doesn't (like Wizz's compensation form), keep it: it's your written claim for other channels and for AESA.",
     "referenceLabel": "Airline's claim reference",
-    "referenceHint": "Shown on screen or in the confirmation email after you submit.",
+    "referenceHint": "Shown on screen or in the confirmation email. If you got more than one claim number, add them separated by commas.",
     "markSubmitted": "I've submitted my claim",
     "emailBody": "{airline} accepts claims by email. We're preparing your claim email: you'll read and approve it before anything is sent.",
     "unknownBody": "We don't have this airline's claim channel yet. We'll look it up and email you the next step. Meanwhile, here is your claim text.",
@@ -349,7 +371,15 @@
     "addDocuments": "Add documents",
     "backToClaims": "Back to my claims",
     "toDashboard": "Go to your claim",
-    "tipsTitle": "Tips for {airline}"
+    "tipsTitle": "Tips for {airline}",
+    "expensesTitle": "Expenses: a separate claim to {airline}",
+    "expensesIntro": "{airline} requires expenses to be claimed separately from the compensation, with its own claim number.",
+    "openExpensesForm": "Open the {airline} expenses form",
+    "receiptsToUpload": "Receipts to upload",
+    "expensesText": "Expenses text to paste",
+    "expensesReference": "Expenses claim number",
+    "markExpensesSubmitted": "I've submitted my expenses claim",
+    "expensesRecorded": "Expenses claim recorded."
   },
   "Dashboard": {
     "back": "My claims",
@@ -412,6 +442,10 @@
       "none": {
         "title": "Nothing to do",
         "body": "This claim is closed."
+      },
+      "respond_to_airline": {
+        "title": "Reply to the airline's answer",
+        "body": "We've read the airline's answer and found what doesn't add up. Choose what your reply should say."
       }
     },
     "aesaUntil": "Last day to go to AESA: {date}.",
@@ -464,7 +498,10 @@
       "email_edited": "You edited a message",
       "email_discarded": "You discarded a draft",
       "email_analyzed": "We read a message about your claim",
-      "email_analysis_failed": "We couldn't summarise a message"
+      "email_analysis_failed": "We couldn't summarise a message",
+      "expenses_submitted": "Expenses claim sent to the airline",
+      "airline_response_reported": "You reported the airline's answer",
+      "airline_response_analyzed": "We read the airline's answer"
     },
     "documentsTitle": "Documents",
     "noDocuments": "No documents yet.",
@@ -517,7 +554,10 @@
       "title": "The airline asks for"
     },
     "whatToDo": "What to do",
-    "prepareOfferReply": "Prepare a reply asking to be paid in money"
+    "prepareOfferReply": "Prepare a reply asking to be paid in money",
+    "goToAnswer": "See the airline's answer",
+    "pasteInto": "Text to paste into {label}",
+    "pasteHint": "Copy it into the airline's form (for example \"Service complaints\" or the expenses form). We don't send it."
   },
   "Admin": {
     "title": "Admin",
@@ -723,5 +763,115 @@
         "source": "Source"
       }
     }
+  },
+  "AirlineResponse": {
+    "title": "The airline's answer",
+    "intro": "Did the airline answer, or did its form refuse your claim? Tell us what they said: we'll read it, point out what doesn't add up and help you reply.",
+    "report": "Report the airline's answer",
+    "reportAnother": "Report another answer",
+    "channel": "How did they answer?",
+    "channels": {
+      "web_form": "Their web form (automatic message)",
+      "email": "Email",
+      "letter": "Letter",
+      "phone": "Phone",
+      "chat": "Chat",
+      "other": "Other"
+    },
+    "receivedOn": "Date",
+    "airlineText": "What they said",
+    "airlineTextHint": "Paste their message word for word, or the text their form showed.",
+    "needText": "Paste what the airline said, or explain it below.",
+    "explanation": "What happened, in your words",
+    "explanationHint": "Anything that helps: what you selected, what staff told you, what doesn't match (e.g. they measured the delay against the rescheduled flight).",
+    "screenshots": "Screenshots",
+    "screenshotsHint": "Add screenshots of their answer: they're evidence if you go to AESA.",
+    "addScreenshot": "Add a screenshot",
+    "submit": "Send to review",
+    "reported": "Thanks. We're reading their answer: it takes a moment.",
+    "theirAnswer": "Their answer",
+    "analyzing": "We're reading the airline's answer…",
+    "analysisFailed": "We couldn't read the answer this time.",
+    "retry": "Try again",
+    "conflicts": "What doesn't add up",
+    "options": "Your options",
+    "recommended": "Recommended",
+    "optionCodes": {
+      "request_evidence": "Ask for proof of the extraordinary circumstance",
+      "contest_delay_calculation": "Contest how they measured the delay",
+      "contest_notice": "Contest the notice they claim to have given",
+      "decline_offer": "Decline the offer and ask for money",
+      "send_documents": "Send the documents they ask for",
+      "accept_payment": "Check the payment and confirm",
+      "wait": "Wait for their answer",
+      "go_to_aesa": "Take it to AESA"
+    },
+    "replyTitle": "Prepare your reply",
+    "replyIncludes": "Your reply should…",
+    "opt": {
+      "request_evidence": "Ask them to say which extraordinary circumstance it was and prove it",
+      "request_evidenceHint": "The airline has to prove it and that it took all reasonable measures (Art. 5(3), Wallentin-Hermann C-549/07).",
+      "contest_delay": "Contest the delay calculation",
+      "contest_delayHint": "The delay counts at arrival against the originally scheduled time (Sturgeon C-402/07).",
+      "decline_offer": "Decline any voucher, credit or partial amount",
+      "include_expenses": "Also ask for my expenses",
+      "mention_aesa": "Say I'll go to AESA if they don't give a substantiated answer",
+      "mention_neb": "Say I'll go to the national enforcement body if they don't give a substantiated answer",
+      "mention_aesaHint": "Recommended: it's a factual next step with a deadline, and AESA will ask for their answer anyway."
+    },
+    "deadline": "Deadline for their answer",
+    "days": "{days} days",
+    "notes": "Anything else to include",
+    "notesHint": "In your own words; we'll write it in the airline's language.",
+    "deliveryPaste": "This airline takes claims through a form: you'll get a text to copy and paste (e.g. under \"Service complaints\" or in the expenses form). Nothing is sent by us.",
+    "deliveryEmail": "You'll get an email to review, edit and approve before it's sent from your claim address.",
+    "draftReply": "Draft my reply",
+    "drafting": "We're writing your reply. It will appear under Messages in a moment.",
+    "draftError": "We couldn't start the reply. Try again in a few minutes.",
+    "draftWaiting": "Your reply is ready under Messages.",
+    "sources": {
+      "reported": "Reported by you",
+      "forwarded": "Forwarded by you",
+      "inbound": "Received at your claim address"
+    }
+  },
+  "Forwarding": {
+    "title": "Get {airline}'s emails into your claim",
+    "theAirline": "the airline",
+    "airlineDomain": "the airline's domain",
+    "intro": "This airline replies to your own email address, not to your claim address. Forward its emails to your claim address and we'll read them, tell you what they mean and help you reply.",
+    "onceTitle": "Each time: forward it",
+    "onceBody": "When an email from the airline arrives, forward it to your claim address. Any mail app works.",
+    "filterTitle": "Or set it up once: a filter",
+    "filterBody": "Create a rule that forwards only emails from {domain} to your claim address. Nothing else from your inbox reaches us.",
+    "providers": {
+      "gmail": {
+        "name": "Gmail",
+        "steps": [
+          "Open Gmail on a computer > Settings (gear) > See all settings > Forwarding and POP/IMAP.",
+          "Click \"Add a forwarding address\" and enter {alias}.",
+          "Gmail sends a confirmation code to that address: we'll forward it to you by email within a few minutes. Enter the code in Gmail.",
+          "Go to Filters and Blocked Addresses > Create a new filter. In \"From\" write {domain}.",
+          "Click \"Create filter\", tick \"Forward it to\" and choose {alias}. Save."
+        ]
+      },
+      "outlook": {
+        "name": "Outlook / Hotmail",
+        "steps": [
+          "Open Outlook.com > Settings > Mail > Rules > Add new rule.",
+          "Name it (e.g. Airline claim). Condition: \"From\" contains {domain}.",
+          "Action: \"Forward to\" {alias}. Save."
+        ]
+      },
+      "icloud": {
+        "name": "iCloud Mail",
+        "steps": [
+          "Open iCloud.com > Mail > Settings (gear) > Rules > Add a rule.",
+          "If a message \"is from\" {domain}, then \"Forward to\" {alias}.",
+          "Save the rule."
+        ]
+      }
+    },
+    "privacy": "We only use forwarded emails for this claim. We check that forwards really come from your mailbox before reading them."
   }
 }

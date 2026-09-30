@@ -5,16 +5,24 @@ import { z } from "zod";
 import { redirect } from "@/i18n/navigation";
 import { invalid, type FormState } from "@/lib/claims/form-state";
 import { encodeReason, REASON_CATEGORIES, UPLOAD_MIME_TYPES, type CareProvided } from "@/lib/claims/model";
+import { estimateArrival, minutesLate } from "@/lib/claims/times";
 import { createClient } from "@/lib/supabase/server";
 import { guardClaim } from "./guard";
 
 const optionalInt = (max: number) =>
   z.preprocess((v) => (v === "" || v === null || v === undefined ? null : Number(v)), z.number().int().min(0).max(max).nullable());
 
+const localTime = z.union([z.string().regex(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/), z.literal("")]);
+
 const disruptionSchema = z.object({
   disruption: z.enum(["delay", "cancellation", "denied_boarding", "missed_connection"]),
-  delay_hours: optionalInt(96),
-  delay_minutes: optionalInt(59),
+  // Delay: times, not a duration. Arrival at the final destination is the legal reference;
+  // if the passenger only knows the departure, arrival is estimated from the scheduled duration.
+  arrival_mode: z.enum(["arrival", "departure"]),
+  scheduled_arr: localTime,
+  actual_arr: localTime,
+  scheduled_dep: localTime,
+  actual_dep: localTime,
   notice_days: optionalInt(365),
   rerouting_offered: z.enum(["yes", "no", ""]),
   earlier_hours: optionalInt(96),
@@ -32,12 +40,15 @@ const disruptionSchema = z.object({
 const toMinutes = (h: number | null, m: number | null) => (h === null && m === null ? null : (h ?? 0) * 60 + (m ?? 0));
 
 export async function saveDisruption(locale: string, claimId: string, _prev: FormState, formData: FormData): Promise<FormState> {
-  await guardClaim(locale, claimId, "draft");
+  const { claim } = await guardClaim(locale, claimId, "draft");
   const get = (k: string) => formData.get(k) ?? "";
   const parsed = disruptionSchema.safeParse({
     disruption: get("disruption"),
-    delay_hours: get("delay_hours"),
-    delay_minutes: get("delay_minutes"),
+    arrival_mode: get("arrival_mode") || "arrival",
+    scheduled_arr: get("scheduled_arr"),
+    actual_arr: get("actual_arr"),
+    scheduled_dep: get("scheduled_dep"),
+    actual_dep: get("actual_dep"),
     notice_days: get("notice_days"),
     rerouting_offered: get("rerouting_offered"),
     earlier_hours: get("earlier_hours"),
@@ -67,11 +78,53 @@ export async function saveDisruption(locale: string, claimId: string, _prev: For
   }
 
   const supabase = await createClient();
+
+  // Arrival delay from the reported times, in each airport's own time zone.
+  let times = {
+    reported_scheduled_arr_local: null as string | null,
+    reported_actual_arr_local: null as string | null,
+    reported_scheduled_dep_local: claim.reported_scheduled_dep_local,
+    reported_actual_dep_local: null as string | null,
+    arrival_time_estimated: false,
+    reported_arrival_delay_minutes: null as number | null,
+  };
+  if (isDelay) {
+    const finalIata = claim.final_destination_iata ?? claim.arr_iata;
+    const { data: zones } = await supabase
+      .from("airports")
+      .select("iata, timezone")
+      .in("iata", [claim.dep_iata, finalIata].filter((x): x is string => !!x));
+    const tz = (code: string | null) => zones?.find((z) => z.iata === code)?.timezone ?? null;
+    const estimated = v.arrival_mode === "departure";
+    let actualArr = v.actual_arr || null;
+    if (estimated) {
+      if (!v.scheduled_arr || !v.scheduled_dep || !v.actual_dep) {
+        return { status: "invalid", fieldErrors: { scheduled_dep: true, actual_dep: true } };
+      }
+      actualArr = estimateArrival({
+        scheduledDep: v.scheduled_dep,
+        scheduledArr: v.scheduled_arr,
+        actualDep: v.actual_dep,
+        depTz: tz(claim.dep_iata),
+        arrTz: tz(finalIata),
+      });
+    }
+    times = {
+      reported_scheduled_arr_local: v.scheduled_arr || null,
+      reported_actual_arr_local: actualArr,
+      reported_scheduled_dep_local: v.scheduled_dep || claim.reported_scheduled_dep_local,
+      reported_actual_dep_local: v.actual_dep || null,
+      arrival_time_estimated: estimated,
+      reported_arrival_delay_minutes:
+        v.scheduled_arr && actualArr ? Math.max(0, minutesLate(v.scheduled_arr, actualArr, tz(finalIata))) : null,
+    };
+  }
+
   const { error } = await supabase
     .from("claims")
     .update({
       disruption: v.disruption,
-      reported_arrival_delay_minutes: isDelay ? toMinutes(v.delay_hours, v.delay_minutes) : null,
+      ...times,
       cancellation_notice_days: isCancellation ? v.notice_days : null,
       care_provided: care,
       reason_given_by_airline: encodeReason(v.reason_category, v.reason_details || null),

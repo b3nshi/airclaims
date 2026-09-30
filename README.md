@@ -52,6 +52,10 @@ Checks: `pnpm test` (eligibility, legal texts, messages, signatures), `pnpm type
 | `0011` | `offer_reply` drafts; shared recipient rule (curated contact, or the offer's sender only on the airline's own domain) |
 | `0012` | Admin: roles (`kb_editor`, `admin`), `airline_knowledge`, `airline_insights`, `admin_audit_log`, review-queue actions, `admin_airline_stats`, passenger tips, per-airline drafting notes; Wizz knowledge seed |
 | `0013` | `admin_upsert_flight` (register flight data by hand, no API call); Wizz Air group: W4/W9 get W6's form and knowledge |
+| `0014` | Reported times on claims (wizard asks times, not durations); airport time zones; Wizz claim-submission form, category and steps |
+| `0015` | Wizz's real claim flow (separate compensation/expenses forms, steps, tips, insights); `record_expenses_submission` |
+| `0016` | "The airline answered": `airline_responses`, `report_airline_response`, analysis + reply ("challenge") drafts; paste-texts for web-form airlines |
+| `0017` | Forwarded airline mail (authenticated forwards from the passenger), Gmail forwarding confirmations, direct airline mail → one "airline's answer" flow; analysis queue |
 
 ## Claim wizard (M2)
 
@@ -75,6 +79,25 @@ dashboard for signed claims (drafts go back to the wizard): status, recommended 
 **Approve & send** (`approve_email` RPC, two-step confirm showing the recipient label), documents
 (opened via `/api/documents/{id}` → 60 s signed URL), expenses, timeline (`claim_events`) and
 withdraw. Email bodies are always shown as plain text; inbound HTML is never rendered.
+
+## The airline's answer
+
+On the claim dashboard the passenger reports what the airline answered (a web form's automatic
+verdict, an email, a letter, a call), pastes it, explains what happened and adds screenshots.
+`airclaim-airline-response` (n8n) reads it: what the airline claims, where it conflicts with the
+facts (e.g. a delay measured against the rescheduled flight, an extraordinary circumstance
+without saying which), the options, and when AESA is possible. The passenger ticks what the reply
+should do (ask for proof of the extraordinary circumstance, contest the delay calculation,
+decline an offer, include expenses, mention AESA with a 14/30-day deadline) and
+`airclaim-email-draft` writes it in the airline's language. Airlines with an email contact get an
+email to approve; web-form airlines (e.g. Wizz) get a text to paste, which we never send.
+
+Answers reach this flow three ways: reported on the dashboard, **forwarded** by the passenger to
+their claim address (for airlines whose forms reply to the passenger's own mailbox; a guide shows
+how to forward once or with a Gmail/Outlook/iCloud filter limited to the airline's domains), or
+sent by the airline **straight to the claim address**. Forwards only count when the passenger's
+mail passed DMARC/SPF/DKIM; otherwise a person reviews them. Gmail's forwarding confirmation code
+is passed straight to the passenger.
 
 ## Admin area
 

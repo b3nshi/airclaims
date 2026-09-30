@@ -17,6 +17,11 @@ describe("nextAction", () => {
     expect(next({ hasPendingApproval: true }).kind).toBe("approve_email");
     expect(next({ hasPendingApproval: true, status: "airline_replied" }).kind).toBe("approve_email");
   });
+  it("asks to answer an analysed airline reply, after approvals", () => {
+    expect(next({ status: "airline_replied", airlineAnswerToHandle: true })).toEqual({ kind: "respond_to_airline", aesaUntil: "2027-09-01" });
+    expect(next({ status: "airline_replied", airlineAnswerToHandle: true, hasPendingApproval: true }).kind).toBe("approve_email");
+    expect(next({ status: "won", airlineAnswerToHandle: true }).kind).toBe("check_payment");
+  });
   it("never asks to approve on closed claims", () => {
     expect(next({ hasPendingApproval: true, status: "withdrawn" }).kind).toBe("none");
   });

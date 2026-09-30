@@ -4,6 +4,7 @@ import type { ClaimStatus, ContactChannel } from "@/lib/supabase/database.types"
 export type NextActionKind =
   | "finish_draft"
   | "approve_email"
+  | "respond_to_airline"
   | "submit_web_form"
   | "preparing_email"
   | "no_channel"
@@ -23,6 +24,7 @@ export type NextActionInput = {
   status: ClaimStatus;
   channel: ContactChannel | null; // airline's preferred compensation channel
   hasPendingApproval: boolean; // an outbound draft waits for the user's approval
+  airlineAnswerToHandle?: boolean; // an analysed airline answer the passenger hasn't replied to
   submittedAt: string | null;
   aesaDeadline: string | null;
   flightDate: string;
@@ -36,6 +38,9 @@ export function nextAction(i: NextActionInput): NextAction {
 
   // Waiting on the user always comes first: nothing is sent without their approval.
   if (i.hasPendingApproval && !closed && i.status !== "draft") return { kind: "approve_email" };
+  if (i.airlineAnswerToHandle && (i.status === "submitted_airline" || i.status === "airline_replied")) {
+    return { kind: "respond_to_airline", aesaUntil };
+  }
 
   switch (i.status) {
     case "draft":

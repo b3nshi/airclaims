@@ -233,6 +233,12 @@ def email_draft():
            "={{ JSON.stringify({ p_key: $('Parse request').first().json.idempotency_key, "
            "p_workflow: 'airclaim-email-draft' }) }}", [1600, 240])
     wf.if_("First time?", "={{ $json.claimed }}", TRUE, [1800, 240])
+    # "challenge": a reply to an airline answer the passenger reported (0016), with their options.
+    wf.if_("Challenge?", "={{ $('Parse request').first().json.template === 'challenge' }}", TRUE, [1900, 160])
+    wf.rpc("Challenge context", "challenge_draft_context",
+           "={{ JSON.stringify({ p_claim_id: $('Parse request').first().json.claim_id, "
+           "p_response_id: $('Parse request').first().json.response_id, "
+           "p_options: $('Parse request').first().json.options }) }}", [2000, 60])
     wf.rpc("Claim context", "email_draft_context",
            "={{ JSON.stringify({ p_claim_id: $('Parse request').first().json.claim_id, "
            "p_template: $('Parse request').first().json.template }) }}", [2000, 160])
@@ -244,6 +250,10 @@ def email_draft():
             body="={{ JSON.stringify($json.request) }}", full_response=True, timeout=180000)
     wf.code("Check draft", src("email-draft/check-draft.js"), [2800, 80])
     wf.if_("Draft ok?", "={{ $json.ok }}", TRUE, [3000, 80])
+    wf.if_("Challenge draft?", "={{ $json.template === 'challenge' }}", TRUE, [3100, 0])
+    wf.rpc("Save challenge", "insert_challenge_draft",
+           "={{ JSON.stringify({ p_claim_id: $json.claim_id, p_response_id: $json.response_id, "
+           "p_subject: $json.subject, p_body: $json.body }) }}", [3200, -80])
     wf.rpc("Save draft", "insert_email_draft",
            "={{ JSON.stringify({ p_claim_id: $json.claim_id, p_template: $json.template, "
            "p_subject: $json.subject, p_body: $json.body }) }}", [3200, 0])
@@ -260,12 +270,18 @@ def email_draft():
            "={{ JSON.stringify({ p_key: $('Parse request').first().json.idempotency_key }) }}", [2400, 280],
            continue_on_error=True)
     wf.chain("Accepted", "Claim idempotency key", "First time?")
-    wf.link("First time?", "Claim context", 0)
+    wf.link("First time?", "Challenge?", 0)
+    wf.link("Challenge?", "Challenge context", 0)
+    wf.link("Challenge?", "Claim context", 1)
+    wf.link("Challenge context", "Eligible?")
     wf.link("Claim context", "Eligible?")
     wf.link("Eligible?", "Build request", 0)
     wf.link("Eligible?", "Release key (not eligible)", 1)
     wf.chain("Build request", "Claude", "Check draft", "Draft ok?")
-    wf.link("Draft ok?", "Save draft", 0)
+    wf.link("Draft ok?", "Challenge draft?", 0)
+    wf.link("Challenge draft?", "Save challenge", 0)
+    wf.link("Challenge draft?", "Save draft", 1)
+    wf.link("Save challenge", "Notification")
     wf.link("Draft ok?", "Log failure", 1)
     wf.chain("Log failure", "Release key (failed)")
     wf.chain("Save draft", "Notification", "Notify user")
@@ -375,6 +391,10 @@ def email_inbound():
     wf.rpc("Mark forwarded", "mark_email_forwarded",
            "={{ JSON.stringify({ p_email_id: $('Build forward').first().json.email_id }) }}", [3200, 440])
     wf.link("Stored?", "Needs AI?", 0)
+    # A mail provider's forwarding confirmation: straight to the passenger, no AI.
+    wf.if_("Verification?", "={{ $('Ingest').first().json.mode }}", {"type": "string", "operation": "equals"}, [1200, 620], "verification")
+    wf.link("Stored?", "Verification?", 0)
+    wf.link("Verification?", "Build forward", 0)
     wf.link("Needs AI?", "Build request", 0)
     wf.chain("Build request", "Claude", "Check analysis", "Analysis ok?")
     wf.link("Analysis ok?", "Apply analysis", 0)
@@ -387,7 +407,58 @@ def email_inbound():
     wf.export()
 
 
+# ---- airclaim-airline-response ------------------------------------------------------------
+def airline_response():
+    """Reads airline answers from the queue (0016/0017): reported on the dashboard, forwarded by the
+    passenger, or sent straight to the claim address. One at a time; a poke from the app or the
+    2-minute schedule starts a run."""
+    wf = Workflow("airclaim-airline-response")
+    wf.signed_entry("airclaim-airline-response", [0, 300], "Valid?")
+    wf.schedule("Every 2 minutes", 2, [200, 100])
+    wf.link("Every 2 minutes", "Load config")
+    wf.if_("From webhook?", FROM_WEBHOOK, TRUE, [600, 300])
+    wf.link("Load config", "From webhook?")
+    wf.link("From webhook?", "Verify signature", 0)
+    wf.link("From webhook?", "Lease answer", 1)
+    wf.if_("Valid?", "={{ $json.valid }}", TRUE, [1000, 300])
+    wf.respond("Accepted", '={{ { "accepted": true } }}', 202, [1200, 240])
+    wf.respond("Reject", '={{ { "error": "invalid_signature" } }}', 401, [1200, 400])
+    wf.link("Valid?", "Accepted", 0)
+    wf.link("Valid?", "Reject", 1)
+    wf.rpc("Lease answer", "claim_pending_airline_response", "={{ JSON.stringify({}) }}", [1400, 120])
+    wf.link("Accepted", "Lease answer")
+    wf.if_("Has answer?", "={{ $json.id }}", EXISTS, [1600, 120])
+    wf.rpc("Answer context", "airline_response_context",
+           "={{ JSON.stringify({ p_response_id: $('Lease answer').first().json.id }) }}", [1800, 120])
+    wf.if_("Readable?", "={{ $json.ok }}", TRUE, [2000, 120])
+    prompt = src("airline-response/system-prompt.md").rstrip("\n")
+    wf.code("Build request", src("airline-response/build-request.js").replace("__SYSTEM_PROMPT__", json.dumps(prompt)), [2200, 40])
+    wf.http("Claude", [2400, 40], url="https://api.anthropic.com/v1/messages", credential="anthropic",
+            headers=[("anthropic-version", "2023-06-01"), ("anthropic-beta", "server-side-fallback-2026-07-01")],
+            body="={{ JSON.stringify($json.request) }}", full_response=True, timeout=180000)
+    wf.code("Check analysis", src("airline-response/check-analysis.js"), [2600, 40])
+    wf.if_("Analysis ok?", "={{ $json.ok }}", TRUE, [2800, 40])
+    wf.rpc("Save analysis", "apply_airline_response_analysis",
+           "={{ JSON.stringify({ p_response_id: $('Lease answer').first().json.id, p: $json.analysis }) }}", [3000, -40])
+    wf.if_("Notify?", "={{ $json.notify }}", TRUE, [3200, -40])
+    wf.code("Notification", src("common/notification-texts.js") + src("airline-response/notification.js"), [3400, -80])
+    wf.http("Notify user", [3600, -80], url=f"={{{{ {CFG}.forwardemail_api_url }}}}", credential="forwardemail",
+            body="={{ JSON.stringify($json) }}", continue_on_error=True)
+    wf.rpc("Mark failed", "fail_airline_response_analysis",
+           "={{ JSON.stringify({ p_response_id: $('Lease answer').first().json.id, p_error: $json.error }) }}",
+           [3000, 120], continue_on_error=True)
+    wf.chain("Lease answer", "Has answer?", "Answer context", "Readable?")
+    wf.link("Readable?", "Build request", 0)
+    wf.chain("Build request", "Claude", "Check analysis", "Analysis ok?")
+    wf.link("Analysis ok?", "Save analysis", 0)
+    wf.link("Analysis ok?", "Mark failed", 1)
+    wf.chain("Save analysis", "Notify?")
+    wf.link("Notify?", "Notification", 0)
+    wf.chain("Notification", "Notify user")
+    wf.export()
+
+
 if __name__ == "__main__":
-    for build in (config, flight_check, email_draft, email_send, email_inbound):
+    for build in (config, flight_check, email_draft, email_send, email_inbound, airline_response):
         build()
     print("built:", ", ".join(sorted(p.name for p in OUT.glob("airclaim-*.json"))))

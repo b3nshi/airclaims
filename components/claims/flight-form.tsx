@@ -1,17 +1,19 @@
 "use client";
 
-import { useTranslations } from "next-intl";
-import { useActionState, useState, useTransition } from "react";
-import { Button } from "@/components/ui/button";
+import { useFormatter, useTranslations } from "next-intl";
+import { useActionState, useEffect, useRef, useState, useTransition } from "react";
 import { Field, describedBy } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import { NativeSelect } from "@/components/ui/native-select";
 import { checkFlight, saveFlight, type LookupResult } from "@/app/[locale]/claims/_actions/flight";
 import { initialFormState } from "@/lib/claims/form-state";
+import { FLIGHT_NUMBER_RE, normalizeFlightNumber } from "@/lib/claims/model";
 import { AirportField, type AirportValue } from "./airport-field";
 import { WizardNav } from "./wizard-nav";
 
 const POLL_ATTEMPTS = 8;
 const POLL_INTERVAL_MS = 4000;
+const LOOKUP_DEBOUNCE_MS = 700;
 
 export type FlightFormValues = {
   flight_iata: string;
@@ -21,11 +23,28 @@ export type FlightFormValues = {
   final: AirportValue | null;
   booking_reference: string;
   flight_id: string;
+  airline_id: string;
+  scheduled_dep_time: string; // HH:mm, local at departure
+  scheduled_arr: string; // datetime-local, local at the final destination
 };
 
-export function FlightForm({ locale, claimId, initial }: { locale: string; claimId: string | null; initial: FlightFormValues }) {
+type AirlineOption = { id: string; name: string; iata: string | null };
+type Found = Extract<LookupResult, { status: "found" | "checking" }>;
+
+export function FlightForm({
+  locale,
+  claimId,
+  initial,
+  airlines,
+}: {
+  locale: string;
+  claimId: string | null;
+  initial: FlightFormValues;
+  airlines: AirlineOption[];
+}) {
   const t = useTranslations("Flight");
   const tw = useTranslations("Wizard");
+  const format = useFormatter();
   const [state, formAction] = useActionState(saveFlight.bind(null, locale, claimId), initialFormState);
   const [flight, setFlight] = useState(initial.flight_iata);
   const [date, setDate] = useState(initial.flight_date);
@@ -34,55 +53,63 @@ export function FlightForm({ locale, claimId, initial }: { locale: string; claim
   const [final, setFinal] = useState(initial.final);
   const [hasConnection, setHasConnection] = useState(Boolean(initial.final));
   const [flightId, setFlightId] = useState(initial.flight_id);
+  const [airlineId, setAirlineId] = useState(initial.airline_id);
+  const [scheduledDepTime, setScheduledDepTime] = useState(initial.scheduled_dep_time);
+  const [scheduledArr, setScheduledArr] = useState(initial.scheduled_arr);
   const [lookup, setLookup] = useState<LookupResult | null>(null);
   const [looking, startLookup] = useTransition();
+  const lastKey = useRef("");
   const err = (k: string) => state.fieldErrors?.[k];
   const today = new Date().toISOString().slice(0, 10);
 
   function apply(res: LookupResult) {
     setLookup(res);
-    if (res.status === "found" || res.status === "checking") {
-      if (res.dep) setDep(res.dep);
-      if (res.arr) setArr(res.arr);
-      setFlightId(res.flightId ?? "");
-    }
+    if (res.status !== "found" && res.status !== "checking") return;
+    // Our flight data fills in the rest; the passenger can still change anything.
+    if (res.dep) setDep(res.dep);
+    if (res.arr) setArr(res.arr);
+    if (res.airline) setAirlineId(res.airline.id);
+    if (res.scheduledDep) setScheduledDepTime(res.scheduledDep.slice(11, 16));
+    if (res.scheduledArr && !hasConnection) setScheduledArr(res.scheduledArr.slice(0, 16));
+    setFlightId(res.flightId ?? "");
   }
 
-  // New flights are confirmed by one queued API call: poll our table for ~30 s.
-  function runLookup() {
-    startLookup(async () => {
-      let res = await checkFlight(flight, date);
-      apply(res);
-      for (let i = 0; i < POLL_ATTEMPTS && (res.status === "checking" || res.status === "checking_no_data"); i++) {
-        await new Promise((r) => setTimeout(r, POLL_INTERVAL_MS));
-        res = await checkFlight(flight, date);
+  // Look the flight up as soon as number and date are valid. New flights are confirmed by
+  // one queued API call, so poll our table for a short while.
+  useEffect(() => {
+    const number = normalizeFlightNumber(flight);
+    const key = `${number}|${date}`;
+    if (!FLIGHT_NUMBER_RE.test(number) || !/^\d{4}-\d{2}-\d{2}$/.test(date) || date > today || key === lastKey.current) return;
+    const timer = setTimeout(() => {
+      lastKey.current = key;
+      startLookup(async () => {
+        let res = await checkFlight(number, date);
         apply(res);
-      }
-    });
-  }
+        for (let i = 0; i < POLL_ATTEMPTS && (res.status === "checking" || res.status === "checking_no_data"); i++) {
+          await new Promise((r) => setTimeout(r, POLL_INTERVAL_MS));
+          res = await checkFlight(number, date);
+          apply(res);
+        }
+      });
+    }, LOOKUP_DEBOUNCE_MS);
+    return () => clearTimeout(timer);
+    // apply/today are stable enough for this lookup; re-run only when the key changes.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [flight, date]);
 
-  const lookupMessage = (() => {
-    switch (lookup?.status) {
-      case "found":
-        if (lookup.cancelled) return `${t("lookupFound")} ${t("lookupFoundCancelled")}`;
-        return lookup.delayMinutes !== null && lookup.delayMinutes >= 15
-          ? `${t("lookupFound")} ${t("lookupFoundDelay", { hours: Math.floor(lookup.delayMinutes / 60), minutes: lookup.delayMinutes % 60 })}`
-          : t("lookupFound");
-      case "checking":
-      case "checking_no_data":
-        return t("lookupChecking");
-      case "not_found":
-        return t("lookupNotFound");
-      case "rate_limited":
-        return t("lookupRateLimited");
-      case "unavailable":
-        return t("lookupUnavailable");
-      case "invalid":
-        return t("lookupInvalid");
-      default:
-        return null;
-    }
-  })();
+  const found = lookup && (lookup.status === "found" || lookup.status === "checking") ? (lookup as Found) : null;
+  const when = (local: string | null) =>
+    local ? format.dateTime(new Date(`${local.slice(0, 16)}:00Z`), { dateStyle: "medium", timeStyle: "short", timeZone: "UTC" }) : "—";
+  const lookupMessage =
+    lookup?.status === "checking" || lookup?.status === "checking_no_data"
+      ? t("lookupChecking")
+      : lookup?.status === "not_found"
+        ? t("lookupNotFound")
+        : lookup?.status === "rate_limited"
+          ? t("lookupRateLimited")
+          : lookup?.status === "unavailable"
+            ? t("lookupUnavailable")
+            : null;
 
   return (
     <form action={formAction} className="space-y-6">
@@ -120,16 +147,46 @@ export function FlightForm({ locale, claimId, initial }: { locale: string; claim
         </Field>
       </div>
 
-      <div className="space-y-2">
-        <Button type="button" variant="outline" onClick={runLookup} disabled={looking || !flight || !date}>
-          {looking ? t("lookingUp") : t("lookup")}
-        </Button>
-        {lookupMessage && (
-          <p role="status" className="text-sm text-muted-foreground">
-            {lookupMessage}
-          </p>
+      <div aria-live="polite">
+        {looking && !found && <p className="text-sm text-muted-foreground">{t("lookingUp")}</p>}
+        {found && (
+          <section className="space-y-2 rounded-lg border border-primary/40 bg-muted/30 p-4 text-sm">
+            <h3 className="font-medium">
+              {found.status === "found" ? t("foundTitle") : t("foundProvisional")}
+            </h3>
+            <p>
+              {[found.airline?.name, found.dep?.label && found.arr?.label ? `${found.dep.label} → ${found.arr.label}` : null]
+                .filter(Boolean)
+                .join(" · ")}
+            </p>
+            <dl className="grid gap-1 sm:grid-cols-2">
+              <div>
+                <dt className="text-xs text-muted-foreground">{t("foundScheduled")}</dt>
+                <dd>{when(found.scheduledDep)} → {when(found.scheduledArr)}</dd>
+              </div>
+              <div>
+                <dt className="text-xs text-muted-foreground">{t("foundActual")}</dt>
+                <dd>{when(found.actualDep)} → {when(found.actualArr)}</dd>
+              </div>
+            </dl>
+            {found.flightStatus && <p className="text-xs text-muted-foreground">{t("foundStatus", { status: found.flightStatus })}</p>}
+            <p className="text-xs text-muted-foreground">{t("foundFilled")}</p>
+          </section>
         )}
+        {lookupMessage && <p role="status" className="text-sm text-muted-foreground">{lookupMessage}</p>}
       </div>
+
+      <Field id="airline_id" label={t("airline")} optionalLabel={tw("optional")} hint={t("airlineHint")}>
+        <NativeSelect id="airline_id" name="airline_id" value={airlineId} onChange={(e) => setAirlineId(e.target.value)}>
+          <option value="">{t("airlineAuto")}</option>
+          {airlines.map((a) => (
+            <option key={a.id} value={a.id}>
+              {a.name}
+              {a.iata ? ` (${a.iata})` : ""}
+            </option>
+          ))}
+        </NativeSelect>
+      </Field>
 
       <div className="grid gap-4 sm:grid-cols-2">
         <Field id="dep_iata" label={t("from")} error={err("dep_iata") && t("airportUnknown")}>
@@ -184,6 +241,34 @@ export function FlightForm({ locale, claimId, initial }: { locale: string; claim
           />
         </Field>
       )}
+
+      <div className="grid gap-4 sm:grid-cols-2">
+        <Field id="scheduled_dep_time" label={t("scheduledDepTime")} optionalLabel={tw("optional")} hint={t("scheduledDepTimeHint")}>
+          <Input
+            id="scheduled_dep_time"
+            name="scheduled_dep_time"
+            type="time"
+            value={scheduledDepTime}
+            onChange={(e) => setScheduledDepTime(e.target.value)}
+            aria-describedby="scheduled_dep_time-hint"
+          />
+        </Field>
+        <Field
+          id="scheduled_arr"
+          label={hasConnection ? t("scheduledArrFinal") : t("scheduledArr")}
+          optionalLabel={tw("optional")}
+          hint={t("scheduledArrHint")}
+        >
+          <Input
+            id="scheduled_arr"
+            name="scheduled_arr"
+            type="datetime-local"
+            value={scheduledArr}
+            onChange={(e) => setScheduledArr(e.target.value)}
+            aria-describedby="scheduled_arr-hint"
+          />
+        </Field>
+      </div>
 
       <Field
         id="booking_reference"

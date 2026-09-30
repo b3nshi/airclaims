@@ -28,4 +28,4 @@ const total = ai.compensation_total_eur;
 if (total && !body.replace(/[.\s]/g, '').includes(String(Math.round(total)))) problems.push('missing_amount');
 if (problems.length) return fail(problems.join(','));
 
-return [{ json: { ok: true, subject, body, claim_id: prep.meta.claim_id, template: prep.template, meta: prep.meta, idempotency_key: prep.idempotency_key } }];
+return [{ json: { ok: true, subject, body, claim_id: prep.meta.claim_id, template: prep.template, response_id: prep.response_id, meta: prep.meta, idempotency_key: prep.idempotency_key } }];

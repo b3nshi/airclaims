@@ -106,7 +106,7 @@ AI-drafted claim and follow-up emails. Nothing is sent from here: drafts land as
 `pending_approval` and the user approves them in the dashboard.
 
 - **In:** signed `POST /webhook/airclaim-email-draft`
-  `{ "claim_id", "template": "initial_claim" | "follow_up" | "offer_reply" }`. The app calls it after
+  `{ "claim_id", "template": "initial_claim" | "follow_up" | "offer_reply" | "challenge", "response_id"?, "options"? }`. The app calls it after
   signing (email-channel airlines) and from the dashboard: "Prepare my claim email" (if the first
   attempt failed), "Prepare a reminder" (airline overdue), "Prepare a reply asking to be paid in
   money" (the latest airline message offered a voucher, credit, miles or less money than claimed).
@@ -194,12 +194,41 @@ keeps payloads well under n8n's 16 MB limit.
 6. **`apply_inbound_analysis`** acts only on the obvious: a substantive airline answer moves
    `submitted_airline → airline_replied`; the airline's reference is saved if we had none. Offers,
    document requests and AESA/court mail also go to the review queue. Nothing is ever accepted.
-7. **Forward** to the passenger's personal email (Forward Email API, from `notify_from`, Reply-To
+7. **Forwards from the passenger** (they can't give the airline the claim address): the parser
+   detects forwards (Fwd:/RV:/TR:/WG: subjects, "Forwarded message"/"Mensaje reenviado", Apple's
+   "Begin forwarded message", an attached .eml) and Forward Email's DMARC/SPF/DKIM result. An
+   authenticated forward from the passenger becomes an airline answer for
+   `airclaim-airline-response`; anything else goes to the review queue. A mail provider's
+   forwarding confirmation (Gmail's code) is forwarded to the passenger straight away, without AI.
+   Substantive direct airline mail also becomes an airline answer after the AI reading.
+8. **Forward** to the passenger's personal email (Forward Email API, from `notify_from`, Reply-To
    `support_email`) with the summary, an explanation of any offer ("you don't have to accept; you
    can ask to be paid in money"), the documents requested, the original message and its attachments.
    Spam isn't forwarded. If the AI step fails, the message is forwarded anyway, without a summary.
 
 The review queue has no admin UI yet: use Supabase Studio (`review_queue where status = 'open'`).
+
+## `airclaim-airline-response`
+
+Reads an airline answer the passenger reported on the dashboard (migration `0016`).
+
+- **Triggers:** a signed poke from the app (after a dashboard report or "Try again") and a schedule
+  every 2 minutes. Answers come from a queue (`claim_pending_airline_response`, one at a time,
+  10-minute lease, 3 attempts): reported on the dashboard, forwarded by the passenger, or sent by
+  the airline to the claim address (0017).
+- **Flow:** lease → `airline_response_context` (claim facts, reported
+  times, our flight data, the airline's text, the passenger's explanation, verified patterns for
+  the airline's group) → Claude (structured: kind, airline position, reasons, the delay they
+  measured, conflicts with the facts, options with explanations, AESA advice, summary — in the
+  passenger's language) → `apply_airline_response_analysis` (also queues a human review; forwarded
+  or direct answers move the claim to "airline replied" and email the passenger a summary) or
+  `fail_airline_response_analysis` (retried up to 3 times).
+- The pasted text is treated as untrusted; "accept payment" is never offered unless the airline
+  confirmed full payment in money.
+
+The reply is drafted by `airclaim-email-draft` with `template: "challenge"`
+(`challenge_draft_context` / `insert_challenge_draft`): an email to approve when the airline has
+an email contact, otherwise a text to paste (email status `draft`, never sent).
 
 ## Planned
 

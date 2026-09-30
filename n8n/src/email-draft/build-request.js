@@ -22,4 +22,4 @@ const request = {
   system: __SYSTEM_PROMPT__,
   messages: [{ role: 'user', content: 'Draft the email for this claim:\n\n' + JSON.stringify(ai, null, 2) }],
 };
-return [{ json: { request, meta: $json.meta, ai, template: parsed.template, idempotency_key: parsed.idempotency_key } }];
+return [{ json: { request, meta: $json.meta, ai, template: parsed.template, response_id: parsed.response_id, idempotency_key: parsed.idempotency_key } }];
