@@ -3,6 +3,7 @@ import { Link, redirect } from "@/i18n/navigation";
 import { buttonVariants } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { AirlineSubmission, airlineChannel } from "@/components/claims/airline-submission";
+import { ClaimPath } from "@/components/claims/claim-path";
 import { CopyButton } from "@/components/claims/copy-button";
 import { ExpensesSubmission, expensesSubmitted } from "@/components/claims/expenses-submission";
 import { ForwardingGuide } from "@/components/claims/forwarding-guide";
@@ -16,6 +17,7 @@ import {
   Timeline,
   type EmailAnalysis,
 } from "@/components/dashboard/sections";
+import { ClaimProgressForms } from "@/components/dashboard/claim-progress-forms";
 import { AirlineResponsePanel } from "@/components/dashboard/airline-response-panel";
 import { RequestDraft } from "@/components/dashboard/request-draft";
 import { WithdrawClaim } from "@/components/dashboard/withdraw-claim";
@@ -24,6 +26,7 @@ import { assessClaim } from "@/lib/claims/assess";
 import { todayInMadrid } from "@/lib/claims/dates";
 import { aliasEmail, canAddDocuments, canEditDocuments, isDraft } from "@/lib/claims/model";
 import { nextAction } from "@/lib/claims/next-action";
+import { claimPath } from "@/lib/claims/stages";
 import { getOwnClaim, requireUser } from "@/lib/claims/server";
 import { createClient } from "@/lib/supabase/server";
 
@@ -79,6 +82,14 @@ export default async function ClaimDashboard({ params }: PageProps<"/[locale]/cl
     flightDate: claim.flight_date,
     today,
   });
+  const path = claimPath({
+    status: claim.status,
+    submittedAt: claim.submitted_airline_at,
+    hadAirlineAnswer: responses.length > 0 || claim.status === "airline_replied",
+    aesaFiled: events.some((e) => e.event_type === "aesa_filed"),
+    today,
+  });
+  const submitted = !["draft", "documents_pending", "validating", "ready_to_submit"].includes(claim.status);
   const date = (iso: string) => format.dateTime(new Date(iso), { dateStyle: "long", timeZone: "UTC" });
 
   const deadlines = claim.submitted_airline_at
@@ -107,6 +118,7 @@ export default async function ClaimDashboard({ params }: PageProps<"/[locale]/cl
           </div>
           <Badge tone={CLOSED.includes(claim.status) ? "muted" : "ok"}>{tc(`status.${claim.status}`)}</Badge>
         </div>
+        <ClaimPath path={path} />
         <dl className="grid gap-3 text-sm sm:grid-cols-2">
           {claim.compensation_eur !== null && (
             <div>
@@ -189,6 +201,17 @@ export default async function ClaimDashboard({ params }: PageProps<"/[locale]/cl
       <Documents claimId={claim.id} documents={docsRes.data ?? []} canAdd={canAddDocuments(claim.status)} />
       <Expenses claimId={claim.id} expenses={a.expenses} totalEur={Number(claim.expenses_total_eur)} canEdit={canEditDocuments(claim.status)} />
       <Timeline createdAt={claim.created_at} events={events} />
+
+      {submitted && !CLOSED.includes(claim.status) && (
+        <ClaimProgressForms
+          locale={locale}
+          claimId={claim.id}
+          canFileAesa={
+            (claim.status === "submitted_airline" || claim.status === "airline_replied") && aesaAvailable(claim.flight_date)
+          }
+          today={today}
+        />
+      )}
 
       {!CLOSED.includes(claim.status) && (
         <div className="border-t pt-6">

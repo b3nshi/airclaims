@@ -184,3 +184,50 @@ export async function requestChallengeDraft(
   }
   return { status: "saved" };
 }
+
+const aesaFiledSchema = z.object({
+  filed_on: z.iso.date(),
+  reference: z.string().trim().max(100),
+});
+
+/** The passenger filed the claim with AESA themselves; the path moves to "AESA decision". */
+export async function markAesaFiled(locale: string, claimId: string, _prev: FormState, formData: FormData): Promise<FormState> {
+  const claim = await requireOwner(locale, claimId);
+  const parsed = aesaFiledSchema.safeParse({ filed_on: formData.get("filed_on"), reference: formData.get("reference") ?? "" });
+  if (!parsed.success) return invalid(parsed.error.issues);
+  if (parsed.data.filed_on > todayInMadrid() || parsed.data.filed_on < claim.flight_date) {
+    return { status: "invalid", fieldErrors: { filed_on: true } };
+  }
+  const supabase = await createClient();
+  const { error } = await supabase.rpc("mark_aesa_filed", {
+    p_claim_id: claimId,
+    p_filed_on: parsed.data.filed_on,
+    p_reference: parsed.data.reference || null,
+  });
+  if (error) return { status: "error" };
+  revalidatePath(`/${locale}/claims`, "layout");
+  return { status: "saved" };
+}
+
+const outcomeSchema = z.object({
+  outcome: z.enum(["won", "partially_won", "lost"]),
+  amount: z.union([z.literal(""), z.coerce.number().min(0).max(100000)]),
+});
+
+/** The passenger records how the claim ended (what actually happened; never accepts anything for them). */
+export async function recordClaimOutcome(locale: string, claimId: string, _prev: FormState, formData: FormData): Promise<FormState> {
+  await requireOwner(locale, claimId);
+  const parsed = outcomeSchema.safeParse({ outcome: formData.get("outcome"), amount: formData.get("amount") ?? "" });
+  if (!parsed.success) return invalid(parsed.error.issues);
+  const { outcome, amount } = parsed.data;
+  if (outcome !== "lost" && amount === "") return { status: "invalid", fieldErrors: { amount: true } };
+  const supabase = await createClient();
+  const { error } = await supabase.rpc("record_claim_outcome", {
+    p_claim_id: claimId,
+    p_outcome: outcome,
+    p_amount_received: amount === "" ? null : amount,
+  });
+  if (error) return { status: "error" };
+  revalidatePath(`/${locale}/claims`, "layout");
+  return { status: "saved" };
+}

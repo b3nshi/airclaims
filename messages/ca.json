@@ -501,7 +501,9 @@
       "email_analysis_failed": "No vam poder resumir un missatge",
       "expenses_submitted": "Reclamació de despeses enviada a l'aerolínia",
       "airline_response_reported": "Vas informar de la resposta de l'aerolínia",
-      "airline_response_analyzed": "Vam llegir la resposta de l'aerolínia"
+      "airline_response_analyzed": "Vam llegir la resposta de l'aerolínia",
+      "aesa_filed": "Vas presentar la reclamació davant AESA",
+      "outcome_recorded": "Vas indicar com va acabar la reclamació"
     },
     "documentsTitle": "Documents",
     "noDocuments": "Encara no hi ha documents.",
@@ -873,5 +875,118 @@
       }
     },
     "privacy": "Només fem servir els correus reenviats per a aquesta reclamació. Comprovem que els reenviaments vénen de debò de la teva bústia abans de llegir-los."
+  },
+  "ClaimPath": {
+    "label": "Etapes de la reclamació",
+    "stageOf": "Etapa {n} de {total}",
+    "court": "Al jutjat",
+    "stages": {
+      "prepare": "Preparar",
+      "send": "Enviar",
+      "airline_wait": "Resposta aerolínia",
+      "airline_reply": "Respondre",
+      "aesa_file": "Anar a AESA",
+      "aesa_wait": "Decisió AESA",
+      "closed": "Tancada"
+    },
+    "state": {
+      "done": "feta",
+      "current": "etapa actual",
+      "todo": "pendent",
+      "skipped": "no necessària"
+    },
+    "outcome": {
+      "won": "Pagada",
+      "partially_won": "Pagada en part",
+      "lost": "Rebutjada",
+      "withdrawn": "Retirada"
+    },
+    "caption": {
+      "prepare": "completa els passos de sota; el teu esborrany es desa a cada pas.",
+      "send": "envia la reclamació a l'aerolínia (i les despeses, si les demana per separat).",
+      "airline_wait": "l'aerolínia ha de respondre abans del {due}. Reenvia'ns tot el que t'enviï.",
+      "airline_reply": "l'aerolínia ha respost. Explica'ns què diu i t'ajudem a contestar.",
+      "aesa_file": "pots portar la reclamació a AESA, l'Agència Estatal de Seguretat Aèria. És gratuït.",
+      "aesa_wait": "AESA està revisant la teva reclamació. Sol resoldre en uns 90 dies.",
+      "closed": "aquesta reclamació ha acabat."
+    },
+    "help": {
+      "open": "Com funciona una reclamació",
+      "close": "Tancar",
+      "title": "Com funciona una reclamació",
+      "intro": "Totes les reclamacions passen per aquestes etapes. No totes les necessiten totes: moltes acaben tan bon punt l'aerolínia paga.",
+      "stagesTitle": "Les etapes",
+      "youAreHere": "ets aquí",
+      "scenariosTitle": "Com pot anar",
+      "stage": {
+        "prepare": "Explica'ns el vol, què va passar, els passatgers, les despeses i els documents. Estimem el que et correspon i signes.",
+        "send": "Envies la reclamació a l'aerolínia: pel seu formulari web (et donem el text i els passos) o per correu des del correu de la reclamació, després que l'aprovis.",
+        "airline_wait": "L'aerolínia té un mes per respondre. Reenvia'ns tot el que t'enviï; ho llegim per tu.",
+        "airline_reply": "L'aerolínia ha respost: paga, rebutja, demana documents o ofereix una altra cosa. T'ho expliquem i t'ajudem a contestar. Tu decideixes; mai no acceptem res per tu.",
+        "aesa_file": "Si l'aerolínia no respon en un mes, o continues sense estar-hi d'acord, pots reclamar gratuïtament davant AESA, dins l'any següent a la reclamació a l'aerolínia.",
+        "aesa_wait": "AESA revisa les dues parts i resol, normalment en uns 90 dies. Per a vols des del 2 de juny de 2023 la seva decisió obliga l'aerolínia.",
+        "closed": "La reclamació acaba pagada, pagada en part, rebutjada o retirada. La pots retirar en qualsevol etapa."
+      },
+      "end": {
+        "paid": "Pagada",
+        "rejected": "Rebutjada",
+        "court": "Jutjat"
+      },
+      "scenario": {
+        "paid": {
+          "title": "L'aerolínia paga",
+          "body": "El camí més habitual: l'aerolínia accepta la reclamació i paga. Indica-ho aquí i la reclamació es tanca."
+        },
+        "rejected": {
+          "title": "L'aerolínia diu que no",
+          "body": "Sovint amb una resposta genèrica (p. ex. «circumstàncies extraordinàries»). L'aerolínia ha de dir què va passar i demostrar-ho: t'ajudem a demanar les proves. Si continua dient que no, ves a AESA."
+        },
+        "formRefusal": {
+          "title": "El formulari de l'aerolínia ho rebutja automàticament",
+          "body": "Alguns formularis mostren «no elegible» al moment. Fes captures: compta com a resposta de l'aerolínia, i pots contestar i anar a AESA."
+        },
+        "offer": {
+          "title": "L'aerolínia ofereix un val o menys diners",
+          "body": "No l'has d'acceptar. La compensació del Reglament 261 es paga en diners tret que acceptis una altra cosa per escrit. T'ajudem a rebutjar-ho i demanar l'import complet."
+        },
+        "noAnswer": {
+          "title": "L'aerolínia no respon",
+          "body": "Passat un mes sense resposta pots anar directament a AESA. També pots enviar abans un recordatori."
+        },
+        "aesaIgnored": {
+          "title": "AESA et dona la raó però l'aerolínia no paga",
+          "body": "Pots anar al jutjat amb la decisió d'AESA. Per sota de 2.000 € és un procediment senzill (judici verbal) i no necessites advocat."
+        },
+        "lost": {
+          "title": "AESA dona la raó a l'aerolínia",
+          "body": "La reclamació es tanca com a rebutjada. Encara pots anar al jutjat si tens proves noves."
+        }
+      },
+      "disclaimer": "Informació general, no assessorament jurídic. Terminis i imports segons el Reglament (CE) 261/2004 tal com s'aplica a Espanya."
+    },
+    "record": {
+      "title": "Actualitza la teva reclamació",
+      "aesa": {
+        "summary": "He presentat la reclamació davant AESA",
+        "body": "L'has presentada al web d'AESA? Indica la data i la referència perquè en seguim el termini.",
+        "date": "Data de presentació",
+        "dateError": "Indica una data entre el vol i avui.",
+        "reference": "Referència d'AESA",
+        "submit": "Desar"
+      },
+      "outcome": {
+        "summary": "La reclamació ha acabat",
+        "body": "Indica només el que ha passat de debò. Si l'aerolínia ofereix un val o menys del que et correspon, no ho indiquis aquí: explica'ns la seva resposta i t'ajudem a contestar.",
+        "label": "Resultat",
+        "options": {
+          "won": "Pagada sencera",
+          "partially_won": "Pagada en part",
+          "lost": "Rebutjada definitivament"
+        },
+        "amount": "Import rebut (€)",
+        "amountError": "Indica l'import que has rebut.",
+        "submit": "Tancar la reclamació"
+      }
+    }
   }
 }

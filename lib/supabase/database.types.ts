@@ -426,6 +426,11 @@ export type Database = {
         Returns: string;
       };
       retry_airline_response: { Args: { p_response_id: string }; Returns: undefined };
+      mark_aesa_filed: { Args: { p_claim_id: string; p_filed_on: string; p_reference: string | null }; Returns: undefined };
+      record_claim_outcome: {
+        Args: { p_claim_id: string; p_outcome: "won" | "partially_won" | "lost"; p_amount_received: number | null };
+        Returns: undefined;
+      };
       record_expenses_submission: { Args: { p_claim_id: string; p_reference: string | null }; Returns: undefined };
       admin_upsert_flight: { Args: { p: Json }; Returns: string };
       admin_link_email_to_claim: { Args: { p_email_id: string; p_alias_code: string }; Returns: string };

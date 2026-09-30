@@ -501,7 +501,9 @@
       "email_analysis_failed": "No pudimos resumir un mensaje",
       "expenses_submitted": "Reclamación de gastos enviada a la aerolínea",
       "airline_response_reported": "Informaste de la respuesta de la aerolínea",
-      "airline_response_analyzed": "Leímos la respuesta de la aerolínea"
+      "airline_response_analyzed": "Leímos la respuesta de la aerolínea",
+      "aesa_filed": "Presentaste la reclamación ante AESA",
+      "outcome_recorded": "Indicaste cómo terminó la reclamación"
     },
     "documentsTitle": "Documentos",
     "noDocuments": "Aún no hay documentos.",
@@ -873,5 +875,118 @@
       }
     },
     "privacy": "Solo usamos los correos reenviados para esta reclamación. Comprobamos que los reenvíos vienen de verdad de tu buzón antes de leerlos."
+  },
+  "ClaimPath": {
+    "label": "Etapas de la reclamación",
+    "stageOf": "Etapa {n} de {total}",
+    "court": "En el juzgado",
+    "stages": {
+      "prepare": "Preparar",
+      "send": "Enviar",
+      "airline_wait": "Respuesta aerolínea",
+      "airline_reply": "Responder",
+      "aesa_file": "Ir a AESA",
+      "aesa_wait": "Decisión AESA",
+      "closed": "Cerrada"
+    },
+    "state": {
+      "done": "hecha",
+      "current": "etapa actual",
+      "todo": "pendiente",
+      "skipped": "no necesaria"
+    },
+    "outcome": {
+      "won": "Pagada",
+      "partially_won": "Pagada en parte",
+      "lost": "Rechazada",
+      "withdrawn": "Retirada"
+    },
+    "caption": {
+      "prepare": "completa los pasos de abajo; tu borrador se guarda en cada paso.",
+      "send": "envía la reclamación a la aerolínea (y los gastos, si los pide por separado).",
+      "airline_wait": "la aerolínea debe responder antes del {due}. Reenvíanos todo lo que te mande.",
+      "airline_reply": "la aerolínea ha respondido. Cuéntanos qué dice y te ayudamos a contestar.",
+      "aesa_file": "puedes llevar la reclamación a AESA, la Agencia Estatal de Seguridad Aérea. Es gratis.",
+      "aesa_wait": "AESA está revisando tu reclamación. Suele resolver en unos 90 días.",
+      "closed": "esta reclamación ha terminado."
+    },
+    "help": {
+      "open": "Cómo funciona una reclamación",
+      "close": "Cerrar",
+      "title": "Cómo funciona una reclamación",
+      "intro": "Todas las reclamaciones pasan por estas etapas. No todas las necesitan todas: muchas terminan en cuanto la aerolínea paga.",
+      "stagesTitle": "Las etapas",
+      "youAreHere": "estás aquí",
+      "scenariosTitle": "Cómo puede ir",
+      "stage": {
+        "prepare": "Cuéntanos el vuelo, qué pasó, los pasajeros, los gastos y los documentos. Estimamos lo que te corresponde y firmas.",
+        "send": "Envías la reclamación a la aerolínea: por su formulario web (te damos el texto y los pasos) o por correo desde el correo de tu reclamación, después de que lo apruebes.",
+        "airline_wait": "La aerolínea tiene un mes para responder. Reenvíanos todo lo que te mande; lo leemos por ti.",
+        "airline_reply": "La aerolínea ha respondido: paga, rechaza, pide documentos u ofrece otra cosa. Te lo explicamos y te ayudamos a contestar. Tú decides; nunca aceptamos nada por ti.",
+        "aesa_file": "Si la aerolínea no responde en un mes, o sigues sin estar de acuerdo, puedes reclamar gratis ante AESA, dentro del año siguiente a tu reclamación a la aerolínea.",
+        "aesa_wait": "AESA revisa las dos partes y resuelve, normalmente en unos 90 días. Para vuelos desde el 2 de junio de 2023 su decisión obliga a la aerolínea.",
+        "closed": "La reclamación termina pagada, pagada en parte, rechazada o retirada. Puedes retirarla en cualquier etapa."
+      },
+      "end": {
+        "paid": "Pagada",
+        "rejected": "Rechazada",
+        "court": "Juzgado"
+      },
+      "scenario": {
+        "paid": {
+          "title": "La aerolínea paga",
+          "body": "El camino más habitual: la aerolínea acepta la reclamación y paga. Indícalo aquí y la reclamación se cierra."
+        },
+        "rejected": {
+          "title": "La aerolínea dice que no",
+          "body": "A menudo con una respuesta genérica (p. ej. «circunstancias extraordinarias»). La aerolínea tiene que decir qué pasó y demostrarlo: te ayudamos a pedir las pruebas. Si sigue diciendo que no, ve a AESA."
+        },
+        "formRefusal": {
+          "title": "El formulario de la aerolínea lo rechaza automáticamente",
+          "body": "Algunos formularios muestran «no elegible» al momento. Haz capturas: cuenta como respuesta de la aerolínea, y puedes contestar e ir a AESA."
+        },
+        "offer": {
+          "title": "La aerolínea ofrece un bono o menos dinero",
+          "body": "No tienes que aceptarlo. La compensación del Reglamento 261 se paga en dinero salvo que aceptes otra cosa por escrito. Te ayudamos a rechazarlo y pedir el importe completo."
+        },
+        "noAnswer": {
+          "title": "La aerolínea no responde",
+          "body": "Pasado un mes sin respuesta puedes ir directamente a AESA. También puedes enviar antes un recordatorio."
+        },
+        "aesaIgnored": {
+          "title": "AESA te da la razón pero la aerolínea no paga",
+          "body": "Puedes ir al juzgado con la decisión de AESA. Por debajo de 2.000 € es un procedimiento sencillo (juicio verbal) y no necesitas abogado."
+        },
+        "lost": {
+          "title": "AESA da la razón a la aerolínea",
+          "body": "La reclamación se cierra como rechazada. Aún puedes ir al juzgado si tienes pruebas nuevas."
+        }
+      },
+      "disclaimer": "Información general, no asesoramiento jurídico. Plazos e importes según el Reglamento (CE) 261/2004 tal como se aplica en España."
+    },
+    "record": {
+      "title": "Actualiza tu reclamación",
+      "aesa": {
+        "summary": "He presentado la reclamación ante AESA",
+        "body": "¿La has presentado en la web de AESA? Indica la fecha y la referencia para que sigamos su plazo.",
+        "date": "Fecha de presentación",
+        "dateError": "Indica una fecha entre el vuelo y hoy.",
+        "reference": "Referencia de AESA",
+        "submit": "Guardar"
+      },
+      "outcome": {
+        "summary": "La reclamación ha terminado",
+        "body": "Indica solo lo que ha pasado de verdad. Si la aerolínea ofrece un bono o menos de lo que te corresponde, no lo indiques aquí: cuéntanos su respuesta y te ayudamos a contestar.",
+        "label": "Resultado",
+        "options": {
+          "won": "Pagada entera",
+          "partially_won": "Pagada en parte",
+          "lost": "Rechazada definitivamente"
+        },
+        "amount": "Importe recibido (€)",
+        "amountError": "Indica el importe que has recibido.",
+        "submit": "Cerrar la reclamación"
+      }
+    }
   }
 }

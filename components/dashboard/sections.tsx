@@ -224,7 +224,7 @@ export async function Timeline({ createdAt, events }: { createdAt: string; event
     "status_changed", "email_approved", "submitted_airline", "email_received", "email_sent", "document_validated",
     "email_drafted", "email_failed", "email_draft_failed", "email_edited", "email_discarded",
     "email_analyzed", "email_analysis_failed", "expenses_submitted",
-    "airline_response_reported", "airline_response_analyzed",
+    "airline_response_reported", "airline_response_analyzed", "aesa_filed", "outcome_recorded",
   ];
   const label = (e: ClaimEventRow) => {
     if (e.event_type === "status_changed") {

@@ -501,7 +501,9 @@
       "email_analysis_failed": "We couldn't summarise a message",
       "expenses_submitted": "Expenses claim sent to the airline",
       "airline_response_reported": "You reported the airline's answer",
-      "airline_response_analyzed": "We read the airline's answer"
+      "airline_response_analyzed": "We read the airline's answer",
+      "aesa_filed": "You filed the claim with AESA",
+      "outcome_recorded": "You recorded how the claim ended"
     },
     "documentsTitle": "Documents",
     "noDocuments": "No documents yet.",
@@ -873,5 +875,118 @@
       }
     },
     "privacy": "We only use forwarded emails for this claim. We check that forwards really come from your mailbox before reading them."
+  },
+  "ClaimPath": {
+    "label": "Claim stages",
+    "stageOf": "Stage {n} of {total}",
+    "court": "In court",
+    "stages": {
+      "prepare": "Prepare",
+      "send": "Send",
+      "airline_wait": "Airline's answer",
+      "airline_reply": "Reply",
+      "aesa_file": "Go to AESA",
+      "aesa_wait": "AESA decision",
+      "closed": "Closed"
+    },
+    "state": {
+      "done": "done",
+      "current": "current stage",
+      "todo": "to do",
+      "skipped": "not needed"
+    },
+    "outcome": {
+      "won": "Paid",
+      "partially_won": "Partly paid",
+      "lost": "Rejected",
+      "withdrawn": "Withdrawn"
+    },
+    "caption": {
+      "prepare": "complete the steps below; your draft is saved at every step.",
+      "send": "send the claim to the airline (and the expenses, if it asks for them separately).",
+      "airline_wait": "the airline must answer by {due}. Forward us anything it sends you.",
+      "airline_reply": "the airline answered. Tell us what it said and we'll help you reply.",
+      "aesa_file": "you can take the claim to AESA, the Spanish aviation authority. It's free.",
+      "aesa_wait": "AESA is reviewing your claim. It usually decides within 90 days.",
+      "closed": "this claim is finished."
+    },
+    "help": {
+      "open": "How a claim works",
+      "close": "Close",
+      "title": "How a claim works",
+      "intro": "Every claim goes through these stages. Not every claim needs all of them: many end as soon as the airline pays.",
+      "stagesTitle": "The stages",
+      "youAreHere": "you are here",
+      "scenariosTitle": "How it can go",
+      "stage": {
+        "prepare": "Tell us about the flight, what happened, the passengers, expenses and documents. We estimate what you are owed, then you sign.",
+        "send": "You submit the claim to the airline: through its web form (we give you the text and the steps) or by email from your claim address, after you approve it.",
+        "airline_wait": "The airline has one month to answer. Forward us anything it sends; we read it for you.",
+        "airline_reply": "The airline answered: paid, rejected, asked for documents or offered something else. We explain it and help you reply. You decide; we never accept anything for you.",
+        "aesa_file": "If the airline doesn't answer within a month, or you still disagree, you can file with AESA, free of charge, within one year of your claim to the airline.",
+        "aesa_wait": "AESA reviews both sides and decides, usually within 90 days. For flights from 2 June 2023 its decision binds the airline.",
+        "closed": "The claim ends paid, partly paid, rejected or withdrawn. You can withdraw at any stage."
+      },
+      "end": {
+        "paid": "Paid",
+        "rejected": "Rejected",
+        "court": "Court"
+      },
+      "scenario": {
+        "paid": {
+          "title": "The airline pays",
+          "body": "The most common happy path: the airline accepts the claim and pays. Record it here and the claim is closed."
+        },
+        "rejected": {
+          "title": "The airline says no",
+          "body": "Often a generic reply (e.g. \"extraordinary circumstances\"). Airlines must say what happened and prove it: we help you ask for the proof. If it still says no, go to AESA."
+        },
+        "formRefusal": {
+          "title": "The airline's form refuses automatically",
+          "body": "Some web forms show \"not eligible\" right away. Take screenshots: it counts as the airline's answer, and you can reply and go to AESA."
+        },
+        "offer": {
+          "title": "The airline offers a voucher or less money",
+          "body": "You don't have to accept. EU261 compensation is paid in money unless you agree otherwise in writing. We help you decline and ask for the full amount."
+        },
+        "noAnswer": {
+          "title": "The airline doesn't answer",
+          "body": "After one month without an answer you can go straight to AESA. You can also send a reminder first."
+        },
+        "aesaIgnored": {
+          "title": "AESA agrees with you but the airline doesn't pay",
+          "body": "You can go to court with AESA's decision. Under €2,000 it's a simple procedure (juicio verbal) and you don't need a lawyer."
+        },
+        "lost": {
+          "title": "AESA agrees with the airline",
+          "body": "The claim closes as rejected. You can still go to court if you have new evidence."
+        }
+      },
+      "disclaimer": "General information, not legal advice. Deadlines and amounts follow EU Regulation 261/2004 as applied in Spain."
+    },
+    "record": {
+      "title": "Update your claim",
+      "aesa": {
+        "summary": "I've filed the claim with AESA",
+        "body": "Filed with AESA through its website? Tell us the date and reference so we can track its deadline.",
+        "date": "Date filed",
+        "dateError": "Enter a date between the flight and today.",
+        "reference": "AESA reference",
+        "submit": "Save"
+      },
+      "outcome": {
+        "summary": "The claim has ended",
+        "body": "Record only what actually happened. If the airline offers a voucher or less than you are owed, don't record it here: tell us its answer and we'll help you reply.",
+        "label": "Result",
+        "options": {
+          "won": "Paid in full",
+          "partially_won": "Partly paid",
+          "lost": "Rejected for good"
+        },
+        "amount": "Amount received (€)",
+        "amountError": "Enter the amount you received.",
+        "submit": "Close the claim"
+      }
+    }
   }
 }
