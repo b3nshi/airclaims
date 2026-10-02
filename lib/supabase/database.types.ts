@@ -442,6 +442,7 @@ export type Database = {
         Args: { p_claim_id: string; p_compensation: string | null; p_expenses: string | null };
         Returns: undefined;
       };
+      mark_reply_pasted: { Args: { p_email_id: string }; Returns: undefined };
       set_airline_response_purpose: { Args: { p_response_id: string; p_purpose: AirlineResponsePurpose }; Returns: undefined };
       retry_airline_response: { Args: { p_response_id: string }; Returns: undefined };
       mark_aesa_filed: { Args: { p_claim_id: string; p_filed_on: string; p_reference: string | null }; Returns: undefined };

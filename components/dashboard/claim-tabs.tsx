@@ -16,7 +16,7 @@ export type ClaimTab = {
  * Every panel stays mounted (forms keep their state) and in-page links such as
  * "#messages" open the tab that contains their target.
  */
-export function ClaimTabs({ tabs, label }: { tabs: ClaimTab[]; label: string }) {
+export function ClaimTabs({ tabs, label, nested = false }: { tabs: ClaimTab[]; label: string; nested?: boolean }) {
   const [active, setActive] = useState<string | undefined>(tabs[0]?.id);
   const root = useRef<HTMLDivElement>(null);
 
@@ -24,8 +24,10 @@ export function ClaimTabs({ tabs, label }: { tabs: ClaimTab[]; label: string }) 
     // Opens the tab holding the element with this id (or the tab itself), then scrolls to it.
     const reveal = (id: string) => {
       const target = id ? document.getElementById(id) : null;
-      const panel = target?.closest<HTMLElement>("[data-claim-tab]");
-      if (!target || !panel || !root.current?.contains(panel)) return false;
+      // Tabs can be nested: find this instance's own panel among the target's ancestors.
+      let panel = target?.closest<HTMLElement>("[data-claim-tab]");
+      while (panel && panel.parentElement !== root.current) panel = panel.parentElement?.closest<HTMLElement>("[data-claim-tab]");
+      if (!target || !panel) return false;
       setActive(panel.dataset.claimTab);
       requestAnimationFrame(() => target.scrollIntoView({ behavior: "smooth", block: "start" }));
       return true;
@@ -57,11 +59,14 @@ export function ClaimTabs({ tabs, label }: { tabs: ClaimTab[]; label: string }) 
   };
 
   return (
-    <div ref={root} className="space-y-6">
+    <div ref={root} className={nested ? "space-y-4" : "space-y-6"}>
       <div
         role="tablist"
         aria-label={label}
-        className="-mx-4 flex gap-1 overflow-x-auto border-b px-4 [scrollbar-width:none] sm:mx-0 sm:px-0"
+        className={cn(
+          "flex gap-1 overflow-x-auto border-b [scrollbar-width:none]",
+          !nested && "-mx-4 px-4 sm:mx-0 sm:px-0",
+        )}
       >
         {tabs.map((tab, i) => {
           const selected = tab.id === active;
@@ -110,7 +115,7 @@ export function ClaimTabs({ tabs, label }: { tabs: ClaimTab[]; label: string }) 
           aria-labelledby={`tab-${tab.id}`}
           data-claim-tab={tab.id}
           hidden={tab.id !== active}
-          className="space-y-8"
+          className={nested ? "space-y-4" : "space-y-8"}
         >
           {tab.content}
         </div>

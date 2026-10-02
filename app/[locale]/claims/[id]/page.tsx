@@ -19,7 +19,7 @@ import {
 } from "@/components/dashboard/sections";
 import { ClaimTabs } from "@/components/dashboard/claim-tabs";
 import { ClaimProgressForms } from "@/components/dashboard/claim-progress-forms";
-import { AirlineResponsePanel } from "@/components/dashboard/airline-response-panel";
+import { AirlineResponsePanel, type AnswerReply } from "@/components/dashboard/airline-response-panel";
 import { RequestDraft } from "@/components/dashboard/request-draft";
 import { WithdrawClaim } from "@/components/dashboard/withdraw-claim";
 import { aesaAvailable, airlineReplyDue, claimLimitDate } from "@/lib/eligibility";
@@ -59,10 +59,22 @@ export default async function ClaimDashboard({ params }: PageProps<"/[locale]/cl
   const drafted = new Set(
     events.filter((e) => e.event_type === "email_drafted").map((e) => (e.payload as { response_id?: string } | null)?.response_id),
   );
+  // The latest reply drafted for each answer, and whether a paste-text was pasted.
+  const pastedEmails = new Set(
+    events.filter((e) => e.event_type === "reply_pasted").map((e) => (e.payload as { email_id?: string } | null)?.email_id),
+  );
+  const replies: Record<string, AnswerReply> = {};
+  for (const e of events) {
+    const p = e.payload as { response_id?: string; email_id?: string } | null;
+    if (e.event_type !== "email_drafted" || !p?.response_id || !p.email_id) continue;
+    const email = (emailsRes.data ?? []).find((m) => m.id === p.email_id);
+    if (email) replies[p.response_id] = { emailId: email.id, status: email.status, pasted: pastedEmails.has(email.id) };
+  }
   const latestPerFlow = (["compensation", "expenses"] as const).map((p) => responses.find((r) => r.purpose === p));
   const airlineAnswerToHandle = latestPerFlow.some((r) => r?.status === "analyzed" && !drafted.has(r.id));
+  // One email to the airline awaits approval or sending at a time (texts to paste don't count).
   const hasOpenDraft = (emailsRes.data ?? []).some(
-    (e) => e.direction === "outbound" && ["pending_approval", "approved", "sending", "draft"].includes(e.status),
+    (e) => e.direction === "outbound" && ["pending_approval", "approved", "sending"].includes(e.status),
   );
   const emails = emailsRes.data ?? [];
 
@@ -196,6 +208,7 @@ export default async function ClaimDashboard({ params }: PageProps<"/[locale]/cl
                         claim={claim}
                         userId={user.id}
                         responses={responses}
+                        replies={replies}
                         hasExpenses={a.expenses.length > 0}
                         hasExpensesFlow={
                           a.expenses.length > 0 ||

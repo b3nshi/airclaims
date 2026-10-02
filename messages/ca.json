@@ -507,7 +507,8 @@
       "aesa_filed": "Vas presentar la reclamació davant AESA",
       "outcome_recorded": "Vas indicar com va acabar la reclamació",
       "references_updated": "Vas actualitzar els números de reclamació",
-      "airline_response_moved": "Vas moure una resposta de l'aerolínia a l'altra reclamació"
+      "airline_response_moved": "Vas moure una resposta de l'aerolínia a l'altra reclamació",
+      "reply_pasted": "Vas enganxar la teva resposta al formulari de l'aerolínia"
     },
     "documentsTitle": "Documents",
     "noDocuments": "Encara no hi ha documents.",
@@ -779,7 +780,7 @@
   },
   "AirlineResponse": {
     "title": "La resposta de l'aerolínia",
-    "intro": "L'aerolínia ha respost o el seu formulari ha rebutjat la teva reclamació? Explica'ns què et van dir: ho llegirem, et direm què no quadra i t'ajudarem a respondre.",
+    "intro": "Ha respost l'aerolínia o el seu formulari ha rebutjat la reclamació? Enganxa el que et van dir: ho llegim, assenyalem el que no quadra i t'ajudem a contestar.",
     "channel": "Com van respondre?",
     "channels": {
       "web_form": "El seu formulari web (missatge automàtic)",
@@ -801,8 +802,6 @@
     "submit": "Envia per revisar",
     "reported": "Gràcies. Estem llegint la seva resposta: triga un moment.",
     "theirAnswer": "La seva resposta",
-    "analyzing": "Estem llegint la resposta de l'aerolínia…",
-    "analysisFailed": "Aquesta vegada no hem pogut llegir la resposta.",
     "retry": "Torna-ho a provar",
     "conflicts": "El que no quadra",
     "options": "Les teves opcions",
@@ -839,7 +838,6 @@
     "draftReply": "Redacta la meva resposta",
     "drafting": "Estem redactant la teva resposta. Apareixerà a Missatges en un moment.",
     "draftError": "No hem pogut començar la resposta. Torna-ho a provar d'aquí a uns minuts.",
-    "draftWaiting": "La teva resposta està a punt a Missatges.",
     "sources": {
       "reported": "Informat per tu",
       "forwarded": "Reenviat per tu",
@@ -852,10 +850,7 @@
       "expenses": "Reclamació de despeses"
     },
     "referenceShort": "Núm. {reference}",
-    "noAnswerYet": "Encara no hi ha resposta.",
     "earlier": "{count, plural, one {# resposta anterior} other {# respostes anteriors}}",
-    "paste": "Enganxar la resposta de l'aerolínia ({flow})",
-    "pasteAnother": "Enganxar una altra resposta ({flow})",
     "moveTo": "Moure a {flow}",
     "concernsHint": {
       "compensation": "Aquesta resposta sembla sobre la reclamació de compensació. Si és així, mou-la allà.",
@@ -870,6 +865,48 @@
       "hint": "Els números que t'ha donat l'aerolínia. Els citem a les teves respostes i AESA els demana.",
       "save": "Desar números",
       "saved": "Desat."
+    },
+    "introTwoClaims": "Aquesta aerolínia tracta la compensació i les despeses com dues reclamacions diferents, cadascuna amb les seves respostes. Enganxa cada resposta a la seva pestanya: la llegim, assenyalem el que no quadra i t'ajudem a contestar.",
+    "flowsLabel": "Reclamacions amb l'aerolínia",
+    "pasteNext": "Enganxar la seva següent resposta",
+    "ourReading": "El que vam veure a la seva resposta",
+    "draftWaitingOther": "Hi ha un altre correu a l'aerolínia esperant la teva aprovació a Missatges. Aprova'l o descarta'l primer i torna per respondre aquesta resposta.",
+    "steps": {
+      "label": "Què passa amb aquesta resposta",
+      "state": {
+        "done": "fet",
+        "current": "ets aquí",
+        "todo": "següent"
+      },
+      "paste": {
+        "title": "Enganxa la resposta de l'aerolínia",
+        "now": "Enganxa a sota el que et van dir (correu, missatge del formulari o carta). Afegeix captures si en tens."
+      },
+      "read": {
+        "title": "La llegim",
+        "now": "Estem comparant la seva resposta amb les dades del teu vol. Sol trigar 1–2 minuts i aquesta pàgina s'actualitza sola: pots marxar i tornar."
+      },
+      "choose": {
+        "title": "Tria la teva resposta",
+        "now": "Llegeix a sota el que hem trobat, marca què ha de dir la teva resposta i prem «Redacta la meva resposta». Encara no s'envia res."
+      },
+      "send": {
+        "title": "Envia la teva resposta",
+        "now": "La teva resposta està llesta."
+      },
+      "wait": {
+        "title": "Espera la seva resposta",
+        "now": "Dona a l'aerolínia el termini que vas demanar (14 o 30 dies). Quan contesti, enganxa-ho a sota i tornem a començar. No contesta a temps? Pots anar a AESA (vegeu «Com funciona una reclamació»)."
+      },
+      "detail": {
+        "read_failed": "No hem pogut llegir aquesta resposta. Torna-ho a provar; si continua fallant, el nostre equip la revisarà.",
+        "approve": "Obre-la a Missatges, revisa-la o edita-la i prem «Aprova i envia»: s'envia des del correu de la reclamació, en el teu nom.",
+        "copy": "Aquesta aerolínia només accepta missatges pel seu formulari web: obre el text, copia'l i enganxa'l al seu formulari (on vas enviar la reclamació). Després digues-nos que ho has fet.",
+        "sending": "Enviant la teva resposta…",
+        "send_failed": "No s'ha pogut enviar la teva resposta. Obre-la a Missatges per tornar-ho a provar."
+      },
+      "openReply": "Obrir la meva resposta",
+      "pasted": "Ja l'he enganxada al seu formulari"
     }
   },
   "Forwarding": {

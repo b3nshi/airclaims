@@ -277,3 +277,13 @@ export async function moveAirlineResponse(
   revalidatePath(`/${locale}/claims/${claimId}`, "layout");
   return { status: "saved" };
 }
+
+/** The passenger pasted the reply text into the airline's form (we never send those). */
+export async function markReplyPasted(locale: string, claimId: string, emailId: string): Promise<FormState> {
+  await requireOwner(locale, claimId);
+  const supabase = await createClient();
+  const { error } = await supabase.rpc("mark_reply_pasted", { p_email_id: emailId });
+  if (error) return { status: "error" };
+  revalidatePath(`/${locale}/claims/${claimId}`, "layout");
+  return { status: "saved" };
+}

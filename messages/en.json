@@ -507,7 +507,8 @@
       "aesa_filed": "You filed the claim with AESA",
       "outcome_recorded": "You recorded how the claim ended",
       "references_updated": "You updated the claim numbers",
-      "airline_response_moved": "You moved an airline answer to the other claim"
+      "airline_response_moved": "You moved an airline answer to the other claim",
+      "reply_pasted": "You pasted your reply into the airline's form"
     },
     "documentsTitle": "Documents",
     "noDocuments": "No documents yet.",
@@ -779,7 +780,7 @@
   },
   "AirlineResponse": {
     "title": "The airline's answer",
-    "intro": "Did the airline answer, or did its form refuse your claim? Tell us what they said: we'll read it, point out what doesn't add up and help you reply.",
+    "intro": "Did the airline answer, or did its form refuse your claim? Paste what they said: we'll read it, point out what doesn't add up and help you reply.",
     "channel": "How did they answer?",
     "channels": {
       "web_form": "Their web form (automatic message)",
@@ -801,8 +802,6 @@
     "submit": "Send to review",
     "reported": "Thanks. We're reading their answer: it takes a moment.",
     "theirAnswer": "Their answer",
-    "analyzing": "We're reading the airline's answer…",
-    "analysisFailed": "We couldn't read the answer this time.",
     "retry": "Try again",
     "conflicts": "What doesn't add up",
     "options": "Your options",
@@ -839,7 +838,6 @@
     "draftReply": "Draft my reply",
     "drafting": "We're writing your reply. It will appear under Messages in a moment.",
     "draftError": "We couldn't start the reply. Try again in a few minutes.",
-    "draftWaiting": "Your reply is ready under Messages.",
     "sources": {
       "reported": "Reported by you",
       "forwarded": "Forwarded by you",
@@ -852,10 +850,7 @@
       "expenses": "Expenses claim"
     },
     "referenceShort": "No. {reference}",
-    "noAnswerYet": "No answer yet.",
     "earlier": "{count, plural, one {# earlier answer} other {# earlier answers}}",
-    "paste": "Paste the airline's answer ({flow})",
-    "pasteAnother": "Paste another answer ({flow})",
     "moveTo": "Move to {flow}",
     "concernsHint": {
       "compensation": "This answer seems to be about the compensation claim. If so, move it there.",
@@ -870,6 +865,48 @@
       "hint": "The numbers the airline gave you. We quote them in your replies and AESA asks for them.",
       "save": "Save numbers",
       "saved": "Saved."
+    },
+    "introTwoClaims": "This airline handles your compensation and your expenses as two separate claims, each with its own answers. Paste each answer in its tab: we'll read it, point out what doesn't add up and help you reply.",
+    "flowsLabel": "Claims with the airline",
+    "pasteNext": "Paste their next answer",
+    "ourReading": "Our reading of their answer",
+    "draftWaitingOther": "Another email to the airline is waiting for your approval under Messages. Approve or discard it first, then come back to reply to this answer.",
+    "steps": {
+      "label": "What happens with this answer",
+      "state": {
+        "done": "done",
+        "current": "you are here",
+        "todo": "next"
+      },
+      "paste": {
+        "title": "Paste the airline's answer",
+        "now": "Paste below what they said (email, form message or letter). Add screenshots if you have them."
+      },
+      "read": {
+        "title": "We read it",
+        "now": "We're comparing their answer with your flight's facts. It usually takes 1–2 minutes and this page updates by itself: you can leave and come back."
+      },
+      "choose": {
+        "title": "Choose your reply",
+        "now": "Read what we found below, tick what your reply should say and press \"Draft my reply\". Nothing is sent yet."
+      },
+      "send": {
+        "title": "Send your reply",
+        "now": "Your reply is ready."
+      },
+      "wait": {
+        "title": "Wait for their answer",
+        "now": "Give the airline the time you asked for (14 or 30 days). When they answer, paste it below and we start again. No answer in time? You can go to AESA (see \"How a claim works\")."
+      },
+      "detail": {
+        "read_failed": "We couldn't read this answer. Try again; if it keeps failing, our team will look at it.",
+        "approve": "Open it in Messages, check or edit it, and press \"Approve and send\": it's sent from your claim address, in your name.",
+        "copy": "This airline only takes messages through its web form: open the text, copy it and paste it into their form (same place you sent the claim). Then tell us you did.",
+        "sending": "Sending your reply…",
+        "send_failed": "Your reply couldn't be sent. Open it in Messages to try again."
+      },
+      "openReply": "Open my reply",
+      "pasted": "I've pasted it into their form"
     }
   },
   "Forwarding": {

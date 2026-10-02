@@ -97,7 +97,7 @@ export async function Messages({
             const when = e.sent_at ?? e.received_at ?? e.created_at;
             const body = emailBodyText(e.body_text, e.body_html);
             return (
-              <li key={e.id} className={cn("space-y-2 rounded-lg border p-4", pending && "border-primary")}>
+              <li key={e.id} id={`email-${e.id}`} className={cn("scroll-mt-6 space-y-2 rounded-lg border p-4", pending && "border-primary")}>
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <p className="min-w-0 text-sm font-medium [overflow-wrap:anywhere]">{e.subject || "—"}</p>
                   <Badge tone={pending ? "action" : e.status === "failed" ? "warn" : "muted"}>{t(`emailStatus.${e.status}`)}</Badge>
@@ -224,7 +224,7 @@ export async function Timeline({ createdAt, events }: { createdAt: string; event
     "status_changed", "email_approved", "submitted_airline", "email_received", "email_sent", "document_validated",
     "email_drafted", "email_failed", "email_draft_failed", "email_edited", "email_discarded",
     "email_analyzed", "email_analysis_failed", "expenses_submitted",
-    "airline_response_reported", "airline_response_analyzed", "aesa_filed", "outcome_recorded", "references_updated", "airline_response_moved",
+    "airline_response_reported", "airline_response_analyzed", "aesa_filed", "outcome_recorded", "references_updated", "airline_response_moved", "reply_pasted",
   ];
   const label = (e: ClaimEventRow) => {
     if (e.event_type === "status_changed") {

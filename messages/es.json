@@ -507,7 +507,8 @@
       "aesa_filed": "Presentaste la reclamación ante AESA",
       "outcome_recorded": "Indicaste cómo terminó la reclamación",
       "references_updated": "Actualizaste los números de reclamación",
-      "airline_response_moved": "Moviste una respuesta de la aerolínea a la otra reclamación"
+      "airline_response_moved": "Moviste una respuesta de la aerolínea a la otra reclamación",
+      "reply_pasted": "Pegaste tu respuesta en el formulario de la aerolínea"
     },
     "documentsTitle": "Documentos",
     "noDocuments": "Aún no hay documentos.",
@@ -779,7 +780,7 @@
   },
   "AirlineResponse": {
     "title": "La respuesta de la aerolínea",
-    "intro": "¿Ha respondido la aerolínea o su formulario ha rechazado tu reclamación? Cuéntanos qué te dijeron: lo leeremos, te diremos qué no cuadra y te ayudaremos a responder.",
+    "intro": "¿Ha respondido la aerolínea o su formulario ha rechazado tu reclamación? Pega lo que te dijeron: lo leemos, señalamos lo que no cuadra y te ayudamos a contestar.",
     "channel": "¿Cómo respondieron?",
     "channels": {
       "web_form": "Su formulario web (mensaje automático)",
@@ -801,8 +802,6 @@
     "submit": "Enviar para revisar",
     "reported": "Gracias. Estamos leyendo su respuesta: tarda un momento.",
     "theirAnswer": "Su respuesta",
-    "analyzing": "Estamos leyendo la respuesta de la aerolínea…",
-    "analysisFailed": "Esta vez no hemos podido leer la respuesta.",
     "retry": "Reintentar",
     "conflicts": "Lo que no cuadra",
     "options": "Tus opciones",
@@ -839,7 +838,6 @@
     "draftReply": "Redactar mi respuesta",
     "drafting": "Estamos redactando tu respuesta. Aparecerá en Mensajes en un momento.",
     "draftError": "No hemos podido empezar la respuesta. Inténtalo de nuevo en unos minutos.",
-    "draftWaiting": "Tu respuesta está lista en Mensajes.",
     "sources": {
       "reported": "Informado por ti",
       "forwarded": "Reenviado por ti",
@@ -852,10 +850,7 @@
       "expenses": "Reclamación de gastos"
     },
     "referenceShort": "N.º {reference}",
-    "noAnswerYet": "Aún no hay respuesta.",
     "earlier": "{count, plural, one {# respuesta anterior} other {# respuestas anteriores}}",
-    "paste": "Pegar la respuesta de la aerolínea ({flow})",
-    "pasteAnother": "Pegar otra respuesta ({flow})",
     "moveTo": "Mover a {flow}",
     "concernsHint": {
       "compensation": "Esta respuesta parece sobre la reclamación de compensación. Si es así, muévela allí.",
@@ -870,6 +865,48 @@
       "hint": "Los números que te ha dado la aerolínea. Los citamos en tus respuestas y AESA los pide.",
       "save": "Guardar números",
       "saved": "Guardado."
+    },
+    "introTwoClaims": "Esta aerolínea trata la compensación y los gastos como dos reclamaciones distintas, cada una con sus respuestas. Pega cada respuesta en su pestaña: la leemos, señalamos lo que no cuadra y te ayudamos a contestar.",
+    "flowsLabel": "Reclamaciones con la aerolínea",
+    "pasteNext": "Pegar su siguiente respuesta",
+    "ourReading": "Lo que vimos en su respuesta",
+    "draftWaitingOther": "Hay otro correo a la aerolínea esperando tu aprobación en Mensajes. Apruébalo o descártalo primero y vuelve para responder a esta respuesta.",
+    "steps": {
+      "label": "Qué pasa con esta respuesta",
+      "state": {
+        "done": "hecho",
+        "current": "estás aquí",
+        "todo": "siguiente"
+      },
+      "paste": {
+        "title": "Pega la respuesta de la aerolínea",
+        "now": "Pega abajo lo que te dijeron (correo, mensaje del formulario o carta). Añade capturas si las tienes."
+      },
+      "read": {
+        "title": "La leemos",
+        "now": "Estamos comparando su respuesta con los datos de tu vuelo. Suele tardar 1–2 minutos y esta página se actualiza sola: puedes irte y volver."
+      },
+      "choose": {
+        "title": "Elige tu respuesta",
+        "now": "Lee abajo lo que hemos encontrado, marca qué debe decir tu respuesta y pulsa «Redactar mi respuesta». Todavía no se envía nada."
+      },
+      "send": {
+        "title": "Envía tu respuesta",
+        "now": "Tu respuesta está lista."
+      },
+      "wait": {
+        "title": "Espera su respuesta",
+        "now": "Dale a la aerolínea el plazo que pediste (14 o 30 días). Cuando conteste, pégalo abajo y volvemos a empezar. ¿No contesta a tiempo? Puedes ir a AESA (ver «Cómo funciona una reclamación»)."
+      },
+      "detail": {
+        "read_failed": "No hemos podido leer esta respuesta. Vuelve a intentarlo; si sigue fallando, nuestro equipo la revisará.",
+        "approve": "Ábrela en Mensajes, revísala o edítala y pulsa «Aprobar y enviar»: se envía desde el correo de tu reclamación, en tu nombre.",
+        "copy": "Esta aerolínea solo acepta mensajes por su formulario web: abre el texto, cópialo y pégalo en su formulario (donde enviaste la reclamación). Después dinos que lo has hecho.",
+        "sending": "Enviando tu respuesta…",
+        "send_failed": "No se ha podido enviar tu respuesta. Ábrela en Mensajes para reintentarlo."
+      },
+      "openReply": "Abrir mi respuesta",
+      "pasted": "Ya la he pegado en su formulario"
     }
   },
   "Forwarding": {
