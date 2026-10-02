@@ -96,6 +96,8 @@ export async function requestEmailDraft(
 }
 
 const responseSchema = z.object({
+  purpose: z.enum(["compensation", "expenses"]),
+  reference: z.string().trim().max(100),
   channel: z.enum(["web_form", "email", "letter", "phone", "chat", "other"]),
   received_on: z.iso.date(),
   airline_text: z.string().trim().max(20000),
@@ -109,6 +111,8 @@ const responseSchema = z.object({
 export async function reportAirlineResponse(locale: string, claimId: string, _prev: FormState, formData: FormData): Promise<FormState> {
   await requireOwner(locale, claimId);
   const parsed = responseSchema.safeParse({
+    purpose: formData.get("purpose") ?? "compensation",
+    reference: formData.get("reference") ?? "",
     channel: formData.get("channel"),
     received_on: formData.get("received_on"),
     airline_text: formData.get("airline_text") ?? "",
@@ -120,10 +124,12 @@ export async function reportAirlineResponse(locale: string, claimId: string, _pr
   const supabase = await createClient();
   const { data: responseId, error } = await supabase.rpc("report_airline_response", {
     p_claim_id: claimId,
+    p_purpose: v.purpose,
     p_channel: v.channel,
     p_received_on: v.received_on,
     p_airline_text: v.airline_text || null,
     p_explanation: v.explanation || null,
+    p_reference: v.reference || null,
   });
   if (error || !responseId) return { status: "error" };
   await pokeAnswerReader();
@@ -229,5 +235,45 @@ export async function recordClaimOutcome(locale: string, claimId: string, _prev:
   });
   if (error) return { status: "error" };
   revalidatePath(`/${locale}/claims`, "layout");
+  return { status: "saved" };
+}
+
+const referencesSchema = z.object({
+  compensation: z.string().trim().max(100),
+  expenses: z.string().trim().max(100),
+});
+
+/** The passenger adds or corrects the airline's claim numbers (compensation and expenses). */
+export async function updateClaimReferences(locale: string, claimId: string, _prev: FormState, formData: FormData): Promise<FormState> {
+  await requireOwner(locale, claimId);
+  const parsed = referencesSchema.safeParse({
+    compensation: formData.get("compensation") ?? "",
+    expenses: formData.get("expenses") ?? "",
+  });
+  if (!parsed.success) return invalid(parsed.error.issues);
+  const supabase = await createClient();
+  const { error } = await supabase.rpc("update_claim_references", {
+    p_claim_id: claimId,
+    p_compensation: parsed.data.compensation || null,
+    p_expenses: parsed.data.expenses || null,
+  });
+  if (error) return { status: "error" };
+  revalidatePath(`/${locale}/claims/${claimId}`, "layout");
+  return { status: "saved" };
+}
+
+/** Moves an answer to the other flow (compensation ⇄ expenses); it is read again. */
+export async function moveAirlineResponse(
+  locale: string,
+  claimId: string,
+  responseId: string,
+  purpose: "compensation" | "expenses",
+): Promise<FormState> {
+  await requireOwner(locale, claimId);
+  const supabase = await createClient();
+  const { error } = await supabase.rpc("set_airline_response_purpose", { p_response_id: responseId, p_purpose: purpose });
+  if (error) return { status: "error" };
+  await pokeAnswerReader();
+  revalidatePath(`/${locale}/claims/${claimId}`, "layout");
   return { status: "saved" };
 }

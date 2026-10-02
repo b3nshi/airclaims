@@ -9,7 +9,9 @@
     "profile": "My profile",
     "signOut": "Sign out",
     "claims": "My claims",
-    "admin": "Admin"
+    "admin": "Admin",
+    "menu": "Menu",
+    "closeMenu": "Close menu"
   },
   "LocaleSwitcher": {
     "label": "Language"
@@ -503,7 +505,9 @@
       "airline_response_reported": "You reported the airline's answer",
       "airline_response_analyzed": "We read the airline's answer",
       "aesa_filed": "You filed the claim with AESA",
-      "outcome_recorded": "You recorded how the claim ended"
+      "outcome_recorded": "You recorded how the claim ended",
+      "references_updated": "You updated the claim numbers",
+      "airline_response_moved": "You moved an airline answer to the other claim"
     },
     "documentsTitle": "Documents",
     "noDocuments": "No documents yet.",
@@ -559,7 +563,14 @@
     "prepareOfferReply": "Prepare a reply asking to be paid in money",
     "goToAnswer": "See the airline's answer",
     "pasteInto": "Text to paste into {label}",
-    "pasteHint": "Copy it into the airline's form (for example \"Service complaints\" or the expenses form). We don't send it."
+    "pasteHint": "Copy it into the airline's form (for example \"Service complaints\" or the expenses form). We don't send it.",
+    "tabs": {
+      "label": "Claim sections",
+      "claim": "Your claim",
+      "messages": "Messages",
+      "documents": "Documents & expenses",
+      "history": "History"
+    }
   },
   "Admin": {
     "title": "Admin",
@@ -769,8 +780,6 @@
   "AirlineResponse": {
     "title": "The airline's answer",
     "intro": "Did the airline answer, or did its form refuse your claim? Tell us what they said: we'll read it, point out what doesn't add up and help you reply.",
-    "report": "Report the airline's answer",
-    "reportAnother": "Report another answer",
     "channel": "How did they answer?",
     "channels": {
       "web_form": "Their web form (automatic message)",
@@ -835,6 +844,32 @@
       "reported": "Reported by you",
       "forwarded": "Forwarded by you",
       "inbound": "Received at your claim address"
+    },
+    "answerReference": "Claim number in this answer",
+    "answerReferenceHint": "If the airline gives (or changes) a claim number, add it: we'll save it as this claim's number.",
+    "flows": {
+      "compensation": "Compensation claim",
+      "expenses": "Expenses claim"
+    },
+    "referenceShort": "No. {reference}",
+    "noAnswerYet": "No answer yet.",
+    "earlier": "{count, plural, one {# earlier answer} other {# earlier answers}}",
+    "paste": "Paste the airline's answer ({flow})",
+    "pasteAnother": "Paste another answer ({flow})",
+    "moveTo": "Move to {flow}",
+    "concernsHint": {
+      "compensation": "This answer seems to be about the compensation claim. If so, move it there.",
+      "expenses": "This answer seems to be about the expenses claim. If so, move it there.",
+      "both": "This answer seems to cover both the compensation and the expenses."
+    },
+    "references": {
+      "title": "Claim numbers",
+      "compensation": "Compensation",
+      "expenses": "Expenses",
+      "none": "—",
+      "hint": "The numbers the airline gave you. We quote them in your replies and AESA asks for them.",
+      "save": "Save numbers",
+      "saved": "Saved."
     }
   },
   "Forwarding": {

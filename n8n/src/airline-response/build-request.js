@@ -15,6 +15,7 @@ const request = {
       schema: {
         type: 'object',
         properties: {
+          concerns: { type: 'string', enum: ['compensation', 'expenses', 'both', 'unclear'] },
           kind: { type: 'string', enum: ['auto_rejection', 'rejection', 'offer', 'request_info', 'acknowledgement', 'payment_confirmed', 'other'] },
           airline_position: { type: 'string' },
           reasons: {
@@ -49,7 +50,7 @@ const request = {
           aesa_advice: { type: 'string' },
           summary: { type: 'string' },
         },
-        required: ['kind', 'airline_position', 'reasons', 'airline_measured_delay_minutes', 'conflicts', 'options', 'aesa_advice', 'summary'],
+        required: ['concerns', 'kind', 'airline_position', 'reasons', 'airline_measured_delay_minutes', 'conflicts', 'options', 'aesa_advice', 'summary'],
         additionalProperties: false,
       },
     },

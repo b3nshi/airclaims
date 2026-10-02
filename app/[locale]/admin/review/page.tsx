@@ -74,7 +74,7 @@ export default async function AdminReview({ params, searchParams }: PageProps<"/
                   <details>
                     <summary className="cursor-pointer text-muted-foreground">{t("review.body")}</summary>
                     {/* Third-party content: plain text only, never rendered as HTML. */}
-                    <pre className="mt-2 max-h-80 overflow-auto rounded-md bg-muted/40 p-3 font-sans whitespace-pre-wrap">
+                    <pre className="mt-2 max-h-80 overflow-auto rounded-md bg-muted/40 p-3 font-sans whitespace-pre-wrap [overflow-wrap:anywhere]">
                       {emailBodyText(email.body_text, email.body_html)}
                     </pre>
                   </details>

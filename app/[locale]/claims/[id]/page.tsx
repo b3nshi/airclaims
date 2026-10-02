@@ -17,6 +17,7 @@ import {
   Timeline,
   type EmailAnalysis,
 } from "@/components/dashboard/sections";
+import { ClaimTabs } from "@/components/dashboard/claim-tabs";
 import { ClaimProgressForms } from "@/components/dashboard/claim-progress-forms";
 import { AirlineResponsePanel } from "@/components/dashboard/airline-response-panel";
 import { RequestDraft } from "@/components/dashboard/request-draft";
@@ -54,12 +55,12 @@ export default async function ClaimDashboard({ params }: PageProps<"/[locale]/cl
   for (const r of [emailsRes, eventsRes, docsRes, responsesRes]) if (r.error) throw r.error;
   const responses = responsesRes.data ?? [];
   const events = eventsRes.data ?? [];
-  // An analysed airline answer the passenger hasn't drafted a reply to yet.
-  const latestResponse = responses[0];
-  const answeredLatest = events.some(
-    (e) => e.event_type === "email_drafted" && (e.payload as { response_id?: string } | null)?.response_id === latestResponse?.id,
+  // An analysed airline answer (latest of each claim: compensation, expenses) not replied to yet.
+  const drafted = new Set(
+    events.filter((e) => e.event_type === "email_drafted").map((e) => (e.payload as { response_id?: string } | null)?.response_id),
   );
-  const airlineAnswerToHandle = latestResponse?.status === "analyzed" && !answeredLatest;
+  const latestPerFlow = (["compensation", "expenses"] as const).map((p) => responses.find((r) => r.purpose === p));
+  const airlineAnswerToHandle = latestPerFlow.some((r) => r?.status === "analyzed" && !drafted.has(r.id));
   const hasOpenDraft = (emailsRes.data ?? []).some(
     (e) => e.direction === "outbound" && ["pending_approval", "approved", "sending", "draft"].includes(e.status),
   );
@@ -85,10 +86,11 @@ export default async function ClaimDashboard({ params }: PageProps<"/[locale]/cl
   const path = claimPath({
     status: claim.status,
     submittedAt: claim.submitted_airline_at,
-    hadAirlineAnswer: responses.length > 0 || claim.status === "airline_replied",
+    hadAirlineAnswer: responses.some((r) => r.purpose === "compensation") || claim.status === "airline_replied",
     aesaFiled: events.some((e) => e.event_type === "aesa_filed"),
     today,
   });
+  const closed = CLOSED.includes(claim.status);
   const submitted = !["draft", "documents_pending", "validating", "ready_to_submit"].includes(claim.status);
   const date = (iso: string) => format.dateTime(new Date(iso), { dateStyle: "long", timeZone: "UTC" });
 
@@ -177,47 +179,80 @@ export default async function ClaimDashboard({ params }: PageProps<"/[locale]/cl
         />
       )}
 
-      {!CLOSED.includes(claim.status) && !expensesSubmitted(events) && (
-        <ExpensesSubmission locale={locale} claim={claim} assessment={a} />
-      )}
-
-      {!CLOSED.includes(claim.status) && channel !== "email" && <ForwardingGuide claim={claim} />}
-
-      {!CLOSED.includes(claim.status) && (
-        <AirlineResponsePanel
-          locale={locale}
-          claim={claim}
-          userId={user.id}
-          responses={responses}
-          hasExpenses={a.expenses.length > 0}
-          departsSpain={a.departsSpain}
-          delivery={channel === "email" ? "email" : "paste"}
-          hasOpenDraft={hasOpenDraft}
-        />
-      )}
-
-      <Deadlines today={today} items={deadlines} />
-      <Messages locale={locale} claimId={claim.id} alias={alias} emails={emails} />
-      <Documents claimId={claim.id} documents={docsRes.data ?? []} canAdd={canAddDocuments(claim.status)} />
-      <Expenses claimId={claim.id} expenses={a.expenses} totalEur={Number(claim.expenses_total_eur)} canEdit={canEditDocuments(claim.status)} />
-      <Timeline createdAt={claim.created_at} events={events} />
-
-      {submitted && !CLOSED.includes(claim.status) && (
-        <ClaimProgressForms
-          locale={locale}
-          claimId={claim.id}
-          canFileAesa={
-            (claim.status === "submitted_airline" || claim.status === "airline_replied") && aesaAvailable(claim.flight_date)
-          }
-          today={today}
-        />
-      )}
-
-      {!CLOSED.includes(claim.status) && (
-        <div className="border-t pt-6">
-          <WithdrawClaim locale={locale} claimId={claim.id} />
-        </div>
-      )}
+      <ClaimTabs
+        label={t("tabs.label")}
+        tabs={[
+          ...(closed
+            ? []
+            : [
+                {
+                  id: "claim",
+                  label: t("tabs.claim"),
+                  attention: airlineAnswerToHandle,
+                  content: (
+                    <>
+                      <AirlineResponsePanel
+                        locale={locale}
+                        claim={claim}
+                        userId={user.id}
+                        responses={responses}
+                        hasExpenses={a.expenses.length > 0}
+                        hasExpensesFlow={
+                          a.expenses.length > 0 ||
+                          !!claim.airline_expenses_reference ||
+                          expensesSubmitted(events) ||
+                          responses.some((r) => r.purpose === "expenses")
+                        }
+                        departsSpain={a.departsSpain}
+                        delivery={channel === "email" ? "email" : "paste"}
+                        hasOpenDraft={hasOpenDraft}
+                      />
+                      {!expensesSubmitted(events) && <ExpensesSubmission locale={locale} claim={claim} assessment={a} />}
+                      {channel !== "email" && <ForwardingGuide claim={claim} />}
+                      <Deadlines today={today} items={deadlines} />
+                      {submitted && (
+                        <ClaimProgressForms
+                          locale={locale}
+                          claimId={claim.id}
+                          canFileAesa={
+                            (claim.status === "submitted_airline" || claim.status === "airline_replied") &&
+                            aesaAvailable(claim.flight_date)
+                          }
+                          today={today}
+                        />
+                      )}
+                      <div className="border-t pt-6">
+                        <WithdrawClaim locale={locale} claimId={claim.id} />
+                      </div>
+                    </>
+                  ),
+                },
+              ]),
+          {
+            id: "messages",
+            label: t("tabs.messages"),
+            count: emails.filter((e) => e.status !== "ignored").length,
+            attention: emails.some((e) => e.status === "pending_approval" || (e.direction === "outbound" && e.status === "draft")),
+            content: <Messages locale={locale} claimId={claim.id} alias={alias} emails={emails} />,
+          },
+          {
+            id: "documents",
+            label: t("tabs.documents"),
+            content: (
+              <>
+                <Documents claimId={claim.id} documents={docsRes.data ?? []} canAdd={canAddDocuments(claim.status)} />
+                <Expenses
+                  claimId={claim.id}
+                  expenses={a.expenses}
+                  totalEur={Number(claim.expenses_total_eur)}
+                  canEdit={canEditDocuments(claim.status)}
+                />
+              </>
+            ),
+          },
+          { id: "history", label: t("tabs.history"), content: <Timeline createdAt={claim.created_at} events={events} /> },
+        ]}
+      />
     </div>
   );
 }

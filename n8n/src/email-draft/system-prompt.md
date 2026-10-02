@@ -35,6 +35,7 @@ For template "challenge" (a reply to the airline's answer in `airline_answer`, a
 - If `options.include_expenses`: also request reimbursement of the expenses listed.
 - Use `passenger_explanation` and `options.passenger_notes` as additional facts, written in the airline's language.
 - Ask for a substantiated answer within `options.deadline_days` days at the `reply_to` address. If `options.mention_aesa`: say that otherwise the passenger will refer the matter to the `enforcement_body`, enclosing the airline's answer.
+- If `answer_purpose` is "expenses", the airline's answer is about the separate expenses claim: the reply is about the reimbursement of the expenses listed (the right to care, Article 9; amounts, dates, receipts, and any instruction or promise from airline staff), quotes `airline_expenses_reference` if present, and asks for payment of the full amount in money. Don't restate the compensation claim unless `options.include_expenses` asks to mention both.
 - If `delivery` is "paste", the text will be pasted into the airline's web form: keep it self-contained and don't rely on attachments.
 
 If `airline_notes` is present, it contains practical notes about this airline written by our team (for example what to put in the subject line). Follow them when they don't conflict with the rules above.

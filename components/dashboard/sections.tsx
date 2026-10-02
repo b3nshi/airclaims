@@ -99,10 +99,10 @@ export async function Messages({
             return (
               <li key={e.id} className={cn("space-y-2 rounded-lg border p-4", pending && "border-primary")}>
                 <div className="flex flex-wrap items-center justify-between gap-2">
-                  <p className="text-sm font-medium">{e.subject || "—"}</p>
+                  <p className="min-w-0 text-sm font-medium [overflow-wrap:anywhere]">{e.subject || "—"}</p>
                   <Badge tone={pending ? "action" : e.status === "failed" ? "warn" : "muted"}>{t(`emailStatus.${e.status}`)}</Badge>
                 </div>
-                <p className="text-xs text-muted-foreground">
+                <p className="text-xs text-muted-foreground [overflow-wrap:anywhere]">
                   {who} · {format.dateTime(new Date(when), { dateStyle: "medium", timeStyle: "short" })}
                 </p>
                 {e.ai_summary && <p className="text-sm">{t("summary", { summary: e.ai_summary })}</p>}
@@ -119,7 +119,7 @@ export async function Messages({
                   body && (
                     <details className="text-sm">
                       <summary className="cursor-pointer text-muted-foreground">{t("showMessage")}</summary>
-                      <pre className="mt-2 max-h-96 overflow-auto rounded-md bg-muted/40 p-3 font-sans whitespace-pre-wrap">{body}</pre>
+                      <pre className="mt-2 max-h-96 overflow-auto rounded-md bg-muted/40 p-3 font-sans whitespace-pre-wrap [overflow-wrap:anywhere]">{body}</pre>
                     </details>
                   )
                 )}
@@ -224,7 +224,7 @@ export async function Timeline({ createdAt, events }: { createdAt: string; event
     "status_changed", "email_approved", "submitted_airline", "email_received", "email_sent", "document_validated",
     "email_drafted", "email_failed", "email_draft_failed", "email_edited", "email_discarded",
     "email_analyzed", "email_analysis_failed", "expenses_submitted",
-    "airline_response_reported", "airline_response_analyzed", "aesa_filed", "outcome_recorded",
+    "airline_response_reported", "airline_response_analyzed", "aesa_filed", "outcome_recorded", "references_updated", "airline_response_moved",
   ];
   const label = (e: ClaimEventRow) => {
     if (e.event_type === "status_changed") {

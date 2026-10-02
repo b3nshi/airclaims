@@ -129,7 +129,7 @@ export async function AirlineSubmission({
           <CopyButton value={claimText.body} />
         </div>
         <p className="text-xs text-muted-foreground">{t("claimTextHint")}</p>
-        <pre className="max-h-80 overflow-auto rounded-lg border bg-muted/30 p-4 text-sm whitespace-pre-wrap">{claimText.body}</pre>
+        <pre className="max-h-80 overflow-auto rounded-lg border bg-muted/30 p-4 text-sm whitespace-pre-wrap [overflow-wrap:anywhere]">{claimText.body}</pre>
       </div>
       {channel === "web_form" && <SubmissionForm locale={locale} claimId={claim.id} />}
     </div>

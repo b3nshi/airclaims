@@ -9,7 +9,9 @@
     "profile": "Mi perfil",
     "signOut": "Salir",
     "claims": "Mis reclamaciones",
-    "admin": "Administración"
+    "admin": "Administración",
+    "menu": "Menú",
+    "closeMenu": "Cerrar menú"
   },
   "LocaleSwitcher": {
     "label": "Idioma"
@@ -503,7 +505,9 @@
       "airline_response_reported": "Informaste de la respuesta de la aerolínea",
       "airline_response_analyzed": "Leímos la respuesta de la aerolínea",
       "aesa_filed": "Presentaste la reclamación ante AESA",
-      "outcome_recorded": "Indicaste cómo terminó la reclamación"
+      "outcome_recorded": "Indicaste cómo terminó la reclamación",
+      "references_updated": "Actualizaste los números de reclamación",
+      "airline_response_moved": "Moviste una respuesta de la aerolínea a la otra reclamación"
     },
     "documentsTitle": "Documentos",
     "noDocuments": "Aún no hay documentos.",
@@ -559,7 +563,14 @@
     "prepareOfferReply": "Preparar una respuesta pidiendo el pago en dinero",
     "goToAnswer": "Ver la respuesta de la aerolínea",
     "pasteInto": "Texto para pegar en {label}",
-    "pasteHint": "Cópialo en el formulario de la aerolínea (por ejemplo «Service complaints» o el formulario de gastos). No lo enviamos nosotros."
+    "pasteHint": "Cópialo en el formulario de la aerolínea (por ejemplo «Service complaints» o el formulario de gastos). No lo enviamos nosotros.",
+    "tabs": {
+      "label": "Secciones de la reclamación",
+      "claim": "Tu reclamación",
+      "messages": "Mensajes",
+      "documents": "Documentos y gastos",
+      "history": "Historial"
+    }
   },
   "Admin": {
     "title": "Administración",
@@ -769,8 +780,6 @@
   "AirlineResponse": {
     "title": "La respuesta de la aerolínea",
     "intro": "¿Ha respondido la aerolínea o su formulario ha rechazado tu reclamación? Cuéntanos qué te dijeron: lo leeremos, te diremos qué no cuadra y te ayudaremos a responder.",
-    "report": "Informar de la respuesta de la aerolínea",
-    "reportAnother": "Informar de otra respuesta",
     "channel": "¿Cómo respondieron?",
     "channels": {
       "web_form": "Su formulario web (mensaje automático)",
@@ -835,6 +844,32 @@
       "reported": "Informado por ti",
       "forwarded": "Reenviado por ti",
       "inbound": "Recibido en el correo de tu reclamación"
+    },
+    "answerReference": "Número de reclamación de esta respuesta",
+    "answerReferenceHint": "Si la aerolínea da (o cambia) un número de reclamación, añádelo: lo guardaremos como el número de esta reclamación.",
+    "flows": {
+      "compensation": "Reclamación de compensación",
+      "expenses": "Reclamación de gastos"
+    },
+    "referenceShort": "N.º {reference}",
+    "noAnswerYet": "Aún no hay respuesta.",
+    "earlier": "{count, plural, one {# respuesta anterior} other {# respuestas anteriores}}",
+    "paste": "Pegar la respuesta de la aerolínea ({flow})",
+    "pasteAnother": "Pegar otra respuesta ({flow})",
+    "moveTo": "Mover a {flow}",
+    "concernsHint": {
+      "compensation": "Esta respuesta parece sobre la reclamación de compensación. Si es así, muévela allí.",
+      "expenses": "Esta respuesta parece sobre la reclamación de gastos. Si es así, muévela allí.",
+      "both": "Esta respuesta parece cubrir la compensación y los gastos."
+    },
+    "references": {
+      "title": "Números de reclamación",
+      "compensation": "Compensación",
+      "expenses": "Gastos",
+      "none": "—",
+      "hint": "Los números que te ha dado la aerolínea. Los citamos en tus respuestas y AESA los pide.",
+      "save": "Guardar números",
+      "saved": "Guardado."
     }
   },
   "Forwarding": {

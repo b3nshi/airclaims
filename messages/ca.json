@@ -9,7 +9,9 @@
     "profile": "El meu perfil",
     "signOut": "Surt",
     "claims": "Les meves reclamacions",
-    "admin": "Administració"
+    "admin": "Administració",
+    "menu": "Menú",
+    "closeMenu": "Tancar menú"
   },
   "LocaleSwitcher": {
     "label": "Idioma"
@@ -503,7 +505,9 @@
       "airline_response_reported": "Vas informar de la resposta de l'aerolínia",
       "airline_response_analyzed": "Vam llegir la resposta de l'aerolínia",
       "aesa_filed": "Vas presentar la reclamació davant AESA",
-      "outcome_recorded": "Vas indicar com va acabar la reclamació"
+      "outcome_recorded": "Vas indicar com va acabar la reclamació",
+      "references_updated": "Vas actualitzar els números de reclamació",
+      "airline_response_moved": "Vas moure una resposta de l'aerolínia a l'altra reclamació"
     },
     "documentsTitle": "Documents",
     "noDocuments": "Encara no hi ha documents.",
@@ -559,7 +563,14 @@
     "prepareOfferReply": "Prepara una resposta demanant el pagament en diners",
     "goToAnswer": "Mostra la resposta de l'aerolínia",
     "pasteInto": "Text per enganxar a {label}",
-    "pasteHint": "Copia'l al formulari de l'aerolínia (per exemple «Service complaints» o el formulari de despeses). No l'enviem nosaltres."
+    "pasteHint": "Copia'l al formulari de l'aerolínia (per exemple «Service complaints» o el formulari de despeses). No l'enviem nosaltres.",
+    "tabs": {
+      "label": "Seccions de la reclamació",
+      "claim": "La teva reclamació",
+      "messages": "Missatges",
+      "documents": "Documents i despeses",
+      "history": "Historial"
+    }
   },
   "Admin": {
     "title": "Administració",
@@ -769,8 +780,6 @@
   "AirlineResponse": {
     "title": "La resposta de l'aerolínia",
     "intro": "L'aerolínia ha respost o el seu formulari ha rebutjat la teva reclamació? Explica'ns què et van dir: ho llegirem, et direm què no quadra i t'ajudarem a respondre.",
-    "report": "Informa de la resposta de l'aerolínia",
-    "reportAnother": "Informa d'una altra resposta",
     "channel": "Com van respondre?",
     "channels": {
       "web_form": "El seu formulari web (missatge automàtic)",
@@ -835,6 +844,32 @@
       "reported": "Informat per tu",
       "forwarded": "Reenviat per tu",
       "inbound": "Rebut al correu de la teva reclamació"
+    },
+    "answerReference": "Número de reclamació d'aquesta resposta",
+    "answerReferenceHint": "Si l'aerolínia dona (o canvia) un número de reclamació, afegeix-lo: el desarem com el número d'aquesta reclamació.",
+    "flows": {
+      "compensation": "Reclamació de compensació",
+      "expenses": "Reclamació de despeses"
+    },
+    "referenceShort": "Núm. {reference}",
+    "noAnswerYet": "Encara no hi ha resposta.",
+    "earlier": "{count, plural, one {# resposta anterior} other {# respostes anteriors}}",
+    "paste": "Enganxar la resposta de l'aerolínia ({flow})",
+    "pasteAnother": "Enganxar una altra resposta ({flow})",
+    "moveTo": "Moure a {flow}",
+    "concernsHint": {
+      "compensation": "Aquesta resposta sembla sobre la reclamació de compensació. Si és així, mou-la allà.",
+      "expenses": "Aquesta resposta sembla sobre la reclamació de despeses. Si és així, mou-la allà.",
+      "both": "Aquesta resposta sembla cobrir la compensació i les despeses."
+    },
+    "references": {
+      "title": "Números de reclamació",
+      "compensation": "Compensació",
+      "expenses": "Despeses",
+      "none": "—",
+      "hint": "Els números que t'ha donat l'aerolínia. Els citem a les teves respostes i AESA els demana.",
+      "save": "Desar números",
+      "saved": "Desat."
     }
   },
   "Forwarding": {

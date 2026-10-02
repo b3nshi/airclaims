@@ -58,7 +58,7 @@ export async function ExpensesSubmission({
           <h4 className="text-sm font-medium">{t("expensesText")}</h4>
           <CopyButton value={text.body} />
         </div>
-        <pre className="max-h-72 overflow-auto rounded-lg border bg-muted/30 p-4 text-sm whitespace-pre-wrap">{text.body}</pre>
+        <pre className="max-h-72 overflow-auto rounded-lg border bg-muted/30 p-4 text-sm whitespace-pre-wrap [overflow-wrap:anywhere]">{text.body}</pre>
       </div>
       <ExpensesReferenceForm locale={locale} claimId={claim.id} />
     </section>

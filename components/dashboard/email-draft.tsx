@@ -91,7 +91,7 @@ export function EmailDraft({
 
   return (
     <div className="space-y-3">
-      <pre className="max-h-96 overflow-auto rounded-md bg-muted/40 p-3 font-sans text-sm whitespace-pre-wrap">{email.body}</pre>
+      <pre className="max-h-96 overflow-auto rounded-md bg-muted/40 p-3 font-sans text-sm whitespace-pre-wrap [overflow-wrap:anywhere]">{email.body}</pre>
 
       {mode === "view" && (
         <div className="flex flex-wrap gap-2">

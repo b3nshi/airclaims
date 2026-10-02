@@ -130,6 +130,7 @@ export type ClaimRow = {
   compensation_eur: number | null;
   expenses_total_eur: number;
   airline_claim_reference: string | null;
+  airline_expenses_reference: string | null;
   submitted_airline_at: string | null;
   aesa_deadline: string | null;
   resolved_at: string | null;
@@ -330,7 +331,10 @@ export type AirlineStatsRow = {
 export type AirlineResponseChannel = "web_form" | "email" | "letter" | "phone" | "chat" | "other";
 
 // AI reading of an airline answer (n8n/src/airline-response/system-prompt.md).
+export type AirlineResponsePurpose = "compensation" | "expenses";
+
 export type AirlineResponseAnalysis = {
+  concerns?: "compensation" | "expenses" | "both" | "unclear"; // since 0019
   kind: "auto_rejection" | "rejection" | "offer" | "request_info" | "acknowledgement" | "payment_confirmed" | "other";
   airline_position: string;
   reasons: { code: string; detail: string }[];
@@ -345,6 +349,7 @@ export type AirlineResponseRow = {
   id: string;
   claim_id: string;
   reported_by: string;
+  purpose: AirlineResponsePurpose;
   channel: AirlineResponseChannel;
   received_on: string;
   airline_text: string | null;
@@ -422,9 +427,22 @@ export type Database = {
       admin_airline_stats: { Args: Record<string, never>; Returns: AirlineStatsRow[] };
       admin_resolve_review: { Args: { p_id: string; p_note: string | null }; Returns: undefined };
       report_airline_response: {
-        Args: { p_claim_id: string; p_channel: string; p_received_on: string; p_airline_text: string | null; p_explanation: string | null };
+        Args: {
+          p_claim_id: string;
+          p_purpose: AirlineResponsePurpose;
+          p_channel: string;
+          p_received_on: string;
+          p_airline_text: string | null;
+          p_explanation: string | null;
+          p_reference: string | null;
+        };
         Returns: string;
       };
+      update_claim_references: {
+        Args: { p_claim_id: string; p_compensation: string | null; p_expenses: string | null };
+        Returns: undefined;
+      };
+      set_airline_response_purpose: { Args: { p_response_id: string; p_purpose: AirlineResponsePurpose }; Returns: undefined };
       retry_airline_response: { Args: { p_response_id: string }; Returns: undefined };
       mark_aesa_filed: { Args: { p_claim_id: string; p_filed_on: string; p_reference: string | null }; Returns: undefined };
       record_claim_outcome: {
